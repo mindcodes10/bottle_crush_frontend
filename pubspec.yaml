@@ -20,18 +20,18 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_native_splash: ^2.0.5
+  flutter_native_splash: ^2.2.14
+
 
 
   flutter_lints: ^4.0.0
 
 flutter_native_splash:
-  color: "#ffffff"  # Background color for the splash screen
-  image: assets/images/bottle_logo.png  # Your custom splash screen image
-  android: true  # Enable on Android
-  ios: true  # Enable on iOS
-  web: true  # Enable on web (optional)
-  fullscreen: true  # Set to true to make it fullscreen (optional)
+  color: "#0B499D" # Background color
+  image: assets/images/bottle_logo.png # Path to your logo image
+  android: true # Enable Android splash screen
+  ios: true # Enable iOS splash screen
+
 
 flutter:
 
