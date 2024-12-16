@@ -45,3 +45,7 @@ app.*.map.json
 # Exclude Flutter test and web folders
 /test/
 /web/
+/linux/
+/macos/
+/windows/
+/ios/

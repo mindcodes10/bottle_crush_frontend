@@ -1,37 +1,48 @@
-import 'package:bottle_crush/utils/theme.dart';
 import 'package:flutter/material.dart';
 
-// Define the custom button widget
+// Reusable Custom Button Widget
 class CustomElevatedButton extends StatelessWidget {
   final String buttonText;
   final VoidCallback onPressed;
+  final double? width; // Optional width to make it flexible
+  final double? height; // Optional height to make it flexible
+  final Color backgroundColor; // Customizable background color
 
   const CustomElevatedButton({
     super.key,
     required this.buttonText,
     required this.onPressed,
+    this.width,
+    this.height,
+    this.backgroundColor = Colors.green, // Default green background
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 120, // Set a specific width for the button
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.backgroundBlue,
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // Adjusted padding for smaller button
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6.0), // Reduced border radius for a smaller button
+    return Align(
+      alignment: Alignment.center, // Center alignment
+      child: SizedBox(
+        width: width ?? 200, // Default width if not provided
+        height: height ?? 50, // Default height if not provided
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: backgroundColor,
+            padding: const EdgeInsets.symmetric(
+              vertical: 12.0,
+              horizontal: 20.0,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0), // Rounded edges
+            ),
           ),
-          minimumSize: const Size(120, 30), // Small button size
-        ),
-        child: Text(
-          buttonText,
-          style: const TextStyle(
-            color: AppTheme.textWhite,
-            fontSize: 14, // Smaller font size for a more compact look
-            fontWeight: FontWeight.bold,
+          child: Text(
+            buttonText,
+            style: const TextStyle(
+              color: Colors.white, // White text
+              fontSize: 16, // Font size
+              fontWeight: FontWeight.bold, // Bold text
+            ),
           ),
         ),
       ),
