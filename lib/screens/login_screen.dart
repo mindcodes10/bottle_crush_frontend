@@ -3,6 +3,7 @@ import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading JSON
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import '../widgets/custom_elevated_button.dart';
 
@@ -17,6 +18,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// whenever your initialization is completed, remove the splash screen:
+    Future.delayed(Duration(seconds: 2)).then((value) => {
+      FlutterNativeSplash.remove()
+    });
+  }
 
   // method to load the admin details from json
   Future<Map<String, dynamic>> _fetchAdminDetails() async {
