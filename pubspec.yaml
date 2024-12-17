@@ -12,6 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_native_splash: ^2.4.3
 
 
 
@@ -20,17 +21,18 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_native_splash: ^2.2.14
+
 
 
 
   flutter_lints: ^4.0.0
 
-flutter_native_splash:
-  color: "#0B499D" # Background color
-  image: assets/images/bottle_logo.png # Path to your logo image
-  android: true # Enable Android splash screen
-  ios: true # Enable iOS splash screen
+#flutter_native_splash:
+#  color: "#0B499D" # Background color
+#  image: assets/images/bottle_logo.png # Path to your logo image
+#  android: true # Enable Android splash screen
+#  ios: false # Enable iOS splash screen
+#  web: false
 
 
 flutter:
@@ -39,7 +41,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/bottle_logo.png
+    - assets/images/leaf.png
     - assets/json/user_credentials.json
     - assets/json/admin_details.json
 
