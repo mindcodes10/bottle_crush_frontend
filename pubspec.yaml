@@ -13,6 +13,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_native_splash: ^2.4.3
+  http: ^1.2.2
+  dart_jsonwebtoken: ^2.4.1
 
 
 
