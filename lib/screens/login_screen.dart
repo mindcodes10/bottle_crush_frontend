@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:bottle_crush/screens/dashboard.dart';
+import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
+import 'package:bottle_crush/utils/token_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading JSON
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -39,8 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Method to validate credentials
   Future<void> submitPressed() async {
-    String enteredEmail = _emailController.text;
-    String enteredPassword = _passwordController.text;
+    String enteredEmail = _emailController.text.trim();
+    String enteredPassword = _passwordController.text.trim();
 
     // Check if email or password is empty
     if (enteredEmail.isEmpty) {
@@ -52,20 +54,20 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
-      // Validate email format
-      String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-      RegExp regExp = RegExp(emailPattern);
 
-      if (!regExp.hasMatch(enteredEmail)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter a valid email'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return; // Stop further execution
-      } // Stop further execution
+    // Validate email format
+    String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    RegExp regExp = RegExp(emailPattern);
 
+    if (!regExp.hasMatch(enteredEmail)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     if (enteredPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -74,44 +76,56 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.red,
         ),
       );
-      return; // Stop further execution
+      return;
     }
 
+    // Call the API login function
+    final apiService = ApiServices();
+
     try {
-      // Load the JSON file
-      final String response = await rootBundle.loadString('assets/json/user_credentials.json');
-      final data = json.decode(response);
+      final response = await apiService.login(enteredEmail, enteredPassword);
 
-      // Check if credentials exist in the JSON file
-      final user = data['users'].firstWhere(
-            (user) => user['email'] == enteredEmail && user['password'] == enteredPassword,
-        orElse: () => null,
-      );
+      if (response != null && response['access_token'] != null) {
+        // Decode the token and extract email and role
+        final token = response['access_token'];
+        final decodedData = TokenService.decodeToken(token);
 
-      if (user != null) {
+        if (decodedData != null) {
+          final email = decodedData['sub']; // Assuming 'sub' is the email
+          final role = decodedData['role']; // Assuming 'role' is available in token
+
+          // Print the email and role
+          print("User Email: $email");
+          print("User Role: $role");
+        }
+
+        // Success: Login successful, navigate to dashboard
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Login successful.'),
+            content: Text('Login successful!'),
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.push(
+
+        // Navigate to Dashboard
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const Dashboard()),
         );
       } else {
+        // Invalid credentials
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please enter valid credentials.'),
+            content: Text('Invalid credentials. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );
       }
     } catch (e) {
-      print('Error loading credentials: $e');
+      print('Error during login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Something went wrong...please try again later'),
+          content: Text('Something went wrong. Please try again later.'),
           backgroundColor: Colors.red,
         ),
       );
