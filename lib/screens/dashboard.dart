@@ -1,5 +1,6 @@
-import 'package:bottle_crush/utils/theme.dart';
+import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -11,10 +12,12 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
+      appBar: CustomAppBar(),  // Use the custom app bar widget here
       body: Center(
-        child: Text('Dashboard', style: TextStyle(color: AppTheme.backgroundBlue, fontSize: 30),),
+        child: Text('Dashboard Content'),
       ),
+
     );
   }
 }
