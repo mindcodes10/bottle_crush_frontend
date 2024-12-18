@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
@@ -97,6 +98,9 @@ class _LoginScreenState extends State<LoginScreen> {
           // Print the email and role
           print("User Email: $email");
           print("User Role: $role");
+
+          // Optionally store the token securely (e.g., using flutter_secure_storage)
+          // await secureStorage.write(key: 'access_token', value: token);
         }
 
         // Success: Login successful, navigate to dashboard
@@ -121,7 +125,16 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       }
+    } on SocketException catch (_) {
+      // Handle network-related errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No internet connection. Please check your network and try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
+      // Handle other types of errors
       print('Error during login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -131,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
+
 
 
   @override

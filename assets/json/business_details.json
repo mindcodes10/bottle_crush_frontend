@@ -1,0 +1,34 @@
+{
+  "business_details": [
+    {
+      "profile_photo": "assets/images/leaf.png",
+      "business_name": "Tech Innovations Ltd.",
+      "business_email": "info@techinnovations.com",
+      "mobile_number": "+1 555 123 456"
+    },
+    {
+      "profile_photo": "assets/images/leaf.png",
+      "business_name": "Green Solutions Inc.",
+      "business_email": "contact@greensolutions.com",
+      "mobile_number": "+1 555 654 321"
+    },
+    {
+      "profile_photo": "assets/images/leaf.png",
+      "business_name": "Creative Design Studio",
+      "business_email": "hello@creativedesign.com",
+      "mobile_number": "+1 555 789 012"
+    },
+    {
+      "profile_photo": "assets/images/leaf.png",
+      "business_name": "Global Tech Enterprises",
+      "business_email": "support@globaltech.com",
+      "mobile_number": "+1 555 234 567"
+    },
+    {
+      "profile_photo": "assets/images/leaf.png",
+      "business_name": "Modern Marketing Agency",
+      "business_email": "contact@modernmarketing.com",
+      "mobile_number": "+1 555 890 123"
+    }
+  ]
+}
