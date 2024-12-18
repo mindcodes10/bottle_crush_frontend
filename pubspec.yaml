@@ -19,6 +19,7 @@ dependencies:
 
 
 
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -48,6 +49,7 @@ flutter:
     - assets/json/user_credentials.json
     - assets/json/admin_details.json
     - assets/images/bottle_crusher_logo.png
+    - assets/json/business_details.json
 
 
   fonts:
