@@ -1,3 +1,16 @@
+buildscript {
+    ext.kotlin_version = '1.8.0' // Set this to the latest stable version of Kotlin
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Update this line to use AGP version 8.2.1 or higher
+        classpath 'com.android.tools.build:gradle:8.7.3' // Use the latest stable version
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Ensure $kotlin_version is defined
+    }
+}
+
 allprojects {
     repositories {
         google()

@@ -16,8 +16,7 @@ dependencies:
   http: ^1.2.2
   dart_jsonwebtoken: ^2.4.1
   font_awesome_flutter: ^10.8.0
-  image_picker: ^0.8.5+3
-
+  image_picker: ^1.1.1
 
 
   cupertino_icons: ^1.0.8
