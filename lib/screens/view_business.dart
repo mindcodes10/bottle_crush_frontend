@@ -1,11 +1,13 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:bottle_crush/screens/add_business.dart';
+import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_elevated_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ViewBusiness extends StatefulWidget {
@@ -17,6 +19,8 @@ class ViewBusiness extends StatefulWidget {
 
 class _ViewBusinessState extends State<ViewBusiness> {
   late Future<List<dynamic>> _businessDetails; // Future to hold business details
+  final ApiServices _apiServices = ApiServices(); // Create an instance of ApiServices
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); // Create an instance of FlutterSecureStorage
 
   int _selectedIndex = 0; // Track the selected index for bottom nav items
 
@@ -31,20 +35,21 @@ class _ViewBusinessState extends State<ViewBusiness> {
   @override
   void initState() {
     super.initState();
-    _businessDetails = _loadBusinessDetails(); // Initialize the Future
+    _fetchTokenAndBusinessDetails(); // Fetch token and business details
   }
 
-  // Method to load JSON from assets
-  Future<List<dynamic>> _loadBusinessDetails() async {
-    final String jsonString = await rootBundle.loadString('assets/json/business_details.json');
-    final Map<String, dynamic> jsonResponse = json.decode(jsonString);
-
-    // Print the business details for debugging
-    print("Business Details: ${jsonResponse['business_details']}");
-
-    return jsonResponse['business_details']; // Return the list of businesses
+  Future<void> _fetchTokenAndBusinessDetails() async {
+    String? token = await _secureStorage.read(key: 'access_token'); // Retrieve the token
+    if (token != null) {
+      setState(() {
+        _businessDetails = _apiServices.fetchBusinessDetails(token); // Use the API service to load business details
+      });
+    } else {
+      // Handle the case where the token is not found (e.g., navigate to login)
+      print('No token found. Please log in.');
+      // Optionally navigate to login screen or show a message
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +67,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Show loading indicator while waiting for data
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             // Show error message if there is an error
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -92,9 +97,12 @@ class _ViewBusinessState extends State<ViewBusiness> {
                       itemCount: businessDetails.length,
                       itemBuilder: (context, index) {
                         var business = businessDetails[index];
+                        // Add print statements to debug the email and mobile values
+                        print('Business Email: ${business['email']}');
+                        print('Business Mobile: ${business['mobile']}');
                         return Card(
                           elevation: 4,
-                          color: AppTheme.backgroundWhite,
+                          color: AppTheme .backgroundWhite,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -102,7 +110,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                             padding: const EdgeInsets.only(top: 8.0, left: 8.0),
                             child: Row(
                               children: [
-                                // Left part (Content section)
+                                // Left part ( Content section)
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,51 +118,43 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
-                                          // Replace CircleAvatar with Image.network to load profile photo
                                           CircleAvatar(
                                             radius: 25,
                                             backgroundColor: Colors.grey[300],
-                                            backgroundImage: business['profile_photo'] != null && business['profile_photo'].isNotEmpty
-                                                ? NetworkImage(business['profile_photo'])
-                                                : AssetImage('assets/images/leaf.png'), // Fallback image
+                                            backgroundImage: business['logo_image'] != null && business['logo_image'].isNotEmpty
+                                                ? MemoryImage(base64Decode(business['logo_image']))
+                                                : const AssetImage('assets/images/leaf.png'), // Fallback image
                                           ),
-
                                           const SizedBox(width: 16),
-
-                                          // The business name text with multiple lines if necessary
                                           Expanded(
                                             child: Text(
-                                              business['business_name'] ?? 'Business Name',
+                                              business['name'] ?? 'Business Name',
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                               ),
-                                              maxLines: 2, // Allow the business name to span two lines
-                                              softWrap: true, // Ensure text wraps when necessary
+                                              maxLines: 2,
+                                              softWrap: true,
                                             ),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 3),
                                       Text(
-                                        business['business_email'] ?? 'business@email.com',
+                                        business['email'] ?? 'business@email.com',
                                         style: const TextStyle(
                                           fontSize: 12,
-                                          //color: Colors.grey,
                                         ),
                                       ),
                                       Text(
-                                        business['mobile_number'] ?? '+1 234 567 890',
+                                        business['mobile'] ?? '+1 234 567 890',
                                         style: const TextStyle(
                                           fontSize: 12,
-                                          //color: Colors.grey,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-
-                                // Fixed-width vertical line
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Container(
@@ -163,10 +163,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                     color: Colors.grey,
                                   ),
                                 ),
-
                                 const SizedBox(width: 16),
-
-                                // Right part (Icons section)
                                 Row(
                                   children: [
                                     IconButton(
@@ -193,12 +190,9 @@ class _ViewBusinessState extends State<ViewBusiness> {
                             ),
                           ),
                         );
-
-
                       },
                     ),
                   ),
-                  // The "Add Business" button should stay at the bottom
                   CustomElevatedButton(
                     buttonText: ' + ADD BUSINESS',
                     onPressed: () {
@@ -215,7 +209,6 @@ class _ViewBusinessState extends State<ViewBusiness> {
               ),
             );
           } else {
-            // If no data is available
             return const Center(child: Text('No business details available.'));
           }
         },

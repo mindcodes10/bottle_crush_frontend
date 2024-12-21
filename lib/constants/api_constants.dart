@@ -4,7 +4,8 @@ class ApiConstants {
 
   // Auth Endpoints
   static const String login = "$baseUrl/login/";
+  static const String createBusiness = "$baseUrl/create_business";
 
-  // Example token key (optional, for use in requests)
-  static const String tokenKey = "access_token";
+  // Endpoint for viewing all businesses
+  static const String viewBusiness = "$baseUrl/businesses";
 }

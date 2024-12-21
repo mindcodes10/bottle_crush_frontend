@@ -3,6 +3,7 @@ import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../services/api_services.dart';
 import '../widgets/custom_elevated_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // <-- Add this import for File operations
@@ -273,18 +274,60 @@ class _AddBusinessState extends State<AddBusiness> {
                   ),
                   CustomElevatedButton(
                     buttonText: 'Submit',
-                    onPressed: () {
-                      // Handle the submit action
-                      if (_selectedImage != null) {
-                        // Example: upload the image to server or handle the selected image
-                        print('Selected Image: ${_selectedImage?.path}');
-                      }
-                    },
+                    onPressed: (){},
+                    // onPressed: () async {
+                    //   print("Submit button clicked");
+                    //
+                    //   if (_businessNameController.text.isEmpty ||
+                    //       _businessEmailController.text.isEmpty ||
+                    //       _businessMobileController.text.isEmpty ||
+                    //       _businessPasswordController.text.isEmpty ||
+                    //       _selectedImage == null) {
+                    //     print("Validation failed: One or more fields are empty");
+                    //     ScaffoldMessenger.of(context).showSnackBar(
+                    //       SnackBar(content: Text("Please fill all fields and select an image")),
+                    //     );
+                    //     return;
+                    //   }
+                    //
+                    //   print("Validation passed: All fields are filled");
+                    //
+                    //   final apiServices = ApiServices();
+                    //   print("Calling createBusiness API...");
+                    //   print("Input Details:");
+                    //   print(" - Business Name: ${_businessNameController.text}");
+                    //   print(" - Business Email: ${_businessEmailController.text}");
+                    //   print(" - Business Mobile: ${_businessMobileController.text}");
+                    //   print(" - Business Password: ${_businessPasswordController.text}");
+                    //   print(" - Logo Path: ${_selectedImage?.path}");
+                    //
+                    //   final result = await apiServices.createBusiness(
+                    //     businessName: _businessNameController.text,
+                    //     businessEmail: _businessEmailController.text,
+                    //     businessMobile: _businessMobileController.text,
+                    //     businessPassword: _businessPasswordController.text,
+                    //     logo: _selectedImage!,
+                    //   );
+                    //
+                    //   if (result != null) {
+                    //     print("API Response: $result");
+                    //     ScaffoldMessenger.of(context).showSnackBar(
+                    //       SnackBar(content: Text("Business created successfully!")),
+                    //     );
+                    //     // Clear the form or navigate
+                    //   } else {
+                    //     print("API call failed. Result is null.");
+                    //     ScaffoldMessenger.of(context).showSnackBar(
+                    //       SnackBar(content: Text("Failed to create business")),
+                    //     );
+                    //   }
+                    // },
                     width: screenWidth * 0.4,
-                    backgroundColor: AppTheme.backgroundBlue, // Blue background for Submit
-                    textColor: AppTheme.textWhite, // White text for Submit button
-                    icon: const Icon(Icons.check, color: AppTheme.textWhite), // Check icon as prefix
+                    backgroundColor: AppTheme.backgroundBlue,
+                    textColor: AppTheme.textWhite,
+                    icon: const Icon(Icons.check, color: AppTheme.textWhite),
                   ),
+
                 ],
               ),
             ),
