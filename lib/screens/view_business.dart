@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:bottle_crush/screens/dashboard.dart';
+import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/screens/add_business.dart';
 import 'package:bottle_crush/services/api_services.dart';
@@ -24,11 +26,25 @@ class _ViewBusinessState extends State<ViewBusiness> {
 
   int _selectedIndex = 0;
 
+  // Callback for bottom nav item tap
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    print('Selected Index: $index');
+
+    // Navigate to respective screen based on the selected index
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Dashboard()), // Home or Dashboard screen
+      );
+    }
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ViewMachines()), // Home or Dashboard screen
+      );
+    }
   }
 
   @override
@@ -60,7 +76,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
     return Scaffold(
       appBar: CustomAppBar(),
       bottomNavigationBar: CustomBottomAppBar(
-        onItemTapped: _onItemTapped,
+        onItemTapped: _onItemTapped, selectedIndex: _selectedIndex,
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _businessDetails,

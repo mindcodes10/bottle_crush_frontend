@@ -1,3 +1,5 @@
+import 'package:bottle_crush/screens/dashboard.dart';
+import 'package:bottle_crush/screens/view_business.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
@@ -50,13 +52,27 @@ class _ViewMachinesState extends State<ViewMachines> {
     setState(() {
       _selectedIndex = index;
     });
+
+    // Navigate to respective screen based on the selected index
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Dashboard()), // Home or Dashboard screen
+      );
+    }
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ViewBusiness()), // Home or Dashboard screen
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
-      bottomNavigationBar: CustomBottomAppBar(onItemTapped: _onItemTapped),
+      bottomNavigationBar: CustomBottomAppBar(onItemTapped: _onItemTapped, selectedIndex: _selectedIndex,),
       backgroundColor: AppTheme.backgroundWhite,
       body: Column(
         children: [
@@ -101,7 +117,7 @@ class _ViewMachinesState extends State<ViewMachines> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Owner: ${machine['owner_id']}', // For now, showing owner ID (You can fetch owner name by ID if necessary)
+                                  'Owner: ${machine['business_name']}', // For now, showing owner ID (You can fetch owner name by ID if necessary)
                                   style: const TextStyle(fontSize: 12),
                                 ),
                                 Text(

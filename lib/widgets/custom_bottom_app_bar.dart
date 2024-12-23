@@ -1,11 +1,16 @@
-import 'package:bottle_crush/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:bottle_crush/utils/theme.dart';
 
 class CustomBottomAppBar extends StatefulWidget {
   final Function(int) onItemTapped; // Callback for item tap actions
+  final int selectedIndex; // Pass selected index to maintain consistency
 
-  const CustomBottomAppBar({super.key, required this.onItemTapped});
+  const CustomBottomAppBar({
+    super.key,
+    required this.onItemTapped,
+    required this.selectedIndex,
+  });
 
   @override
   _CustomBottomAppBarState createState() => _CustomBottomAppBarState();
@@ -13,6 +18,12 @@ class CustomBottomAppBar extends StatefulWidget {
 
 class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
   int _selectedIndex = 0; // Tracks the selected index
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex; // Initialize with the passed index
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +69,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
   Widget _buildTopLine(int index) {
     // Calculate dynamic width based on screen size
     double screenWidth = MediaQuery.of(context).size.width;
-    double lineWidth = screenWidth / 4; // Adjust line width proportionally
+    double lineWidth = screenWidth / 5; // Adjust line width proportionally
 
     return SizedBox(
       width: lineWidth, // Use calculated width

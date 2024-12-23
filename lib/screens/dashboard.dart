@@ -45,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       appBar: CustomAppBar(), // Use the custom app bar widget here
       bottomNavigationBar: CustomBottomAppBar(
-        onItemTapped: _onItemTapped, // Pass the callback for bottom nav
+        onItemTapped: _onItemTapped, selectedIndex: _selectedIndex, // Pass the callback for bottom nav
       ),
       // You can add the body of the Dashboard screen here if required
       body: Center(

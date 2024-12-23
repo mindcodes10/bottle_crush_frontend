@@ -105,7 +105,7 @@ class _AddBusinessState extends State<AddBusiness> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: CustomAppBar(),
+      appBar: const CustomAppBar(),
       backgroundColor: AppTheme.backgroundWhite,
       body: SingleChildScrollView(
         // Wrap the body in a SingleChildScrollView
@@ -347,7 +347,7 @@ class _AddBusinessState extends State<AddBusiness> {
         ),
       ),
       bottomNavigationBar: CustomBottomAppBar(
-        onItemTapped: _onItemTapped,
+        onItemTapped: _onItemTapped, selectedIndex: _selectedIndex,
       ),
     );
   }
