@@ -80,20 +80,20 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
-
-    // Validate email format
-    String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-    RegExp regExp = RegExp(emailPattern);
-
-    if (!regExp.hasMatch(enteredEmail)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid email'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    //
+    // // Validate email format
+    // String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    // RegExp regExp = RegExp(emailPattern);
+    //
+    // if (!regExp.hasMatch(enteredEmail)) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Please enter a valid email'),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     if (enteredPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -184,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: screenHeight * 0.1),
+          SizedBox(height: screenHeight * 0.08),
           const Center(
             child: CircleAvatar(
               radius: 50,

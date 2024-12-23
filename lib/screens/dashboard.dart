@@ -39,7 +39,7 @@ class _DashboardState extends State<Dashboard> {
 
 
     return Scaffold(
-      appBar: const CustomAppBar(), // Use the custom app bar widget here
+      appBar: CustomAppBar(), // Use the custom app bar widget here
       bottomNavigationBar: CustomBottomAppBar(
         onItemTapped: _onItemTapped, // Pass the callback
       ),

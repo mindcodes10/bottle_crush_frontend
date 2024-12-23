@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:bottle_crush/constants/api_constants.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -42,44 +43,129 @@ class ApiServices {
     }
   }
 
-  // Function to create a business
-  Future<Map<String, dynamic>?> createBusiness(Map<String, dynamic> businessData) async {
-    final url = Uri.parse(ApiConstants.createBusiness); // Endpoint URL
+  // Future<Map<String, dynamic>> createBusiness({
+  //   required String token,
+  //   required String name,
+  //   required String mobile,
+  //   required String email,
+  //   required String password,
+  //   File? logoImage, // Made logoImage optional
+  // }) async {
+  //   final uri = Uri.parse(ApiConstants.createBusiness);
+  //   final request = http.MultipartRequest('POST', uri);
+  //
+  //   // Add headers
+  //   request.headers['Authorization'] = 'Bearer $token';
+  //   request.headers['Accept'] = 'application/json';
+  //
+  //   // Add fields
+  //   request.fields['business_data[name]'] = name;
+  //   request.fields['business_data[mobile]'] = mobile;
+  //   request.fields['user_data[email]'] = email;
+  //   request.fields['user_data[password]'] = password;
+  //
+  //   // Add logo image if it's not null
+  //   if (logoImage != null) {
+  //     request.files.add(await http.MultipartFile.fromPath(
+  //       'logo_image',
+  //       logoImage.path,
+  //     ));
+  //   }
+  //
+  //   // Print request details for debugging
+  //   print('Sending request to: ${request.url}');
+  //   print('Request headers: ${request.headers}');
+  //   print('Request fields: ${request.fields}');
+  //   print('Request files: ${request.files.map((file) => file.filename).toList()}');
+  //
+  //   try {
+  //     // Send the request
+  //     final response = await request.send();
+  //
+  //     // Print the response status code
+  //     print('Response status code: ${response.statusCode}');
+  //
+  //     // Handle the response
+  //     if (response.statusCode == 200) {
+  //       final responseData = await response.stream.toBytes();
+  //       final responseString = String.fromCharCodes(responseData);
+  //       print('Response body: $responseString'); // Print the response body
+  //       return json.decode(responseString);
+  //     } else {
+  //       // Print error message before throwing exception
+  //       print('Failed to create business: ${response.statusCode}');
+  //       throw Exception('Failed to create business: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     // Print any exceptions that occur
+  //     print('Error occurred: $e');
+  //     throw Exception('Error occurred: $e');
+  //   }
+  // }
+
+  // import 'dart:convert';
+  // import 'dart:io';
+  // import 'package:http/http.dart' as http;
+
+  Future<Map<String, dynamic>> createBusiness({
+    required String token,
+    required String name,
+    required String mobile,
+    required String email,
+    required String password,
+    File? logoImage, // Optional logo image
+  }) async {
+    final uri = Uri.parse(ApiConstants.createBusiness);
+
+    // Create a MultipartRequest
+    var request = http.MultipartRequest('POST', uri);
+
+    // Add headers
+    request.headers.addAll({
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    });
+
+    // Add business_data and user_data as fields
+    request.fields['business_data'] = jsonEncode({
+      "name": name,
+      "mobile": mobile,
+    });
+
+    request.fields['user_data'] = jsonEncode({
+      "email": email,
+      "password": password,
+    });
+
+    // Add logo image as a file if provided
+    if (logoImage != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'logo_image', // The key for the file in the request
+        logoImage.path,
+      ));
+    }
 
     try {
-      // Retrieve the token from secure storage
-      final token = await secureStorage.read(key: 'access_token');
+      // Send the request
+      var response = await request.send();
 
-      if (token == null) {
-        print("Error: No token found. Please login first.");
-        return null;
-      }
-
-      // Make the POST request
-      final response = await http.post(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $token", // Include the token
-        },
-        body: jsonEncode(businessData), // Convert business data to JSON
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Successful creation
-        final responseData = jsonDecode(response.body);
-        print("Business Created Successfully: $responseData");
-        return responseData;
+      // Parse the response
+      if (response.statusCode == 200) {
+        final responseBody = await response.stream.bytesToString();
+        print('Response body: $responseBody');
+        return jsonDecode(responseBody);
       } else {
-        // Handle errors
-        print("Business Creation Failed: ${response.statusCode} ${response.body}");
-        return null;
+        print('Failed to create business: ${response.statusCode}');
+        throw Exception('Failed to create business: ${response.statusCode}');
       }
     } catch (e) {
-      print("Error during business creation: $e");
-      return null;
+      print('Error occurred: $e');
+      throw Exception('Error occurred: $e');
     }
   }
+
+
+
 
   Future<List<dynamic>> fetchBusinessDetails(String token) async {
     try {
