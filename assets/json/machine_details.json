@@ -1,0 +1,22 @@
+{
+  "machine_details": [
+    {
+      "name": "Machine 1",
+      "number": "1234",
+      "owner_name": "info1",
+      "location": "street, city, state, pincode"
+    },
+    {
+      "name": "Machine 2",
+      "number": "12345",
+      "owner_name": "info2",
+      "location": "street, city, state, pincode"
+    },
+    {
+      "name": "Machine 3",
+      "number": "123456",
+      "owner_name": "info3",
+      "location": "street, city, state, pincode"
+    }
+  ]
+}

@@ -58,7 +58,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
   Widget _buildTopLine(int index) {
     // Calculate dynamic width based on screen size
     double screenWidth = MediaQuery.of(context).size.width;
-    double lineWidth = screenWidth / 5; // Adjust line width proportionally
+    double lineWidth = screenWidth / 4; // Adjust line width proportionally
 
     return SizedBox(
       width: lineWidth, // Use calculated width
@@ -70,7 +70,6 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
       ),
     );
   }
-
 
   // A reusable widget to build bottom navigation items with standard icons
   Widget _buildBottomNavItem(IconData icon, String label, int index) {
@@ -142,4 +141,3 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
     );
   }
 }
-

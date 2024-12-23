@@ -80,20 +80,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
-    //
-    // // Validate email format
-    // String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-    // RegExp regExp = RegExp(emailPattern);
-    //
-    // if (!regExp.hasMatch(enteredEmail)) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Please enter a valid email'),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    //   return;
-    // }
 
     if (enteredPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -117,14 +103,14 @@ class _LoginScreenState extends State<LoginScreen> {
         final decodedData = TokenService.decodeToken(token);
 
         if (decodedData != null) {
-          final email = decodedData['sub']; // Assuming 'sub' is the email
-          final role = decodedData['role']; // Assuming 'role' is available in token
+          final email = decodedData['sub']; // 'sub' is the email
+          final role = decodedData['role']; // 'role' is available in token
 
           // Print the email and role
           print("User Email: $email");
           print("User Role: $role");
 
-          // Optionally store the token securely (e.g., using flutter_secure_storage)
+          // store the token securely (e.g., using flutter_secure_storage)
           await secureStorage.write(key: 'access_token', value: token);
           print("Access Token = $token");
         }
