@@ -9,6 +9,7 @@ import 'package:flutter/services.dart'; // For loading JSON
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import '../widgets/custom_elevated_button.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,15 +22,39 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  final secureStorage = const FlutterSecureStorage();
+
 
   @override
   void initState() {
     super.initState();
 
+    // Check if a token exists and navigate accordingly
+    _checkToken();
+
     /// whenever your initialization is completed, remove the splash screen:
-    Future.delayed(Duration(seconds: 2)).then((value) => {
+    Future.delayed(const Duration(seconds: 2)).then((value) => {
       FlutterNativeSplash.remove()
     });
+  }
+
+  // Method to check token
+  Future<void> _checkToken() async {
+    String? token = await secureStorage.read(key: 'access_token');
+    if (token != null) {
+      // Decode the token and extract email and role
+      final decodedData = TokenService.decodeToken(token);
+      if (decodedData != null) {
+        final email = decodedData['sub'];
+        print("Token found for: $email");
+
+        // Navigate to Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );
+      }
+    }
   }
 
   // method to load the admin details from json
@@ -55,20 +80,20 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
-
-    // Validate email format
-    String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-    RegExp regExp = RegExp(emailPattern);
-
-    if (!regExp.hasMatch(enteredEmail)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid email'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+    //
+    // // Validate email format
+    // String emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    // RegExp regExp = RegExp(emailPattern);
+    //
+    // if (!regExp.hasMatch(enteredEmail)) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Please enter a valid email'),
+    //       backgroundColor: Colors.red,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     if (enteredPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -100,7 +125,8 @@ class _LoginScreenState extends State<LoginScreen> {
           print("User Role: $role");
 
           // Optionally store the token securely (e.g., using flutter_secure_storage)
-          // await secureStorage.write(key: 'access_token', value: token);
+          await secureStorage.write(key: 'access_token', value: token);
+          print("Access Token = $token");
         }
 
         // Success: Login successful, navigate to dashboard
@@ -158,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: screenHeight * 0.1),
+          SizedBox(height: screenHeight * 0.08),
           const Center(
             child: CircleAvatar(
               radius: 50,
