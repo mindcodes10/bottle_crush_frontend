@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:bottle_crush/screens/dashboard.dart';
+import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/screens/add_business.dart';
 import 'package:bottle_crush/services/api_services.dart';
@@ -24,11 +26,25 @@ class _ViewBusinessState extends State<ViewBusiness> {
 
   int _selectedIndex = 0;
 
+  // Callback for bottom nav item tap
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    print('Selected Index: $index');
+
+    // Navigate to respective screen based on the selected index
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Dashboard()), // Home or Dashboard screen
+      );
+    }
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ViewMachines()), // Home or Dashboard screen
+      );
+    }
   }
 
   @override
@@ -46,8 +62,6 @@ class _ViewBusinessState extends State<ViewBusiness> {
     } else {
       // Handle the case where the token is not found
       print('No token found. Please log in.');
-      // Optionally navigate to login screen or show a message
-      // For example, you could set _businessDetails to an empty list or show a dialog
       setState(() {
         _businessDetails = Future.value([]); // Initialize to an empty list
       });
@@ -62,7 +76,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
     return Scaffold(
       appBar: CustomAppBar(),
       bottomNavigationBar: CustomBottomAppBar(
-        onItemTapped: _onItemTapped,
+        onItemTapped: _onItemTapped, selectedIndex: _selectedIndex,
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _businessDetails,
@@ -108,84 +122,85 @@ class _ViewBusinessState extends State<ViewBusiness> {
                             padding: const EdgeInsets.only(top: 8.0, left: 8.0),
                             child: Row(
                               children: [
-                            Expanded(
-                            child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                            Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Colors.grey[300],
-                                  backgroundImage: business['logo_image'] != null && business['logo_image'].isNotEmpty
-                                      ? MemoryImage(base64Decode(business['logo_image']))
-                                      : const AssetImage('assets/images/leaf.png'),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 25,
+                                            backgroundColor: Colors.grey[300],
+                                            backgroundImage: business['logo_image'] != null &&
+                                                business['logo_image'].isNotEmpty
+                                                ? MemoryImage(base64Decode(business['logo_image']))
+                                                : const AssetImage('assets/images/leaf.png'),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: Text(
+                                              business['name'] ?? 'Business Name',
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                              maxLines: 2,
+                                              softWrap: true,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        business['owner_email'] ?? 'business@email.com',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      Text(
+                                        business['mobile'] ?? '+1 234 567 890',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Container(
+                                    height: 100,
+                                    width: 0.3,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                                 const SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    business['name'] ?? 'Business Name',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        FontAwesomeIcons.solidPenToSquare,
+                                        color: AppTheme.backgroundBlue,
+                                      ),
+                                      onPressed: () {
+                                        // Handle Edit action here
+                                      },
                                     ),
-                                    maxLines: 2,
-                                    softWrap: true,
-                                  ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        FontAwesomeIcons.solidTrashCan,
+                                        color: AppTheme.backgroundBlue,
+                                      ),
+                                      onPressed: () {
+                                        // Handle Delete action here
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 3),
-                            Text(
-                              business['owner_email'] ?? 'business@email.com',
-                              style: const TextStyle(
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              business['mobile'] ?? '+1 234 567 890',
-                              style: const TextStyle(
-                                fontSize: 12,
-                              ),
-                            ),
-                            ],
                           ),
-                        ),
-                        Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Container(
-                        height: 100,
-                        width: 0.3,
-                        color: Colors.grey,
-                        ),
-                        ),
-                        const SizedBox(width: 16),
-                        Row(
-                        children: [
-                        IconButton(
-                        icon: const Icon(
-                        FontAwesomeIcons.solidPenToSquare,
-                        color: AppTheme.backgroundBlue,
-                        ),
-                        onPressed: () {
-                        // Handle Edit action here
-                        },
-                        ),
-                        IconButton(
-                        icon: const Icon(
-                        FontAwesomeIcons.solidTrashCan,
-                        color: AppTheme.backgroundBlue,
-                        ),
-                        onPressed: () {
-                        // Handle Delete action here
-                        },
-                        ),
-                        ],
-                        ),
-                        ],
-                        ),
-                        ),
                         );
                       },
                     ),

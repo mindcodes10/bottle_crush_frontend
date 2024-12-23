@@ -191,4 +191,28 @@ class ApiServices {
       throw Exception('Error fetching business details: $e');
     }
   }
+
+  // Method to fetch machine details
+  Future<List<dynamic>> fetchMachineDetails(String token) async {
+    try {
+      final response = await http.get(
+        Uri.parse(ApiConstants.viewMachines),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',  // Include the bearer token in headers
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the JSON
+        List<dynamic> machines = json.decode(response.body);
+        return machines;
+      } else {
+        throw Exception('Failed to load machine details');
+      }
+    } catch (e) {
+      print('Error: $e');
+      rethrow;
+    }
+  }
 }

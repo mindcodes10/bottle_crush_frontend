@@ -1,4 +1,5 @@
 import 'package:bottle_crush/screens/view_business.dart';
+import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
@@ -20,12 +21,18 @@ class _DashboardState extends State<Dashboard> {
       _selectedIndex = index;
     });
 
-    // Handle navigation logic
+    // Handle navigation logic based on the tapped index
     if (index == 1) {
       // Navigate to the ViewBusiness page when the "Business" tab is tapped
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ViewBusiness()),
+      );
+    } else if (index == 2) {
+      // Navigate to the ViewMachines page when the "Machine" tab is tapped
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ViewMachines()),
       );
     } else {
       // Handle other navigation cases if needed
@@ -33,17 +40,17 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: CustomAppBar(), // Use the custom app bar widget here
       bottomNavigationBar: CustomBottomAppBar(
-        onItemTapped: _onItemTapped, // Pass the callback
+        onItemTapped: _onItemTapped, selectedIndex: _selectedIndex, // Pass the callback for bottom nav
       ),
-
+      // You can add the body of the Dashboard screen here if required
+      body: Center(
+        child: Text('Dashboard Content Here'), // Placeholder for dashboard content
+      ),
     );
   }
 }

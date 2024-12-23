@@ -9,4 +9,6 @@ class ApiConstants {
 
   // Endpoint for viewing all businesses
   static const String viewBusiness = "$baseUrl/businesses";
+
+  static const String viewMachines = "$baseUrl/machines";
 }
