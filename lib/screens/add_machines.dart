@@ -17,7 +17,8 @@ class AddMachines extends StatefulWidget {
 class _AddMachinesState extends State<AddMachines> {
   int _selectedIndex = 0;
   final TextEditingController _machineNameController = TextEditingController();
-  final TextEditingController _machineNumberController = TextEditingController();
+  final TextEditingController _machineNumberController =
+      TextEditingController();
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
@@ -28,18 +29,47 @@ class _AddMachinesState extends State<AddMachines> {
   final List<String> _businessNames = []; // List to store business names
   String? _selectedBusinessName;
 
-
   final List<String> _states = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-    "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana",
-    "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands",
-    "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Lakshadweep",
-    "Puducherry", "Jammu and Kashmir", "Ladakh"
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi",
+    "Lakshadweep",
+    "Puducherry",
+    "Jammu and Kashmir",
+    "Ladakh"
   ];
 
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); // Secure Storage instance
+  final FlutterSecureStorage _secureStorage =
+      const FlutterSecureStorage(); // Secure Storage instance
 
   @override
   void initState() {
@@ -58,7 +88,8 @@ class _AddMachinesState extends State<AddMachines> {
     try {
       final String? token = await _secureStorage.read(key: "access_token");
       if (token != null) {
-        List<dynamic> businesses = await apiServices.fetchBusinessDetails(token);
+        List<dynamic> businesses =
+            await apiServices.fetchBusinessDetails(token);
 
         setState(() {
           _businessNames.clear();
@@ -78,7 +109,6 @@ class _AddMachinesState extends State<AddMachines> {
     }
   }
 
-
   void _submitPressed() async {
     // Validate form fields
     if (_machineNameController.text.isEmpty ||
@@ -87,10 +117,21 @@ class _AddMachinesState extends State<AddMachines> {
         _streetController.text.isEmpty ||
         _cityController.text.isEmpty ||
         _pincodeController.text.isEmpty ||
-        _selectedState == null || _selectedState!.isEmpty) {
+        _selectedState == null ||
+        _selectedState!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill in all fields!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    // Validate pin code to be exactly 6 digits
+    if (_pincodeController.text.length != 6 || !RegExp(r'^\d{6}$').hasMatch(_pincodeController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pin code must be exactly 6 digits!'),
           backgroundColor: Colors.red,
         ),
       );
@@ -112,11 +153,13 @@ class _AddMachinesState extends State<AddMachines> {
     }
 
     // Validate machine number uniqueness
-    bool isMachineNumberExist = await _checkMachineNumberExists(token, _machineNumberController.text);
+    bool isMachineNumberExist =
+        await _checkMachineNumberExists(token, _machineNumberController.text);
     if (isMachineNumberExist) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Machine number already exists! Please enter a unique machine number.'),
+          content: Text(
+              'Machine number already exists! Please enter a unique machine number.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -173,7 +216,8 @@ class _AddMachinesState extends State<AddMachines> {
     }
   }
 
-  Future<bool> _checkMachineNumberExists(String token, String machineNumber) async {
+  Future<bool> _checkMachineNumberExists(
+      String token, String machineNumber) async {
     try {
       // Fetch machine details
       List<dynamic> machines = await apiServices.fetchMachineDetails(token);
@@ -191,10 +235,6 @@ class _AddMachinesState extends State<AddMachines> {
     }
   }
 
-
-
-
-
   Future<int?> _getBusinessIdByName(String token, String businessName) async {
     try {
       // Call the API to get all business details
@@ -202,11 +242,13 @@ class _AddMachinesState extends State<AddMachines> {
 
       // Search for the business by name
       for (var business in businesses) {
-        print('Comparing: user input "$businessName" with API value "${business['name']}"');
+        print(
+            'Comparing: user input "$businessName" with API value "${business['name']}"');
 
         if (business['name'] == businessName) {
-          print('Match found for business name: ${business['name']}, ${business['id']}');
-          return business['id'];  // Return the business_id
+          print(
+              'Match found for business name: ${business['name']}, ${business['id']}');
+          return business['id']; // Return the business_id
         }
       }
 
@@ -218,7 +260,6 @@ class _AddMachinesState extends State<AddMachines> {
       return null;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +276,8 @@ class _AddMachinesState extends State<AddMachines> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 12.0, left: 14.0, right: 10.0, bottom: 8.0),
+              padding: const EdgeInsets.only(
+                  top: 12.0, left: 14.0, right: 10.0, bottom: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -255,21 +297,22 @@ class _AddMachinesState extends State<AddMachines> {
                     screenWidth: screenWidth,
                   ),
                   SizedBox(height: screenHeight * 0.01),
-        _buildDropdown(
-          labelText: 'Business Name',
-          icon: FontAwesomeIcons.briefcase,
-          items: _businessNames,
-          value: _selectedBusinessName,
-          onChanged: (value) {
-            setState(() {
-              _selectedBusinessName = value;  // Update the state with the selected value
-              _businessNameController.text = value!;  // Update the text controller
-            });
-          },
-          screenWidth: screenWidth,
-        ),
-
-        SizedBox(height: screenHeight * 0.01),
+                  _buildDropdown(
+                    labelText: 'Business Name',
+                    icon: FontAwesomeIcons.briefcase,
+                    items: _businessNames,
+                    value: _selectedBusinessName,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBusinessName =
+                            value; // Update the state with the selected value
+                        _businessNameController.text =
+                            value!; // Update the text controller
+                      });
+                    },
+                    screenWidth: screenWidth,
+                  ),
+                  SizedBox(height: screenHeight * 0.01),
                   _buildDropdown(
                     labelText: 'State',
                     icon: FontAwesomeIcons.solidFlag,
@@ -297,18 +340,43 @@ class _AddMachinesState extends State<AddMachines> {
                     screenWidth: screenWidth,
                   ),
                   SizedBox(height: screenHeight * 0.01),
-                  _buildTextFormField(
+                  TextFormField(
                     controller: _pincodeController,
-                    labelText: 'Pin code',
-                    icon: FontAwesomeIcons.locationDot,
-                    screenWidth: screenWidth,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.03,
+                      color: AppTheme.textBlack,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Pin Code',
+                      labelStyle: TextStyle(fontSize: screenWidth * 0.03),
+                      prefixIcon: Icon(
+                        FontAwesomeIcons.locationDot,
+                        size: screenWidth * 0.05,
+                        color: AppTheme.backgroundBlue,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the pin code';
+                      }
+                      if (!RegExp(r'^\d{6}$').hasMatch(value)) {
+                        return 'Pin code must be exactly 6 digits';
+                      }
+                      return null;
+                    },
                   ),
+
                 ],
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -350,6 +418,8 @@ class _AddMachinesState extends State<AddMachines> {
     required String labelText,
     required IconData icon,
     required double screenWidth,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
@@ -376,25 +446,26 @@ class _AddMachinesState extends State<AddMachines> {
     required String labelText,
     required IconData icon,
     required List<String> items,
-    required String? value,  // Change to nullable String
+    required String? value, // Change to nullable String
     required ValueChanged<String?> onChanged,
     required double screenWidth,
   }) {
     return DropdownButtonFormField<String>(
-      value: value ?? (items.isNotEmpty ? items[0] : null),  // Correct grouping of condition
+      value: value ??
+          (items.isNotEmpty ? items[0] : null), // Correct grouping of condition
       items: items
           .map<DropdownMenuItem<String>>(
             (String value) => DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: screenWidth * 0.03,
-              color: AppTheme.textBlack,
+              value: value,
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.03,
+                  color: AppTheme.textBlack,
+                ),
+              ),
             ),
-          ),
-        ),
-      )
+          )
           .toList(),
       onChanged: onChanged,
       decoration: InputDecoration(
@@ -411,6 +482,4 @@ class _AddMachinesState extends State<AddMachines> {
       ),
     );
   }
-
-
 }
