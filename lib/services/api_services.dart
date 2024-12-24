@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -29,7 +30,8 @@ class ApiServices {
 
         // Store the token in Flutter Secure Storage
         if (responseData.containsKey('token')) {
-          await secureStorage.write(key: 'access_token', value: responseData['token']);
+          await secureStorage.write(
+              key: 'access_token', value: responseData['token']);
         }
         return responseData;
       } else {
@@ -164,9 +166,6 @@ class ApiServices {
     }
   }
 
-
-
-
   Future<List<dynamic>> fetchBusinessDetails(String token) async {
     try {
       final response = await http.get(
@@ -182,9 +181,11 @@ class ApiServices {
         // Parse the JSON response
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
         print("API Response: $jsonResponse"); // Log the response for debugging
-        return jsonResponse['businesses']; // Adjust this based on your API response structure
+        return jsonResponse[
+            'businesses']; // Adjust this based on your API response structure
       } else {
-        throw Exception('Failed to load business details: ${response.statusCode}');
+        throw Exception(
+            'Failed to load business details: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching business details: $e');
@@ -199,7 +200,8 @@ class ApiServices {
         Uri.parse(ApiConstants.viewMachines),
         headers: {
           'Accept': 'application/json',
-          'Authorization': 'Bearer $token',  // Include the bearer token in headers
+          'Authorization':
+              'Bearer $token', // Include the bearer token in headers
         },
       );
 
@@ -212,6 +214,49 @@ class ApiServices {
       }
     } catch (e) {
       print('Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> createMachine({
+    required String token,
+    required String name,
+    required String number,
+    required String street,
+    required String city,
+    required String state,
+    required String pinCode,
+    required int businessId,
+  }) async {
+    final url = Uri.parse('http://62.72.12.225:8005/create_machines/');
+    final headers = {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json', // Ensure Content-Type is JSON
+    };
+    final body = jsonEncode({
+      'name': name,
+      'number': number,
+      'street': street,
+      'city': city,
+      'state': state,
+      'pin_code': pinCode,
+      'business_id': businessId,
+    });
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Headers: ${response.headers}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return true; // Success
+      } else {
+        throw Exception('Failed to create machine: ${response.body}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
       rethrow;
     }
   }

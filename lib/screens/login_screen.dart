@@ -105,14 +105,17 @@ class _LoginScreenState extends State<LoginScreen> {
         if (decodedData != null) {
           final email = decodedData['sub']; // 'sub' is the email
           final role = decodedData['role']; // 'role' is available in token
+          final id = decodedData['id'];
 
           // Print the email and role
           print("User Email: $email");
           print("User Role: $role");
+          print("User Id: $id");
 
           // store the token securely (e.g., using flutter_secure_storage)
           await secureStorage.write(key: 'access_token', value: token);
           print("Access Token = $token");
+
         }
 
         // Success: Login successful, navigate to dashboard

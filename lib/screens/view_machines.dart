@@ -1,3 +1,4 @@
+import 'package:bottle_crush/screens/add_machines.dart';
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/screens/view_business.dart';
 import 'package:flutter/material.dart';
@@ -173,7 +174,7 @@ class _ViewMachinesState extends State<ViewMachines> {
             child: CustomElevatedButton(
               buttonText: ' + ADD MACHINE',
               onPressed: () {
-                // Handle Add Machine button click
+               Navigator.push(context,  MaterialPageRoute(builder: (context)=> const AddMachines()));
               },
               width: double.infinity,
               height: 50,
