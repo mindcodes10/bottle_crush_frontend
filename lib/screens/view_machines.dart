@@ -146,7 +146,14 @@ class _ViewMachinesState extends State<ViewMachines> {
                                   color: AppTheme.backgroundBlue,
                                 ),
                                 onPressed: () {
-                                  // Handle Edit action
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddMachines(
+                                        machine: machine,
+                                      ),
+                                    ),
+                                  );
                                 },
                               ),
                               IconButton(
@@ -174,7 +181,10 @@ class _ViewMachinesState extends State<ViewMachines> {
             child: CustomElevatedButton(
               buttonText: ' + ADD MACHINE',
               onPressed: () {
-               Navigator.push(context,  MaterialPageRoute(builder: (context)=> const AddMachines()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddMachines()),
+                );
               },
               width: double.infinity,
               height: 50,

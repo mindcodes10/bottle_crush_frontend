@@ -8,7 +8,8 @@ import 'package:bottle_crush/widgets/custom_elevated_button.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AddMachines extends StatefulWidget {
-  const AddMachines({super.key});
+  final dynamic machine;
+  const AddMachines({super.key,this.machine});
 
   @override
   State<AddMachines> createState() => _AddMachinesState();
@@ -17,8 +18,7 @@ class AddMachines extends StatefulWidget {
 class _AddMachinesState extends State<AddMachines> {
   int _selectedIndex = 0;
   final TextEditingController _machineNameController = TextEditingController();
-  final TextEditingController _machineNumberController =
-      TextEditingController();
+  final TextEditingController _machineNumberController = TextEditingController();
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
@@ -68,13 +68,22 @@ class _AddMachinesState extends State<AddMachines> {
     "Ladakh"
   ];
 
-  final FlutterSecureStorage _secureStorage =
-      const FlutterSecureStorage(); // Secure Storage instance
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); // Secure Storage instance
 
   @override
   void initState() {
     super.initState();
     _fetchBusinessNames(); // Fetch business names when the widget is first initialized
+    if (widget.machine != null) {
+      // Populate fields if editing
+      _machineNameController.text = widget.machine['name'];
+      _machineNumberController.text = widget.machine['number'];
+      _businessNameController.text = widget.machine['business_name'];
+      _streetController.text = widget.machine['street'];
+      _cityController.text = widget.machine['city'];
+      _pincodeController.text = widget.machine['pin_code'];
+      _selectedState = widget.machine['state'];
+    }
   }
 
   void _onItemTapped(int index) {
@@ -182,29 +191,55 @@ class _AddMachinesState extends State<AddMachines> {
 
     // Prepare machine data for API request
     try {
-      bool success = await apiServices.createMachine(
-        token: token,
-        name: _machineNameController.text,
-        number: _machineNumberController.text,
-        street: _streetController.text,
-        city: _cityController.text,
-        state: _selectedState!,
-        pinCode: _pincodeController.text,
-        businessId: businessId,
-      );
-
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Machine created successfully!'),
-            backgroundColor: Colors.green,
-          ),
+      if(widget.machine == null) {
+        bool success = await apiServices.createMachine(
+          token: token,
+          name: _machineNameController.text,
+          number: _machineNumberController.text,
+          street: _streetController.text,
+          city: _cityController.text,
+          state: _selectedState!,
+          pinCode: _pincodeController.text,
+          businessId: businessId,
         );
-        // Optionally clear form fields or navigate away
-      } else {
-        throw Exception('Failed to create machine. Unknown error occurred.');
+
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Machine created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          // Optionally clear form fields or navigate away
+        } else {
+          throw Exception('Failed to create machine. Unknown error occurred.');
+        }
       }
-    } catch (e, stackTrace) {
+      else {
+        // Update existing machine
+        bool success = (await apiServices.updateMachine(
+          machineId: widget.machine['id'],
+          name: _machineNameController.text,
+          number: _machineNumberController.text,
+          street: _streetController.text,
+          city: _cityController.text,
+          state: _selectedState!,
+          pinCode: _pincodeController.text,
+          businessId: businessId, // Replace with actual business ID logic
+        )) as bool;
+
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Machine updated successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      }
+      Navigator.pop(context); // Go back after saving
+    }
+    catch (e, stackTrace) {
       print('Error occurred: $e');
       print('Stack Trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -272,6 +307,7 @@ class _AddMachinesState extends State<AddMachines> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
+      backgroundColor: AppTheme.backgroundWhite,
       body: Column(
         children: [
           Expanded(
@@ -281,7 +317,10 @@ class _AddMachinesState extends State<AddMachines> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Add Machines'),
+                  Text(
+                    widget.machine == null ? 'Add Machine' : 'Update Machine',
+                    style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(height: screenHeight * 0.01),
                   _buildTextFormField(
                     controller: _machineNameController,
@@ -395,7 +434,7 @@ class _AddMachinesState extends State<AddMachines> {
                   ),
                 ),
                 CustomElevatedButton(
-                  buttonText: 'Submit',
+                  buttonText: widget.machine == null ? 'Add ' : 'Update ',
                   onPressed: _submitPressed,
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundBlue,
