@@ -1,3 +1,6 @@
+import 'package:bottle_crush/screens/dashboard.dart';
+import 'package:bottle_crush/screens/email.dart';
+import 'package:bottle_crush/screens/view_business.dart';
 import 'package:bottle_crush/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,7 +19,7 @@ class AddMachines extends StatefulWidget {
 }
 
 class _AddMachinesState extends State<AddMachines> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   final TextEditingController _machineNameController = TextEditingController();
   final TextEditingController _machineNumberController = TextEditingController();
   final TextEditingController _businessNameController = TextEditingController();
@@ -90,6 +93,26 @@ class _AddMachinesState extends State<AddMachines> {
     setState(() {
       _selectedIndex = index;
     });
+
+    // Navigate to respective screen based on the selected index
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Dashboard()), // Home or Dashboard screen
+      );
+    }
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ViewBusiness()), // Home or Dashboard screen
+      );
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Email()), // Home or Dashboard screen
+      );
+    }
   }
 
   // Fetch business names from API and populate the list

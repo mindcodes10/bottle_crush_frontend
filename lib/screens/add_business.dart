@@ -1,3 +1,6 @@
+import 'package:bottle_crush/screens/dashboard.dart';
+import 'package:bottle_crush/screens/email.dart';
+import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
@@ -18,7 +21,7 @@ class AddBusiness extends StatefulWidget {
 }
 
 class _AddBusinessState extends State<AddBusiness> {
-  int _selectedIndex = 0; // Track the selected index for bottom nav items
+  int _selectedIndex = 1; // Track the selected index for bottom nav items
   bool _isPasswordVisible = false;
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _businessEmailController =
@@ -41,8 +44,26 @@ class _AddBusinessState extends State<AddBusiness> {
     setState(() {
       _selectedIndex = index;
     });
-    // Handle navigation logic here based on the index
-    print('Selected Index: $index'); // Example print statement
+
+    // Navigate to respective screen based on the selected index
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Dashboard()),
+      );
+    }
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ViewMachines()),
+      );
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Email()),
+      );
+    }
   }
 
   @override
