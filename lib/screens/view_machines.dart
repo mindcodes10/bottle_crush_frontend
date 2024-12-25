@@ -219,15 +219,19 @@ class _ViewMachinesState extends State<ViewMachines> {
                                   FontAwesomeIcons.solidPenToSquare,
                                   color: AppTheme.backgroundBlue,
                                 ),
-                                onPressed: () {
-                                  Navigator.push(
+                                onPressed: () async {
+                                  // Navigate to the AddMachines page and wait for the result
+                                  final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AddMachines(
-                                        machine: machine,
-                                      ),
+                                      builder: (context) => AddMachines(machine: machine),
                                     ),
                                   );
+
+                                  // Check if the result indicates a successful update
+                                  if (result == true) {
+                                    fetchMachines(); // Refresh the machine list
+                                  }
                                 },
                               ),
                               IconButton(

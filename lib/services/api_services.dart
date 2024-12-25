@@ -271,22 +271,19 @@ class ApiServices {
     required String pinCode,
     required int businessId,
   }) async {
-    // Retrieve the access token from Flutter Secure Storage
     String? token = await secureStorage.read(key: "access_token");
     if (token == null) {
       throw Exception("Access token not found. Please log in again.");
     }
 
-    // API URL
     final String url = "${ApiConstants.updateMachine}/$machineId";
-
-    // Request headers
     Map<String, String> headers = {
       "Accept": "application/json",
       "Authorization": "Bearer $token",
+      "Content-Type": "application/json", // Ensure Content-Type is set to JSON
     };
 
-    // Request body
+    // Prepare the request body as a Map
     Map<String, dynamic> body = {
       "name": name,
       "number": number,
@@ -301,8 +298,15 @@ class ApiServices {
     final response = await http.put(
       Uri.parse(url),
       headers: headers,
-      body: jsonEncode(body),
+      body: jsonEncode(body), // Ensure this is a JSON string
     );
+
+    print('Update Response Status Code: ${response.statusCode}');
+    print('Update Response Body: ${response.body}');
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update machine: ${response.body}');
+    }
 
     return response;
   }
