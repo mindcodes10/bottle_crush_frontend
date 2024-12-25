@@ -35,8 +35,8 @@ class CustomElevatedButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: backgroundColor,
             padding: const EdgeInsets.symmetric(
-              vertical: 12.0,
-              horizontal: 20.0,
+              vertical: 10.0,
+              horizontal: 15.0,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0), // Rounded edges
@@ -56,7 +56,7 @@ class CustomElevatedButton extends StatelessWidget {
                 buttonText,
                 style: TextStyle(
                   color: textColor, // Custom text color
-                  fontSize: 16, // Font size
+                  fontSize: 14, // Font size
                   fontWeight: FontWeight.bold, // Bold text
                 ),
               ),

@@ -1,7 +1,6 @@
 class ApiConstants {
   // Base URL
   static const String baseUrl = "http://62.72.12.225:8005";
-  //static const String baseUrl = "http://192.168.1.104:8000";
 
   // Auth Endpoints
   static const String login = "$baseUrl/login/";
@@ -10,9 +9,10 @@ class ApiConstants {
   // Endpoint for viewing all businesses
   static const String viewBusiness = "$baseUrl/businesses";
 
+  // Endpoint for deleting a business
+  static String deleteBusiness(int businessId) => "$baseUrl/business/$businessId";
+
   static const String viewMachines = "$baseUrl/machines";
   static const String createMachines = '$baseUrl/create_machines/';
   static const String updateMachine = "$baseUrl/machines";
-
-
 }

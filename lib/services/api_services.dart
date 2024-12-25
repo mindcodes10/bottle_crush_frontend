@@ -306,4 +306,35 @@ class ApiServices {
 
     return response;
   }
+
+  Future<bool> deleteBusiness(int businessId) async {
+    // Get the access token from secure storage
+    String? token = await secureStorage.read(key: "access_token");
+
+    if (token == null) {
+      // Return false if token is not found
+      return false;
+    }
+
+    // Prepare headers
+    Map<String, String> headers = {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Send DELETE request
+    final response = await http.delete(
+      Uri.parse(ApiConstants.deleteBusiness(businessId)),
+      headers: headers,
+    );
+
+    // Check if the request was successful
+    if (response.statusCode == 200) {
+      return true; // Successfully deleted
+    } else {
+      // Handle error (you can check the response body for more details)
+      print('Error: ${response.statusCode}');
+      return false; // Failure to delete
+    }
+  }
 }
