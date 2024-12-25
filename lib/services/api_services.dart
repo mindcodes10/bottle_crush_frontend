@@ -260,4 +260,50 @@ class ApiServices {
       rethrow;
     }
   }
+
+  Future<http.Response> updateMachine({
+    required int machineId,
+    required String name,
+    required String number,
+    required String street,
+    required String city,
+    required String state,
+    required String pinCode,
+    required int businessId,
+  }) async {
+    // Retrieve the access token from Flutter Secure Storage
+    String? token = await secureStorage.read(key: "access_token");
+    if (token == null) {
+      throw Exception("Access token not found. Please log in again.");
+    }
+
+    // API URL
+    final String url = "${ApiConstants.updateMachine}/$machineId";
+
+    // Request headers
+    Map<String, String> headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+    };
+
+    // Request body
+    Map<String, dynamic> body = {
+      "name": name,
+      "number": number,
+      "street": street,
+      "city": city,
+      "state": state,
+      "pin_code": pinCode,
+      "business_id": businessId,
+    };
+
+    // Send the PUT request
+    final response = await http.put(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    return response;
+  }
 }

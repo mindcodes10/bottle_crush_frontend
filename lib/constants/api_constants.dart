@@ -12,6 +12,7 @@ class ApiConstants {
 
   static const String viewMachines = "$baseUrl/machines";
   static const String createMachines = '$baseUrl/create_machines/';
+  static const String updateMachine = "$baseUrl/machines";
 
 
 }
