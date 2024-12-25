@@ -1,3 +1,4 @@
+import 'package:bottle_crush/screens/email.dart';
 import 'package:bottle_crush/screens/view_business.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:bottle_crush/utils/theme.dart';
@@ -26,17 +27,20 @@ class _DashboardState extends State<Dashboard> {
       // Navigate to the ViewBusiness page when the "Business" tab is tapped
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ViewBusiness()),
+        MaterialPageRoute(builder: (context) => const ViewBusiness()),
       );
     } else if (index == 2) {
       // Navigate to the ViewMachines page when the "Machine" tab is tapped
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ViewMachines()),
+        MaterialPageRoute(builder: (context) => const ViewMachines()),
       );
-    } else {
-      // Handle other navigation cases if needed
-      print('Selected Index: $index');
+    } else if(index == 3) {
+      // Navigate to the ViewMachines page when the "Machine" tab is tapped
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Email()),
+      );
     }
   }
 
