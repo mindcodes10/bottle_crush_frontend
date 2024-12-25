@@ -49,6 +49,22 @@ class _ViewMachinesState extends State<ViewMachines> {
     }
   }
 
+  // Delete machine function
+  Future<void> deleteMachine(int machineId) async {
+    bool success = await apiService.deleteMachine(machineId);
+    if (success) {
+      // If the deletion is successful, refresh the machine list
+      fetchMachines();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Machine deleted successfully!'), backgroundColor: Colors.green,),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete machine!'),backgroundColor: Colors.red,),
+      );
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -69,11 +85,69 @@ class _ViewMachinesState extends State<ViewMachines> {
     }
   }
 
+  void _showDeleteConfirmationDialog(int machineId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppTheme.backgroundWhite,
+          title: const Text(
+            'Are you sure you want to delete this machine?\n\n This action cannot be undone',
+            style: TextStyle(fontSize: 13),
+          ),
+          contentPadding: const EdgeInsets.all(16.0),
+          content: const SizedBox(
+            height: 25,
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomElevatedButton(
+                  buttonText: 'Cancel',
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  backgroundColor: AppTheme.backgroundWhite,
+                  textColor: AppTheme.backgroundBlue,
+                  borderColor: AppTheme.backgroundBlue,
+                  width: 120,
+                  height: 38,
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: AppTheme.backgroundBlue,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                CustomElevatedButton(
+                  buttonText: 'Delete',
+                  onPressed: () async {
+                    // Call deleteMachine function when "Delete" is pressed
+                    await deleteMachine(machineId);
+                    Navigator.of(context).pop(); // Close the dialog after deletion
+                  },
+                  backgroundColor: AppTheme.backgroundBlue,
+                  textColor: Colors.white,
+                  width: 120,
+                  height: 38,
+                  icon: const Icon(
+                    Icons.delete,
+                    color: AppTheme.textWhite,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
-      bottomNavigationBar: CustomBottomAppBar(onItemTapped: _onItemTapped, selectedIndex: _selectedIndex,),
+      bottomNavigationBar: CustomBottomAppBar(onItemTapped: _onItemTapped, selectedIndex: _selectedIndex),
       backgroundColor: AppTheme.backgroundWhite,
       body: Column(
         children: [
@@ -162,7 +236,7 @@ class _ViewMachinesState extends State<ViewMachines> {
                                   color: AppTheme.backgroundBlue,
                                 ),
                                 onPressed: () {
-                                  // Handle Delete action
+                                  _showDeleteConfirmationDialog(machine['id']);
                                 },
                               ),
                             ],

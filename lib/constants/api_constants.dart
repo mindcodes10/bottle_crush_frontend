@@ -15,4 +15,7 @@ class ApiConstants {
   static const String viewMachines = "$baseUrl/machines";
   static const String createMachines = '$baseUrl/create_machines/';
   static const String updateMachine = "$baseUrl/machines";
+
+  // Endpoint for deleting a machine
+  static String deleteMachine(int machineId) => "$baseUrl/machines/$machineId";
 }

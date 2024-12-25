@@ -337,4 +337,36 @@ class ApiServices {
       return false; // Failure to delete
     }
   }
+
+  Future<bool> deleteMachine(int machineId) async {
+    try {
+      // Get the stored token from Flutter secure storage
+      String? token = await secureStorage.read(key: "access_token");
+      if (token == null) {
+        throw Exception("No token found");
+      }
+
+      // Construct the URL for the delete request
+      String url = ApiConstants.deleteMachine(machineId);
+
+      // Send the DELETE request with the Bearer token
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Check the response status code
+      if (response.statusCode == 200) {
+        return true; // Machine deleted successfully
+      } else {
+        return false; // Failed to delete the machine
+      }
+    } catch (e) {
+      print("Error deleting machine: $e");
+      return false; // Error occurred
+    }
+  }
 }
