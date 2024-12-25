@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
-import 'package:flutter/material.dart';
 import 'package:bottle_crush/screens/add_business.dart';
 import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
@@ -20,7 +20,7 @@ class ViewBusiness extends StatefulWidget {
 }
 
 class _ViewBusinessState extends State<ViewBusiness> {
-  Future<List<dynamic>>? _businessDetails; // Change to nullable Future
+  Future<List<dynamic>>? _businessDetails;
   final ApiServices _apiServices = ApiServices();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
@@ -36,13 +36,13 @@ class _ViewBusinessState extends State<ViewBusiness> {
     if (index == 0) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const Dashboard()), // Home or Dashboard screen
+        MaterialPageRoute(builder: (context) => const Dashboard()),
       );
     }
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ViewMachines()), // Home or Dashboard screen
+        MaterialPageRoute(builder: (context) => const ViewMachines()),
       );
     }
   }
@@ -60,7 +60,6 @@ class _ViewBusinessState extends State<ViewBusiness> {
         _businessDetails = _apiServices.fetchBusinessDetails(token);
       });
     } else {
-      // Handle the case where the token is not found
       print('No token found. Please log in.');
       setState(() {
         _businessDetails = Future.value([]); // Initialize to an empty list
@@ -68,15 +67,89 @@ class _ViewBusinessState extends State<ViewBusiness> {
     }
   }
 
+  // Function to show confirmation dialog before deletion
+  void _showDeleteConfirmationDialog(int businessId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppTheme.backgroundWhite,
+          title: const Text(
+            'Are you sure you want to delete this business?\n\n This action cannot be undone',
+            style: TextStyle(fontSize: 13),
+          ),
+          contentPadding: const EdgeInsets.all(16.0),
+          content: const SizedBox(
+            height: 25,
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomElevatedButton(
+                  buttonText: 'Cancel',
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  backgroundColor: AppTheme.backgroundWhite,
+                  textColor: AppTheme.backgroundBlue,
+                  borderColor: AppTheme.backgroundBlue,
+                  width: 120,
+                  height: 38,
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: AppTheme.backgroundBlue,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                CustomElevatedButton(
+                  buttonText: 'Delete',
+                  onPressed: () async {
+                    // Call the API to delete the business
+                    bool isDeleted = await _apiServices.deleteBusiness(businessId);
+                    if (isDeleted) {
+                      // Refresh the business details after deletion
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Business deleted successfully'),backgroundColor: Colors.green,),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Failed to delete business'), backgroundColor: Colors.red,),
+                      );
+                    }
+                    Navigator.of(context).pop();
+                    _fetchTokenAndBusinessDetails();
+                  },
+                  backgroundColor: AppTheme.backgroundBlue,
+                  textColor: Colors.white,
+                  width: 120,
+                  height: 38,
+                  icon: const Icon(
+                    Icons.delete,
+                    color: AppTheme.textWhite,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: CustomAppBar(),
+      appBar: const CustomAppBar(),
       bottomNavigationBar: CustomBottomAppBar(
-        onItemTapped: _onItemTapped, selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+        selectedIndex: _selectedIndex,
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _businessDetails,
@@ -193,7 +266,8 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                         color: AppTheme.backgroundBlue,
                                       ),
                                       onPressed: () {
-                                        // Handle Delete action here
+                                        // Call the delete confirmation dialog
+                                        _showDeleteConfirmationDialog(business['id']);
                                       },
                                     ),
                                   ],
