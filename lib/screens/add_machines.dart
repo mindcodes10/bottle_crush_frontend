@@ -191,7 +191,8 @@ class _AddMachinesState extends State<AddMachines> {
 
     // Prepare machine data for API request
     try {
-      if(widget.machine == null) {
+      if (widget.machine == null) {
+        // Create new machine
         bool success = await apiServices.createMachine(
           token: token,
           name: _machineNameController.text,
@@ -210,14 +211,13 @@ class _AddMachinesState extends State<AddMachines> {
               backgroundColor: Colors.green,
             ),
           );
-          // Optionally clear form fields or navigate away
+          Navigator.pop(context, true); // Return true on success
         } else {
           throw Exception('Failed to create machine. Unknown error occurred.');
         }
-      }
-      else {
+      } else {
         // Update existing machine
-        bool success = (await apiServices.updateMachine(
+        var response = await apiServices.updateMachine(
           machineId: widget.machine['id'],
           name: _machineNameController.text,
           number: _machineNumberController.text,
@@ -225,26 +225,34 @@ class _AddMachinesState extends State<AddMachines> {
           city: _cityController.text,
           state: _selectedState!,
           pinCode: _pincodeController.text,
-          businessId: businessId, // Replace with actual business ID logic
-        )) as bool;
+          businessId: businessId,
+        );
 
-        if (success) {
+        if (response.statusCode == 200) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Machine updated successfully!'),
               backgroundColor: Colors.green,
             ),
           );
+          Navigator.pop(context, true); // Return true on success
+        } else {
+          // Handle the error response
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update machine: ${response.body}'),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       }
-      Navigator.pop(context); // Go back after saving
     }
     catch (e, stackTrace) {
       print('Error occurred: $e');
       print('Stack Trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to create machine. Please try again.'),
+        SnackBar(
+          content: Text('Error: $e'),
           backgroundColor: Colors.red,
         ),
       );
