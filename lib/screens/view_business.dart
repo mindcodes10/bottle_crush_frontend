@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:bottle_crush/screens/email.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
@@ -24,7 +25,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
   final ApiServices _apiServices = ApiServices();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   // Callback for bottom nav item tap
   void _onItemTapped(int index) {
@@ -39,10 +40,16 @@ class _ViewBusinessState extends State<ViewBusiness> {
         MaterialPageRoute(builder: (context) => const Dashboard()),
       );
     }
-    if (index == 1) {
+    if (index == 2) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ViewMachines()),
+      );
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Email()),
       );
     }
   }

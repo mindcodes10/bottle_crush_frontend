@@ -1,5 +1,6 @@
 import 'package:bottle_crush/screens/add_machines.dart';
 import 'package:bottle_crush/screens/dashboard.dart';
+import 'package:bottle_crush/screens/email.dart';
 import 'package:bottle_crush/screens/view_business.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
@@ -19,7 +20,7 @@ class ViewMachines extends StatefulWidget {
 
 class _ViewMachinesState extends State<ViewMachines> {
   final ApiServices apiService = ApiServices();
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   List<dynamic> machineDetails = [];
   bool isLoading = true;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -81,6 +82,12 @@ class _ViewMachinesState extends State<ViewMachines> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ViewBusiness()), // Home or Dashboard screen
+      );
+    }
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Email()), // Home or Dashboard screen
       );
     }
   }
