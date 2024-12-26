@@ -3,8 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bottle_crush/utils/theme.dart';
 
 class CustomBottomAppBar extends StatefulWidget {
-  final Function(int) onItemTapped; // Callback for item tap actions
-  final int selectedIndex; // Pass selected index to maintain consistency
+  final Function(int) onItemTapped;
+  final int selectedIndex;
 
   const CustomBottomAppBar({
     super.key,
@@ -17,26 +17,34 @@ class CustomBottomAppBar extends StatefulWidget {
 }
 
 class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
-  int _selectedIndex = 0; // Tracks the selected index
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.selectedIndex; // Initialize with the passed index
+    _selectedIndex = widget.selectedIndex;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 8, // Add shadow elevation
-      color: AppTheme.backgroundWhite, // Background color for the BottomAppBar
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2), // Adjust opacity for shadow
+            blurRadius: 10, // Adjust the blur radius for shadow softness
+            spreadRadius: 1, // Spread the shadow (0 means no spreading)
+            offset: Offset(0, 4), // Position the shadow (x, y)
+          ),
+        ],
+      ),
       child: SizedBox(
-        height: 80, // Adjusted height of the BottomAppBar
+        height: 85,
         child: Stack(
           children: [
             Positioned.fill(
               child: BottomAppBar(
-                color: AppTheme.backgroundWhite, // Ensures consistent color
+                color: AppTheme.backgroundWhite,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -67,49 +75,48 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
   }
 
   Widget _buildTopLine(int index) {
-    // Calculate dynamic width based on screen size
     double screenWidth = MediaQuery.of(context).size.width;
-    double lineWidth = screenWidth / 5; // Adjust line width proportionally
+    double lineWidth = screenWidth / 5;
 
     return SizedBox(
-      width: lineWidth, // Use calculated width
+      width: lineWidth,
       child: Container(
-        height: 4, // Height of the line
+        height: 4,
         color: _selectedIndex == index
             ? AppTheme.backgroundBlue
-            : Colors.transparent, // Show blue line if selected
+            : Colors.transparent,
       ),
     );
   }
 
-  // A reusable widget to build bottom navigation items with standard icons
   Widget _buildBottomNavItem(IconData icon, String label, int index) {
     return InkWell(
       onTap: () {
         setState(() {
-          _selectedIndex = index; // Update the selected index
+          _selectedIndex = index;
         });
-        widget.onItemTapped(index); // Trigger the callback with index
+        widget.onItemTapped(index);
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 6), // Spacer for the blue line
+          const SizedBox(height: 6),
           Icon(
             icon,
             color: _selectedIndex == index
                 ? AppTheme.backgroundBlue
-                : AppTheme.backgroundBlue, // Highlight selected icon
-            size: 25, // Adjust the icon size to match reduced height
+                : AppTheme.backgroundBlue,
+            size: 25,
           ),
-          const SizedBox(height: 2), // Reduced spacing between icon and text
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12, // Reduced font size for better fit
-              color: _selectedIndex == index
-                  ? AppTheme.backgroundBlue
-                  : AppTheme.backgroundBlue, // Highlight selected text
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: _selectedIndex == index
+                    ? AppTheme.backgroundBlue
+                    : AppTheme.backgroundBlue,
+              ),
             ),
           ),
         ],
@@ -117,34 +124,34 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
     );
   }
 
-  // A reusable widget to build bottom navigation items with Font Awesome icons
   Widget _buildFontAwesomeNavItem(IconData icon, String label, int index) {
     return InkWell(
       onTap: () {
         setState(() {
-          _selectedIndex = index; // Update the selected index
+          _selectedIndex = index;
         });
-        widget.onItemTapped(index); // Trigger the callback with index
+        widget.onItemTapped(index);
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 6), // Spacer for the blue line
+          const SizedBox(height: 6),
           FaIcon(
             icon,
             color: _selectedIndex == index
                 ? AppTheme.backgroundBlue
-                : AppTheme.backgroundBlue, // Highlight selected icon
-            size: 22, // Adjust icon size to match reduced height
+                : AppTheme.backgroundBlue,
+            size: 22,
           ),
-          const SizedBox(height: 2), // Reduced spacing between icon and text
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12, // Reduced font size for better fit
-              color: _selectedIndex == index
-                  ? AppTheme.backgroundBlue
-                  : AppTheme.backgroundBlue, // Highlight selected text
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: _selectedIndex == index
+                    ? AppTheme.backgroundBlue
+                    : AppTheme.backgroundBlue,
+              ),
             ),
           ),
         ],
