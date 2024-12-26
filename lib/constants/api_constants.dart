@@ -9,6 +9,9 @@ class ApiConstants {
   // Endpoint for viewing all businesses
   static const String viewBusiness = "$baseUrl/businesses";
 
+  // Endpoint for viewing a business by ID
+  static String getBusinessById(int businessId) => "$baseUrl/business/$businessId";
+
   // Endpoint for deleting a business
   static String deleteBusiness(int businessId) => "$baseUrl/business/$businessId";
 

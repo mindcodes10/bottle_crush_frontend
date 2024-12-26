@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'dart:io';
+import 'package:bottle_crush/screens/business_dashboard.dart';
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
@@ -65,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-  // Method to validate credentials
+
   Future<void> submitPressed() async {
     String enteredEmail = _emailController.text.trim();
     String enteredPassword = _passwordController.text.trim();
@@ -91,11 +93,16 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // Hash the password using SHA-256
+    //final hashedPassword = sha256.convert(utf8.encode(enteredPassword)).toString();
+
     // Call the API login function
     final apiService = ApiServices();
 
     try {
       final response = await apiService.login(enteredEmail, enteredPassword);
+
+      //final response = await apiService.login(enteredEmail, hashedPassword);
 
       if (response != null && response['access_token'] != null) {
         // Decode the token and extract email and role
@@ -112,27 +119,38 @@ class _LoginScreenState extends State<LoginScreen> {
           print("User Role: $role");
           print("User Id: $id");
 
-          // store the token securely (e.g., using flutter_secure_storage)
+          // Store the token securely (e.g., using flutter_secure_storage)
           await secureStorage.write(key: 'access_token', value: token);
           print("Access Token = $token");
 
+          // Navigate to the appropriate dashboard based on the role
+          if (role == 't_admin') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Dashboard()),
+            );
+          } else if (role == 't_customer') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => BusinessDashboard(id:id)),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Invalid role.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login successful!'),
+              backgroundColor: Colors.green,
+            ),
+          );
         }
-
-        // Success: Login successful, navigate to dashboard
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login successful!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Navigate to Dashboard
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Dashboard()),
-        );
       } else {
-        // Invalid credentials
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid credentials. Please try again.'),
@@ -141,7 +159,6 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } on SocketException catch (_) {
-      // Handle network-related errors
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No internet connection. Please check your network and try again.'),
@@ -149,7 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } catch (e) {
-      // Handle other types of errors
       print('Error during login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -159,6 +175,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
+
+
 
 
 
