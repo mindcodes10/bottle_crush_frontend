@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:bottle_crush/constants/api_constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -405,4 +406,91 @@ class ApiServices {
       throw Exception("Error in getBusinessById: $e");
     }
   }
+
+  Future<Map<String, dynamic>> sendForgotPasswordEmail(String email) async {
+    final Uri url = Uri.parse(ApiConstants.forgotPassword);
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to send forgot password email: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
+    final url = Uri.parse(ApiConstants.verifyOtpEndpoint);
+
+    // Prepare the request payload
+    final Map<String, dynamic> body = {
+      'email': email,
+      'otp': otp,
+    };
+
+    try {
+      // Send the POST request
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      // Check if the response is successful (HTTP status 200)
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        return responseData;  // Return the response from the API
+      } else {
+        throw Exception('Failed to verify OTP');
+      }
+    } catch (e) {
+      // Handle any errors
+      throw Exception('Error verifying OTP: $e');
+    }
+  }
+
+  // Function to reset the password
+  Future<Map<String, dynamic>> passwordReset(String resetToken, String newPassword) async {
+    final url = Uri.parse(ApiConstants.resetPassword);
+
+    try {
+      // Make the POST request
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'reset_token': resetToken,
+          'new_password': newPassword,
+        }),
+      );
+
+      debugPrint('Request Body: ${json.encode({
+        'reset_token': resetToken,
+        'new_password': newPassword,
+      })}');
+
+      if (response.statusCode == 200) {
+        // Return the response as a map if the request is successful
+        debugPrint('Response body : $response');
+        return json.decode(response.body);
+
+      } else {
+        // If the request failed, throw an error with the response message
+        throw Exception('Failed to reset password: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint("Error in resetPassword: $e");
+      throw Exception('Error resetting password');
+    }
+  }
+
 }

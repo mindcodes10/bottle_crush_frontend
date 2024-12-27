@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bottle_crush/screens/forgot_password.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:io';
 import 'package:bottle_crush/screens/business_dashboard.dart';
@@ -9,7 +10,6 @@ import 'package:bottle_crush/utils/token_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading JSON
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-
 import '../widgets/custom_elevated_button.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     // Hash the password using SHA-256
-    //final hashedPassword = sha256.convert(utf8.encode(enteredPassword)).toString();
+    final hashedPassword = sha256.convert(utf8.encode(enteredPassword)).toString();
 
     // Call the API login function
     final apiService = ApiServices();
@@ -307,90 +307,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: () async {
-                            // Fetch admin details from JSON
-                            final adminDetails = await _fetchAdminDetails();
-
-                            // Display dialog with fetched details
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  title: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.lock,
-                                        color: AppTheme.backgroundBlue,
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'Forgot Password',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Contact the admin to change your password.',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      const SizedBox(height: 15),
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.person, color: AppTheme.backgroundBlue),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            'Admin: ${adminDetails['admin_name']}',
-                                            style: const TextStyle(fontSize: 15),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.phone, color: AppTheme.backgroundBlue),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            'Contact: ${adminDetails['admin_contact']}',
-                                            style: const TextStyle(fontSize: 15),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  actionsAlignment: MainAxisAlignment.center,
-                                  actions: [
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppTheme.backgroundBlue,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12.0),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // Close the dialog
-                                      },
-                                      child: const Text(
-                                        'Got it!',
-                                        style: TextStyle(
-                                          color: AppTheme.textWhite,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> ForgotPassword()));
                           },
                           child: const Text(
                             'Forgot Password?',

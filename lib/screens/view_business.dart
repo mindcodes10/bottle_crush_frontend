@@ -158,6 +158,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
+      backgroundColor: AppTheme.backgroundWhite,
       body: FutureBuilder<List<dynamic>>(
         future: _businessDetails,
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
