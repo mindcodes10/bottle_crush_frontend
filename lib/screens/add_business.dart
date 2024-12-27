@@ -114,7 +114,8 @@ class _AddBusinessState extends State<AddBusiness> {
         name: _businessNameController.text,
         mobile: _businessMobileController.text,
         email: _businessEmailController.text,
-        password: hashedPassword,
+       // password: hashedPassword,
+        password: _businessPasswordController.text,
         logoImage: _selectedImage != null ? _selectedImage : null, // Updated line
       );
 

@@ -10,7 +10,6 @@ import 'package:bottle_crush/utils/token_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading JSON
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-
 import '../widgets/custom_elevated_button.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -95,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     // Hash the password using SHA-256
-    //final hashedPassword = sha256.convert(utf8.encode(enteredPassword)).toString();
+    final hashedPassword = sha256.convert(utf8.encode(enteredPassword)).toString();
 
     // Call the API login function
     final apiService = ApiServices();

@@ -1,6 +1,7 @@
 class ApiConstants {
   // Base URL
   static const String baseUrl = "http://62.72.12.225:8005";
+  //static const String baseUrl = "http://192.168.1.106:8000";
 
   // Auth Endpoints
   static const String login = "$baseUrl/login/";
@@ -21,4 +22,13 @@ class ApiConstants {
 
   // Endpoint for deleting a machine
   static String deleteMachine(int machineId) => "$baseUrl/machines/$machineId";
+
+  // Forgot Password Endpoint
+  static const String forgotPassword = "$baseUrl/users/forgot-password";
+
+  // Add the verify OTP endpoint
+  static const String verifyOtpEndpoint = '$baseUrl/users/verify-otp';
+
+  // reset-password endpoint
+  static const String resetPassword = "$baseUrl/users/reset-password";
 }
