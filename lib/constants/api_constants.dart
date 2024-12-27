@@ -31,4 +31,7 @@ class ApiConstants {
 
   // reset-password endpoint
   static const String resetPassword = "$baseUrl/users/reset-password";
+
+  // Endpoint for "Get My Business"
+  static const String myBusiness = "$baseUrl/my-business";
 }

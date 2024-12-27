@@ -34,19 +34,25 @@ class _BusinessViewState extends State<BusinessView> {
     if (index == 0) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => BusinessDashboard(id: widget.id,)),
+        MaterialPageRoute(
+          builder: (context) => BusinessDashboard(id: widget.id),
+        ),
       );
     }
     if (index == 2) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MachineView(id:widget.id)),
+        MaterialPageRoute(
+          builder: (context) => MachineView(id: widget.id),
+        ),
       );
     }
     if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => BusinessEmail(id:widget.id)),
+        MaterialPageRoute(
+          builder: (context) => BusinessEmail(id: widget.id),
+        ),
       );
     }
   }
@@ -54,18 +60,26 @@ class _BusinessViewState extends State<BusinessView> {
   @override
   void initState() {
     super.initState();
-    fetchBusinessDetails(widget.id);
-   // _fetchTokenAndBusinessDetails();
+    _businessDetails = fetchBusinessDetails();
   }
 
-  void fetchBusinessDetails(int businessId) async {
+  Future<List<dynamic>> fetchBusinessDetails() async {
     try {
-      final _businessDetails = await _apiServices.getBusinessById(businessId);
-      print("Business Details: $_businessDetails");
+      final response = await _apiServices.getMyBusiness();
+      debugPrint('Response Received : $response');
+
+      // Ensure 'businesses' key exists in the response
+      if (response.containsKey('businesses') && response['businesses'] is List) {
+        return response['businesses'] as List<dynamic>;
+      } else {
+        throw Exception('Invalid response format: "businesses" key missing or invalid.');
+      }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
+      throw Exception('An error occurred: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

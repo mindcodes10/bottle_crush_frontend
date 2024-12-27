@@ -46,70 +46,6 @@ class ApiServices {
     }
   }
 
-  // Future<Map<String, dynamic>> createBusiness({
-  //   required String token,
-  //   required String name,
-  //   required String mobile,
-  //   required String email,
-  //   required String password,
-  //   File? logoImage, // Made logoImage optional
-  // }) async {
-  //   final uri = Uri.parse(ApiConstants.createBusiness);
-  //   final request = http.MultipartRequest('POST', uri);
-  //
-  //   // Add headers
-  //   request.headers['Authorization'] = 'Bearer $token';
-  //   request.headers['Accept'] = 'application/json';
-  //
-  //   // Add fields
-  //   request.fields['business_data[name]'] = name;
-  //   request.fields['business_data[mobile]'] = mobile;
-  //   request.fields['user_data[email]'] = email;
-  //   request.fields['user_data[password]'] = password;
-  //
-  //   // Add logo image if it's not null
-  //   if (logoImage != null) {
-  //     request.files.add(await http.MultipartFile.fromPath(
-  //       'logo_image',
-  //       logoImage.path,
-  //     ));
-  //   }
-  //
-  //   // Print request details for debugging
-  //   print('Sending request to: ${request.url}');
-  //   print('Request headers: ${request.headers}');
-  //   print('Request fields: ${request.fields}');
-  //   print('Request files: ${request.files.map((file) => file.filename).toList()}');
-  //
-  //   try {
-  //     // Send the request
-  //     final response = await request.send();
-  //
-  //     // Print the response status code
-  //     print('Response status code: ${response.statusCode}');
-  //
-  //     // Handle the response
-  //     if (response.statusCode == 200) {
-  //       final responseData = await response.stream.toBytes();
-  //       final responseString = String.fromCharCodes(responseData);
-  //       print('Response body: $responseString'); // Print the response body
-  //       return json.decode(responseString);
-  //     } else {
-  //       // Print error message before throwing exception
-  //       print('Failed to create business: ${response.statusCode}');
-  //       throw Exception('Failed to create business: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     // Print any exceptions that occur
-  //     print('Error occurred: $e');
-  //     throw Exception('Error occurred: $e');
-  //   }
-  // }
-
-  // import 'dart:convert';
-  // import 'dart:io';
-  // import 'package:http/http.dart' as http;
-
   Future<Map<String, dynamic>> createBusiness({
     required String token,
     required String name,
@@ -490,6 +426,50 @@ class ApiServices {
     } catch (e) {
       debugPrint("Error in resetPassword: $e");
       throw Exception('Error resetting password');
+    }
+  }
+
+  // Function to get "My Business" data
+  Future<Map<String, dynamic>> getMyBusiness() async {
+    const url = ApiConstants.myBusiness;
+
+    try {
+      // Retrieve the access token from Flutter Secure Storage
+      final accessToken = await secureStorage.read(key: 'access_token');
+      if (accessToken == null) {
+        return {
+          'success': false,
+          'message': 'Access token not found. Please log in again.'
+        };
+      }
+
+      debugPrint('Access Token : $accessToken');
+
+      // Configure headers with the Bearer token and additional headers
+      final headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      };
+
+      // Make the HTTP GET request
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        // Parse and return the JSON response
+        return json.decode(response.body) as Map<String, dynamic>;
+      } else {
+        // Handle error response
+        return {
+          'success': false,
+          'message': 'Failed to fetch business data: ${response.statusCode}'
+        };
+      }
+    } catch (error) {
+      // Handle network or parsing errors
+      return {
+        'success': false,
+        'message': 'An error occurred: $error',
+      };
     }
   }
 
