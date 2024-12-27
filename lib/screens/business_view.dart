@@ -67,20 +67,6 @@ class _BusinessViewState extends State<BusinessView> {
     }
   }
 
-  // Future<void> _fetchTokenAndBusinessDetails() async {
-  //   String? token = await _secureStorage.read(key: 'access_token');
-  //   if (token != null) {
-  //     setState(() {
-  //       _businessDetails = _apiServices.fetchBusinessDetails(token);
-  //     });
-  //   } else {
-  //     print('No token found. Please log in.');
-  //     setState(() {
-  //       _businessDetails = Future.value([]); // Initialize to an empty list
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -92,6 +78,7 @@ class _BusinessViewState extends State<BusinessView> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
+      backgroundColor: AppTheme.backgroundWhite,
       body: FutureBuilder<List<dynamic>>(
         future: _businessDetails,
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {

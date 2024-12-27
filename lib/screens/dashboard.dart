@@ -70,7 +70,6 @@ class _DashboardState extends State<Dashboard> {
     // Getting screen width and height for responsiveness
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    // double textScaleFactor = MediaQuery.of(context).textScaleFactor;
 
     // Adjusting sizes based on screen size
     double cardWidth = screenWidth * 0.4;
@@ -78,8 +77,6 @@ class _DashboardState extends State<Dashboard> {
     double iconSize = cardWidth * 0.2;
     double titleFontSize = cardWidth * 0.09;
     double valueFontSize = cardWidth * 0.1;
-    // double titleFontSize = 18 * textScaleFactor;
-    // double valueFontSize = 22 * textScaleFactor;
 
     return Scaffold(
       appBar: const CustomAppBar(),
@@ -88,88 +85,96 @@ class _DashboardState extends State<Dashboard> {
         selectedIndex: _selectedIndex,
       ),
       backgroundColor: AppTheme.backgroundWhite,
-      body: SingleChildScrollView( // Wraps the content in a scrollable widget
-        child: Padding(
-          padding: const EdgeInsets.all(14.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Admin Dashboard',
-                    style: TextStyle(fontSize: titleFontSize, fontWeight: FontWeight.bold),
-                  ),
-                  CustomElevatedButton(
-                    buttonText: 'Export to Excel',
-                    onPressed: (){}, // Call validateCredentials on submit
-                    width: screenWidth * 0.45,
-                    height: 45,
-                    backgroundColor: AppTheme.backgroundBlue,
-                    icon: const Icon(FontAwesomeIcons.solidFileExcel, color: AppTheme.backgroundWhite,),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildDashboardCard(
-                    title: "Total Machines",
-                    value: totalMachineCount.toString(),
-                    icon: FontAwesomeIcons.box,
-                    //icon: Icons.save_alt, // Export icon
-                    cardWidth: cardWidth,
-                    cardHeight: cardHeight,
-                    iconSize: iconSize,
-                    titleFontSize: titleFontSize,
-                    valueFontSize: valueFontSize,
-                  ),
-                  _buildDashboardCard(
-                    title: "Total Businesses",
-                    value: totalBusinessCount.toString(),
-                    icon: FontAwesomeIcons.briefcase,
-                    cardWidth: cardWidth,
-                    cardHeight: cardHeight,
-                    iconSize: iconSize,
-                    titleFontSize: titleFontSize,
-                    valueFontSize: valueFontSize,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildDashboardCard(
-                    title: "Total Bottles",
-                    value: totalBottleCount.toString(),
-                    icon: FontAwesomeIcons.bottleWater,
-                    cardWidth: cardWidth,
-                    cardHeight: cardHeight,
-                    iconSize: iconSize,
-                    titleFontSize: titleFontSize,
-                    valueFontSize: valueFontSize,
-                  ),
-                  _buildDashboardCard(
-                    title: "Bottle Weight (kg)",
-                    value: totalBottleWeight.toStringAsFixed(1),
-                    icon: FontAwesomeIcons.weightHanging,
-                    cardWidth: cardWidth,
-                    cardHeight: cardHeight,
-                    iconSize: iconSize,
-                    titleFontSize: titleFontSize,
-                    valueFontSize: valueFontSize,
-                  ),
-                ],
-              ),
-            ],
+      body: RefreshIndicator(
+        onRefresh: _fetchDashboardData, // Calls the fetch data method
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(), // Ensure the list can always be pulled down
+          child: Padding(
+            padding: const EdgeInsets.all(14.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Admin Dashboard',
+                      style: TextStyle(
+                          fontSize: titleFontSize, fontWeight: FontWeight.bold),
+                    ),
+                    CustomElevatedButton(
+                      buttonText: 'Export to Excel',
+                      onPressed: () {}, // Call validateCredentials on submit
+                      width: screenWidth * 0.45,
+                      height: 45,
+                      backgroundColor: AppTheme.backgroundBlue,
+                      icon: const Icon(
+                        FontAwesomeIcons.solidFileExcel,
+                        color: AppTheme.backgroundWhite,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildDashboardCard(
+                      title: "Total Machines",
+                      value: totalMachineCount.toString(),
+                      icon: FontAwesomeIcons.box,
+                      cardWidth: cardWidth,
+                      cardHeight: cardHeight,
+                      iconSize: iconSize,
+                      titleFontSize: titleFontSize,
+                      valueFontSize: valueFontSize,
+                    ),
+                    _buildDashboardCard(
+                      title: "Total Businesses",
+                      value: totalBusinessCount.toString(),
+                      icon: FontAwesomeIcons.briefcase,
+                      cardWidth: cardWidth,
+                      cardHeight: cardHeight,
+                      iconSize: iconSize,
+                      titleFontSize: titleFontSize,
+                      valueFontSize: valueFontSize,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildDashboardCard(
+                      title: "Total Bottles",
+                      value: totalBottleCount.toString(),
+                      icon: FontAwesomeIcons.bottleWater,
+                      cardWidth: cardWidth,
+                      cardHeight: cardHeight,
+                      iconSize: iconSize,
+                      titleFontSize: titleFontSize,
+                      valueFontSize: valueFontSize,
+                    ),
+                    _buildDashboardCard(
+                      title: "Bottle Weight (kg)",
+                      value: totalBottleWeight.toStringAsFixed(1),
+                      icon: FontAwesomeIcons.weightHanging,
+                      cardWidth: cardWidth,
+                      cardHeight: cardHeight,
+                      iconSize: iconSize,
+                      titleFontSize: titleFontSize,
+                      valueFontSize: valueFontSize,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
 
   Widget _buildDashboardCard({
     required String title,
