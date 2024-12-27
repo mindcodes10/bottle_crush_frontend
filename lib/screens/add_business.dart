@@ -12,6 +12,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io'; // <-- Add this import for File operations
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert'; // <-- Add this import for json encoding
+import 'package:crypto/crypto.dart';
+
 
 class AddBusiness extends StatefulWidget {
   const AddBusiness({super.key});
@@ -84,6 +86,13 @@ class _AddBusinessState extends State<AddBusiness> {
     super.dispose();
   }
 
+  // Function to hash the password
+  String _hashPassword(String password) {
+    final bytes = utf8.encode(password); // Convert password to bytes
+    final hashedPassword = sha256.convert(bytes); // Hash the password using SHA256
+    return hashedPassword.toString(); // Return the hashed password as a string
+  }
+
   submitPressed() async {
     if (_businessNameController.text.isEmpty ||
         _businessEmailController.text.isEmpty ||
@@ -96,13 +105,16 @@ class _AddBusinessState extends State<AddBusiness> {
       return;
     }
 
+    // Hash the password before sending it
+    String hashedPassword = _hashPassword(_businessPasswordController.text);
+
     try {
       final response = await apiServices.createBusiness(
         token: token!,
         name: _businessNameController.text,
         mobile: _businessMobileController.text,
         email: _businessEmailController.text,
-        password: _businessPasswordController.text,
+        password: hashedPassword,
         logoImage: _selectedImage != null ? _selectedImage : null, // Updated line
       );
 

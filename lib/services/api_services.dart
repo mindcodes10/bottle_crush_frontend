@@ -373,4 +373,36 @@ class ApiServices {
       return false; // Error occurred
     }
   }
+
+  Future<Map<String, dynamic>> getBusinessById(int businessId) async {
+    try {
+      // Retrieve token from secure storage
+      final token = await secureStorage.read(key: "access_token");
+
+      if (token == null) {
+        throw Exception("Token not found");
+      }
+
+      // API endpoint
+      final url = ApiConstants.getBusinessById(businessId);
+
+      // HTTP GET request
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      // Check for successful response
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception("Failed to fetch business details: ${response.body}");
+      }
+    } catch (e) {
+      throw Exception("Error in getBusinessById: $e");
+    }
+  }
 }
