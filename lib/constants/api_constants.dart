@@ -1,7 +1,7 @@
 class ApiConstants {
   // Base URL
-  //static const String baseUrl = "http://62.72.12.225:8005";
-  static const String baseUrl = "http://192.168.1.104:8000";
+  static const String baseUrl = "http://62.72.12.225:8005";
+  //static const String baseUrl = "http://192.168.1.104:8000";
 
   // Auth Endpoints
   static const String login = "$baseUrl/login/";
@@ -37,4 +37,7 @@ class ApiConstants {
 
   // get machines by business
   static const String myMachines = "$baseUrl/my-machines";
+
+  // update company details
+  static const String updateBusiness = '$baseUrl/businesses/{business_id}';
 }

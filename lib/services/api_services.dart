@@ -505,4 +505,39 @@ class ApiServices {
     }
   }
 
+  // function to update company details
+  Future<Map<String, dynamic>> updateBusiness(
+      String token, int businessId, String name, String mobile) async {
+    final url = ApiConstants.updateBusiness.replaceAll('{business_id}', businessId.toString());
+    final headers = {
+      'Content-Type': 'application/json', // Specify JSON content
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    final body = jsonEncode({
+      'name': name,
+      'mobile': mobile,
+    });
+
+    debugPrint('Request URL: $url');
+    debugPrint('Request Headers: $headers');
+    debugPrint('Request Body: $body'); // Debugging
+
+    try {
+      final response = await http.put(Uri.parse(url), headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        debugPrint('Error response: ${response.body}'); // Log error
+        throw Exception('Failed to update business: ${response.body}');
+      }
+    } catch (error) {
+      debugPrint('Error: $error');
+      throw Exception('An error occurred: $error');
+    }
+  }
+
+
+
 }
