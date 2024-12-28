@@ -648,4 +648,57 @@ class ApiServices {
       throw Exception('Error occurred: $e');
     }
   }
+
+  // function to send email
+  static Future<Map<String, dynamic>> sendEmail({
+    required String token,
+    required String toEmail,
+    required String subject,
+    required String message,
+    String? filePath, // Optional for attachments
+  }) async {
+    try {
+      // Headers
+      final headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'multipart/form-data',
+      };
+
+      // Multipart request
+      var request = http.MultipartRequest('POST', Uri.parse(ApiConstants.sendEmailEndpoint));
+      request.headers.addAll(headers);
+
+      // Add form data fields
+      request.fields['to_email'] = toEmail;
+      request.fields['subject'] = subject;
+      request.fields['message'] = message;
+
+      // Add attachment if provided
+      if (filePath != null) {
+        request.files.add(await http.MultipartFile.fromPath('attachments', filePath));
+      }
+
+      // Send the request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      // Check response status
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return {
+          'error': 'Failed to send email',
+          'status': response.statusCode,
+          'response': response.body,
+        };
+      }
+    } catch (e) {
+      return {
+        'error': 'An exception occurred',
+        'details': e.toString(),
+      };
+    }
+  }
+
 }

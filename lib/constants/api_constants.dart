@@ -51,5 +51,9 @@ class ApiConstants {
   // get total bottle count and bottle weight
   static const String bottleStats = "$baseUrl/bottle-stats";
 
+  // send email
+  static const String sendEmailEndpoint = '$baseUrl/send-email';
+
+
 
 }
