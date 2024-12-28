@@ -67,7 +67,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     // Getting screen width and height for responsiveness
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    // double textScaleFactor = MediaQuery.of(context).textScaleFactor;
+
 
     // Adjusting sizes based on screen size
     double cardWidth = screenWidth * 0.4;
@@ -75,8 +75,6 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     double iconSize = cardWidth * 0.2;
     double titleFontSize = cardWidth * 0.09;
     double valueFontSize = cardWidth * 0.1;
-    // double titleFontSize = 18 * textScaleFactor;
-    // double valueFontSize = 22 * textScaleFactor;
 
     return Scaffold(
       appBar: const CustomAppBar(),
@@ -95,7 +93,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Business Dashboard',
+                    'Company Dashboard',
                     style: TextStyle(fontSize: titleFontSize, fontWeight: FontWeight.bold),
                   ),
                   CustomElevatedButton(
@@ -164,7 +162,6 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
             Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
             const SizedBox(height: 10),
             Text(title, style: TextStyle(fontSize: titleFontSize)),
-            //const SizedBox(height: 5),
             Text(
               value,
               style: TextStyle(

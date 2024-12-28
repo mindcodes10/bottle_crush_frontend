@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:bottle_crush/screens/email.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/screens/dashboard.dart';
@@ -67,7 +66,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
         _businessDetails = _apiServices.fetchBusinessDetails(token);
       });
     } else {
-      print('No token found. Please log in.');
+      debugPrint('No token found. Please log in.');
       setState(() {
         _businessDetails = Future.value([]); // Initialize to an empty list
       });
@@ -82,7 +81,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
         return AlertDialog(
           backgroundColor: AppTheme.backgroundWhite,
           title: const Text(
-            'Are you sure you want to delete this business?\n\n This action cannot be undone',
+            'Are you sure you want to delete this company?\n\n This action cannot be undone',
             style: TextStyle(fontSize: 13),
           ),
           contentPadding: const EdgeInsets.all(16.0),
@@ -118,11 +117,11 @@ class _ViewBusinessState extends State<ViewBusiness> {
                       // Refresh the business details after deletion
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Business deleted successfully'),backgroundColor: Colors.green,),
+                        const SnackBar(content: Text('Company deleted successfully'),backgroundColor: Colors.green,),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Failed to delete business'), backgroundColor: Colors.red,),
+                        const SnackBar(content: Text('Failed to delete company'), backgroundColor: Colors.red,),
                       );
                     }
                     Navigator.of(context).pop();
@@ -169,7 +168,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
           } else if (snapshot.hasData) {
             List<dynamic> businessDetails = snapshot.data!;
             if (businessDetails.isEmpty) {
-              return const Center(child: Text('No business details available.'));
+              return const Center(child: Text('No company details available.'));
             }
 
             return Container(
@@ -181,7 +180,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Business Details',
+                    'Company Details',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: screenWidth * 0.04,
@@ -221,7 +220,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                           const SizedBox(width: 16),
                                           Expanded(
                                             child: Text(
-                                              business['name'] ?? 'Business Name',
+                                              business['name'] ?? 'Company Name',
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
@@ -234,7 +233,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                       ),
                                       const SizedBox(height: 3),
                                       Text(
-                                        business['owner_email'] ?? 'business@email.com',
+                                        business['owner_email'] ?? 'company@email.com',
                                         style: const TextStyle(
                                           fontSize: 12,
                                         ),
@@ -288,7 +287,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                     ),
                   ),
                   CustomElevatedButton(
-                    buttonText: ' + ADD BUSINESS',
+                    buttonText: ' + ADD COMPANY',
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -303,7 +302,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
               ),
             );
           } else {
-            return const Center(child: Text('No business details available.'));
+            return const Center(child: Text('No company details available.'));
           }
         },
       ),

@@ -2,7 +2,6 @@ import 'package:bottle_crush/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bottle_crush/utils/theme.dart';
-import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_elevated_button.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -14,16 +13,14 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   final TextEditingController emailController = TextEditingController();
-  final List<TextEditingController> otpControllers =
-      List.generate(6, (index) => TextEditingController());
+  final List<TextEditingController> otpControllers = List.generate(6, (index) => TextEditingController());
   final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
   bool isOtpSent = false;
   bool isOtpVerified = false;
   bool isNewPasswordObscured = true; // State for New Password visibility
-  bool isConfirmPasswordObscured =
-      true; // State for Confirm Password visibility
+  bool isConfirmPasswordObscured = true; // State for Confirm Password visibility
   String resetToken = ""; // Declare a variable to store the reset token
 
   final ApiServices apiServices = ApiServices();
@@ -92,8 +89,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -128,15 +124,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               showSnackbar("Please enter your email");
                               return;
                             }
-
-                            // Show loading Snackbar
+                            // Show loading Snack bar
                             showSnackbar("Sending OTP... Please wait.");
 
                             try {
                               final response = await apiServices.sendForgotPasswordEmail(emailController.text);
 
                               if (response.containsKey('message')) {
-                                // Show success Snackbar
+                                // Show success Snack bar
                                 showSnackbar("OTP sent successfully! Check your email.");
                                 setState(() {
                                   isOtpSent = true;
@@ -170,7 +165,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               return;
                             }
 
-                            // Show loading Snackbar
+                            // Show loading Snack bar
                             showSnackbar("Verifying OTP... Please wait.");
 
                             // Extract OTP from controllers
@@ -180,7 +175,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               final response = await apiServices.verifyOtp(emailController.text, otp);
 
                               if (response.containsKey('message') && response['message'] == "OTP verified successfully") {
-                                // Show success Snackbar
+                                // Show success Snack bar
                                 showSnackbar("OTP verified successfully.");
 
                                 // Store the reset token from the response

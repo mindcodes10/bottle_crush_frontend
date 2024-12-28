@@ -1,17 +1,11 @@
-import 'package:bottle_crush/screens/add_machines.dart';
 import 'package:bottle_crush/screens/business_dashboard.dart';
 import 'package:bottle_crush/screens/business_email.dart';
 import 'package:bottle_crush/screens/business_view.dart';
-import 'package:bottle_crush/screens/dashboard.dart';
-import 'package:bottle_crush/screens/email.dart';
-import 'package:bottle_crush/screens/view_business.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bottle_crush/utils/theme.dart';
-import 'package:bottle_crush/widgets/custom_elevated_button.dart';
 import 'package:bottle_crush/services/api_services.dart';
 
 class MachineView extends StatefulWidget {
@@ -47,7 +41,7 @@ class _MachineViewState extends State<MachineView> {
         isLoading = false; // Set loading to false once data is fetched
       });
     } catch (e) {
-      print('Error loading machine details: $e');
+      debugPrint('Error loading machine details: $e');
       setState(() {
         isLoading = false;
       });
@@ -130,7 +124,7 @@ class _MachineViewState extends State<MachineView> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Owner: ${machine['business_name']}',
+                                  'Company Name: ${machine['business_name']}',
                                   style: const TextStyle(fontSize: 12),
                                 ),
                                 Text(

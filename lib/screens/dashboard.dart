@@ -130,7 +130,7 @@ class _DashboardState extends State<Dashboard> {
                       valueFontSize: valueFontSize,
                     ),
                     _buildDashboardCard(
-                      title: "Total Businesses",
+                      title: "Total Companies",
                       value: totalBusinessCount.toString(),
                       icon: FontAwesomeIcons.briefcase,
                       cardWidth: cardWidth,
@@ -199,7 +199,6 @@ class _DashboardState extends State<Dashboard> {
             Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
             const SizedBox(height: 10),
             Text(title, style: TextStyle(fontSize: titleFontSize)),
-            //const SizedBox(height: 5),
             Text(
               value,
               style: TextStyle(

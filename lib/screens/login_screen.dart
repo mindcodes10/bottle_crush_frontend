@@ -1,6 +1,5 @@
-import 'dart:convert';
+
 import 'package:bottle_crush/screens/forgot_password.dart';
-import 'package:crypto/crypto.dart';
 import 'dart:io';
 import 'package:bottle_crush/screens/business_dashboard.dart';
 import 'package:bottle_crush/screens/dashboard.dart';
@@ -8,7 +7,6 @@ import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/utils/token_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For loading JSON
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import '../widgets/custom_elevated_button.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -48,23 +46,23 @@ class _LoginScreenState extends State<LoginScreen> {
       final decodedData = TokenService.decodeToken(token);
       if (decodedData != null) {
         final email = decodedData['sub'];
-        print("Token found for: $email");
+        debugPrint("Token found for: $email");
 
         // Navigate to Dashboard
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Dashboard()),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const Dashboard()),
+        // );
       }
     }
   }
-
-  // method to load the admin details from json
-  Future<Map<String, dynamic>> _fetchAdminDetails() async {
-    // Load the JSON file
-    final String response = await rootBundle.loadString('assets/json/admin_details.json');
-    return json.decode(response);
-  }
+  //
+  // // method to load the admin details from json
+  // Future<Map<String, dynamic>> _fetchAdminDetails() async {
+  //   // Load the JSON file
+  //   final String response = await rootBundle.loadString('assets/json/admin_details.json');
+  //   return json.decode(response);
+  // }
 
 
 
@@ -93,16 +91,11 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // Hash the password using SHA-256
-    final hashedPassword = sha256.convert(utf8.encode(enteredPassword)).toString();
-
-    // Call the API login function
+      // Call the API login function
     final apiService = ApiServices();
 
     try {
       final response = await apiService.login(enteredEmail, enteredPassword);
-
-      //final response = await apiService.login(enteredEmail, hashedPassword);
 
       if (response != null && response['access_token'] != null) {
         // Decode the token and extract email and role
@@ -115,13 +108,13 @@ class _LoginScreenState extends State<LoginScreen> {
           final id = decodedData['id'];
 
           // Print the email and role
-          print("User Email: $email");
-          print("User Role: $role");
-          print("User Id: $id");
+          debugPrint("User Email: $email");
+          debugPrint("User Role: $role");
+          debugPrint("User Id: $id");
 
           // Store the token securely (e.g., using flutter_secure_storage)
           await secureStorage.write(key: 'access_token', value: token);
-          print("Access Token = $token");
+          debugPrint("Access Token = $token");
 
           // Navigate to the appropriate dashboard based on the role
           if (role == 't_admin') {
@@ -166,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } catch (e) {
-      print('Error during login: $e');
+      debugPrint('Error during login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Something went wrong. Please try again later.'),
@@ -308,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=> ForgotPassword()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> const ForgotPassword()));
                           },
                           child: const Text(
                             'Forgot Password?',

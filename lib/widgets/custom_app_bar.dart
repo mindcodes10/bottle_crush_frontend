@@ -15,7 +15,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _CustomAppBarState extends State<CustomAppBar> {
   final GlobalKey _iconKey = GlobalKey(); // Key for the profile icon
-  final FlutterSecureStorage _secureStorage = FlutterSecureStorage(); // Initialize secure storage
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); // Initialize secure storage
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +34,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
         child: AppBar(
           leading: Padding(
-            padding: const EdgeInsets.all(0), // Remove padding for larger image
+            padding: const EdgeInsets.all(0),
             child: Image.asset(
-              'assets/images/bottle_crusher_logo.png', // Replace with the path to your logo
+              'assets/images/bottle_crusher_logo.png',
               fit: BoxFit.cover, // Ensure the image covers the space
               width: 70, // Set a fixed width to maximize the size (adjust as needed)
               height: 70, // Set a fixed height to keep the logo proportionate (adjust as needed)
@@ -56,7 +56,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               },
             ),
           ],
-          backgroundColor: Colors.white, // Optional: Set AppBar color
+          backgroundColor: Colors.white,
         ),
       ),
     );
@@ -86,7 +86,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             title: const Text('Logout', style: TextStyle(color: AppTheme.textWhite)),
             onTap: () {
               // Handle logout action
-              print("Logging out");
+              debugPrint("Logging out");
               Navigator.pop(context); // Close the menu
               _logoutUser (context); // Call the logout function
             },
