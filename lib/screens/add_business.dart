@@ -105,16 +105,12 @@ class _AddBusinessState extends State<AddBusiness> {
       return;
     }
 
-    // Hash the password before sending it
-    String hashedPassword = _hashPassword(_businessPasswordController.text);
-
     try {
       final response = await apiServices.createBusiness(
         token: token!,
         name: _businessNameController.text,
         mobile: _businessMobileController.text,
         email: _businessEmailController.text,
-       // password: hashedPassword,
         password: _businessPasswordController.text,
         logoImage: _selectedImage != null ? _selectedImage : null, // Updated line
       );
@@ -124,7 +120,6 @@ class _AddBusinessState extends State<AddBusiness> {
         SnackBar(content: Text(response['message'])),
       );
 
-      // Optionally, navigate to another screen or reset the form
     } catch (e) {
       // Handle error response
       ScaffoldMessenger.of(context).showSnackBar(
@@ -152,7 +147,7 @@ class _AddBusinessState extends State<AddBusiness> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Add New Business',
+                  'Add New Company',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -169,7 +164,7 @@ class _AddBusinessState extends State<AddBusiness> {
                   style: TextStyle(
                       fontSize: screenWidth * 0.03, color: AppTheme.textBlack),
                   decoration: InputDecoration(
-                    labelText: 'Business Name',
+                    labelText: 'Company Name',
                     labelStyle: TextStyle(fontSize: screenWidth * 0.03),
                     prefixIcon: Icon(
                       FontAwesomeIcons.briefcase,
@@ -191,7 +186,7 @@ class _AddBusinessState extends State<AddBusiness> {
                   style: TextStyle(
                       fontSize: screenWidth * 0.03, color: AppTheme.textBlack),
                   decoration: InputDecoration(
-                    labelText: 'Business Email',
+                    labelText: 'Company Email',
                     labelStyle: TextStyle(fontSize: screenWidth * 0.03),
                     prefixIcon: Icon(
                       FontAwesomeIcons.solidEnvelope,
@@ -214,7 +209,7 @@ class _AddBusinessState extends State<AddBusiness> {
                   style: TextStyle(
                       fontSize: screenWidth * 0.03, color: AppTheme.textBlack),
                   decoration: InputDecoration(
-                    labelText: 'Business Mobile',
+                    labelText: 'Company Mobile',
                     labelStyle: TextStyle(fontSize: screenWidth * 0.03),
                     prefixIcon: Icon(
                       FontAwesomeIcons.phone,

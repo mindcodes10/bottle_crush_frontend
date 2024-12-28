@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:bottle_crush/constants/api_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class ApiServices {
-  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   // Function to perform login
   Future<Map<String, dynamic>?> login(String email, String password) async {
@@ -27,25 +26,25 @@ class ApiServices {
       if (response.statusCode == 200) {
         // Successful login, parse the response body
         final responseData = jsonDecode(response.body);
-        print("Login Successful: $responseData");
+        debugPrint("Login Successful: $responseData");
 
         // Store the token in Flutter Secure Storage
         if (responseData.containsKey('token')) {
-          await secureStorage.write(
-              key: 'access_token', value: responseData['token']);
+          await secureStorage.write(key: 'access_token', value: responseData['token']);
         }
         return responseData;
       } else {
         // Handle errors
-        print("Login Failed: ${response.statusCode} ${response.body}");
+        debugPrint("Login Failed: ${response.statusCode} ${response.body}");
         return null;
       }
     } catch (e) {
-      print("Error during login: $e");
+      debugPrint("Error during login: $e");
       return null;
     }
   }
 
+  // Function to create new company
   Future<Map<String, dynamic>> createBusiness({
     required String token,
     required String name,
@@ -91,18 +90,19 @@ class ApiServices {
       // Parse the response
       if (response.statusCode == 200) {
         final responseBody = await response.stream.bytesToString();
-        print('Response body: $responseBody');
+        debugPrint('Response body: $responseBody');
         return jsonDecode(responseBody);
       } else {
-        print('Failed to create business: ${response.statusCode}');
-        throw Exception('Failed to create business: ${response.statusCode}');
+        debugPrint('Failed to create company: ${response.statusCode}');
+        throw Exception('Failed to create company: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error occurred: $e');
+      debugPrint('Error occurred: $e');
       throw Exception('Error occurred: $e');
     }
   }
 
+  // Function to fetch company details
   Future<List<dynamic>> fetchBusinessDetails(String token) async {
     try {
       final response = await http.get(
@@ -117,16 +117,14 @@ class ApiServices {
       if (response.statusCode == 200) {
         // Parse the JSON response
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        print("API Response: $jsonResponse"); // Log the response for debugging
-        return jsonResponse[
-            'businesses']; // Adjust this based on your API response structure
+        debugPrint("API Response: $jsonResponse"); // Log the response for debugging
+        return jsonResponse['businesses']; // Adjust this based on your API response structure
       } else {
-        throw Exception(
-            'Failed to load business details: ${response.statusCode}');
+        throw Exception('Failed to load company details: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching business details: $e');
-      throw Exception('Error fetching business details: $e');
+      debugPrint('Error fetching company details: $e');
+      throw Exception('Error fetching company details: $e');
     }
   }
 
@@ -137,8 +135,7 @@ class ApiServices {
         Uri.parse(ApiConstants.viewMachines),
         headers: {
           'Accept': 'application/json',
-          'Authorization':
-              'Bearer $token', // Include the bearer token in headers
+          'Authorization': 'Bearer $token', // Include the bearer token in headers
         },
       );
 
@@ -150,11 +147,12 @@ class ApiServices {
         throw Exception('Failed to load machine details');
       }
     } catch (e) {
-      print('Error: $e');
+      debugPrint('Error: $e');
       rethrow;
     }
   }
 
+  // Function to create new Machine
   Future<bool> createMachine({
     required String token,
     required String name,
@@ -183,9 +181,9 @@ class ApiServices {
 
     try {
       final response = await http.post(url, headers: headers, body: body);
-      print('Response Status Code: ${response.statusCode}');
-      print('Response Headers: ${response.headers}');
-      print('Response Body: ${response.body}');
+      debugPrint('Response Status Code: ${response.statusCode}');
+      debugPrint('Response Headers: ${response.headers}');
+      debugPrint('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         return true; // Success
@@ -193,11 +191,12 @@ class ApiServices {
         throw Exception('Failed to create machine: ${response.body}');
       }
     } catch (e) {
-      print('Error occurred: $e');
+      debugPrint('Error occurred: $e');
       rethrow;
     }
   }
 
+  // Function to update machine details
   Future<http.Response> updateMachine({
     required int machineId,
     required String name,
@@ -238,8 +237,8 @@ class ApiServices {
       body: jsonEncode(body), // Ensure this is a JSON string
     );
 
-    print('Update Response Status Code: ${response.statusCode}');
-    print('Update Response Body: ${response.body}');
+    debugPrint('Update Response Status Code: ${response.statusCode}');
+    debugPrint('Update Response Body: ${response.body}');
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update machine: ${response.body}');
@@ -248,6 +247,7 @@ class ApiServices {
     return response;
   }
 
+  // Function to delete existing company
   Future<bool> deleteBusiness(int businessId) async {
     // Get the access token from secure storage
     String? token = await secureStorage.read(key: "access_token");
@@ -274,11 +274,12 @@ class ApiServices {
       return true; // Successfully deleted
     } else {
       // Handle error (you can check the response body for more details)
-      print('Error: ${response.statusCode}');
+      debugPrint('Error: ${response.statusCode}');
       return false; // Failure to delete
     }
   }
 
+  // Function to delete existing machine
   Future<bool> deleteMachine(int machineId) async {
     try {
       // Get the stored token from Flutter secure storage
@@ -306,11 +307,12 @@ class ApiServices {
         return false; // Failed to delete the machine
       }
     } catch (e) {
-      print("Error deleting machine: $e");
+      debugPrint("Error deleting machine: $e");
       return false; // Error occurred
     }
   }
 
+  // Function to get company details by user id
   Future<Map<String, dynamic>> getBusinessById(int businessId) async {
     try {
       // Retrieve token from secure storage
@@ -336,13 +338,14 @@ class ApiServices {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception("Failed to fetch business details: ${response.body}");
+        throw Exception("Failed to fetch company details: ${response.body}");
       }
     } catch (e) {
       throw Exception("Error in getBusinessById: $e");
     }
   }
 
+  // Function to send otp to the email
   Future<Map<String, dynamic>> sendForgotPasswordEmail(String email) async {
     final Uri url = Uri.parse(ApiConstants.forgotPassword);
     try {
@@ -362,6 +365,7 @@ class ApiServices {
     }
   }
 
+  // Function to verify the entered otp
   Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
     final url = Uri.parse(ApiConstants.verifyOtpEndpoint);
 
@@ -429,7 +433,7 @@ class ApiServices {
     }
   }
 
-  // Function to get "My Business" data
+  // Function to get "My Company" data
   Future<Map<String, dynamic>> getMyBusiness() async {
     const url = ApiConstants.myBusiness;
 
@@ -461,7 +465,7 @@ class ApiServices {
         // Handle error response
         return {
           'success': false,
-          'message': 'Failed to fetch business data: ${response.statusCode}'
+          'message': 'Failed to fetch company data: ${response.statusCode}'
         };
       }
     } catch (error) {

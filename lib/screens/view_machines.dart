@@ -43,7 +43,7 @@ class _ViewMachinesState extends State<ViewMachines> {
         isLoading = false; // Set loading to false once data is fetched
       });
     } catch (e) {
-      print('Error loading machine details: $e');
+      debugPrint('Error loading machine details: $e');
       setState(() {
         isLoading = false;
       });
@@ -199,7 +199,7 @@ class _ViewMachinesState extends State<ViewMachines> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Owner: ${machine['business_name']}', // For now, showing owner ID (You can fetch owner name by ID if necessary)
+                                  'Company Name: ${machine['business_name']}',
                                   style: const TextStyle(fontSize: 12),
                                 ),
                                 Text(

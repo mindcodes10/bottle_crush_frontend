@@ -7,7 +7,6 @@ import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class BusinessView extends StatefulWidget {
   final int id;
@@ -20,7 +19,6 @@ class BusinessView extends StatefulWidget {
 class _BusinessViewState extends State<BusinessView> {
   Future<List<dynamic>>? _businessDetails;
   final ApiServices _apiServices = ApiServices();
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   int _selectedIndex = 1;
 
@@ -34,24 +32,21 @@ class _BusinessViewState extends State<BusinessView> {
     if (index == 0) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => BusinessDashboard(id: widget.id),
+        MaterialPageRoute(builder: (context) => BusinessDashboard(id: widget.id),
         ),
       );
     }
     if (index == 2) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => MachineView(id: widget.id),
+        MaterialPageRoute(builder: (context) => MachineView(id: widget.id),
         ),
       );
     }
     if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => BusinessEmail(id: widget.id),
+        MaterialPageRoute(builder: (context) => BusinessEmail(id: widget.id),
         ),
       );
     }
@@ -103,7 +98,7 @@ class _BusinessViewState extends State<BusinessView> {
           } else if (snapshot.hasData) {
             List<dynamic> businessDetails = snapshot.data!;
             if (businessDetails.isEmpty) {
-              return const Center(child: Text('No business details available.'));
+              return const Center(child: Text('No company details available.'));
             }
 
             return Container(
@@ -115,7 +110,7 @@ class _BusinessViewState extends State<BusinessView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Business Details',
+                    'Company Details',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: screenWidth * 0.04,
@@ -155,7 +150,7 @@ class _BusinessViewState extends State<BusinessView> {
                                           const SizedBox(width: 16),
                                           Expanded(
                                             child: Text(
-                                              business['name'] ?? 'Business Name',
+                                              business['name'] ?? 'Company Name',
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
@@ -168,7 +163,7 @@ class _BusinessViewState extends State<BusinessView> {
                                       ),
                                       const SizedBox(height: 3),
                                       Text(
-                                        business['owner_email'] ?? 'business@email.com',
+                                        business['owner_email'] ?? 'company@email.com',
                                         style: const TextStyle(
                                           fontSize: 12,
                                         ),
@@ -193,7 +188,7 @@ class _BusinessViewState extends State<BusinessView> {
               ),
             );
           } else {
-            return const Center(child: Text('No business details available.'));
+            return const Center(child: Text('No company details available.'));
           }
         },
       ),

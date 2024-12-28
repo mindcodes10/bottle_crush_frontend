@@ -13,7 +13,7 @@ class CustomBottomAppBar extends StatefulWidget {
   });
 
   @override
-  _CustomBottomAppBarState createState() => _CustomBottomAppBarState();
+  State<CustomBottomAppBar> createState() => _CustomBottomAppBarState();
 }
 
 class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
@@ -34,7 +34,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
             color: Colors.black.withOpacity(0.2), // Adjust opacity for shadow
             blurRadius: 10, // Adjust the blur radius for shadow softness
             spreadRadius: 1, // Spread the shadow (0 means no spreading)
-            offset: Offset(0, 4), // Position the shadow (x, y)
+            offset: const Offset(0, 4), // Position the shadow (x, y)
           ),
         ],
       ),
@@ -49,7 +49,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildBottomNavItem(Icons.home, 'Home', 0),
-                    _buildBottomNavItem(Icons.business_center, 'Business', 1),
+                    _buildBottomNavItem(Icons.business_center, 'Company', 1),
                     _buildFontAwesomeNavItem(FontAwesomeIcons.box, 'Machine', 2),
                     _buildBottomNavItem(Icons.email_sharp, 'Email', 3),
                   ],

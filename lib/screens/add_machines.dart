@@ -98,24 +98,24 @@ class _AddMachinesState extends State<AddMachines> {
     if (index == 0) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const Dashboard()), // Home or Dashboard screen
+        MaterialPageRoute(builder: (context) => const Dashboard()),
       );
     }
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ViewBusiness()), // Home or Dashboard screen
+        MaterialPageRoute(builder: (context) => const ViewBusiness()),
       );
     }
     if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const Email()), // Home or Dashboard screen
+        MaterialPageRoute(builder: (context) => const Email()),
       );
     }
   }
 
-  // Fetch business names from API and populate the list
+  // Fetch company names from API and populate the list
   Future<void> _fetchBusinessNames() async {
     try {
       final String? token = await _secureStorage.read(key: "access_token");
@@ -137,7 +137,7 @@ class _AddMachinesState extends State<AddMachines> {
         });
       }
     } catch (e) {
-      print('Error fetching business names: $e');
+      debugPrint('Error fetching company names: $e');
     }
   }
 
@@ -171,7 +171,7 @@ class _AddMachinesState extends State<AddMachines> {
     }
 
     // Retrieve the token from secure storage
-    final storage = FlutterSecureStorage();
+    const storage = FlutterSecureStorage();
     String? token = await storage.read(key: "access_token");
 
     if (token == null) {
@@ -185,8 +185,7 @@ class _AddMachinesState extends State<AddMachines> {
     }
 
     // Validate machine number uniqueness
-    bool isMachineNumberExist =
-        await _checkMachineNumberExists(token, _machineNumberController.text);
+    bool isMachineNumberExist = await _checkMachineNumberExists(token, _machineNumberController.text);
     if (isMachineNumberExist) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -205,7 +204,7 @@ class _AddMachinesState extends State<AddMachines> {
     if (businessId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Business name not found!'),
+          content: Text('Company name not found!'),
           backgroundColor: Colors.red,
         ),
       );
@@ -271,8 +270,8 @@ class _AddMachinesState extends State<AddMachines> {
       }
     }
     catch (e, stackTrace) {
-      print('Error occurred: $e');
-      print('Stack Trace: $stackTrace');
+      debugPrint('Error occurred: $e');
+      debugPrint('Stack Trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
@@ -296,7 +295,7 @@ class _AddMachinesState extends State<AddMachines> {
 
       return exists;
     } catch (e) {
-      print('Error checking machine number existence: $e');
+      debugPrint('Error checking machine number existence: $e');
       return false;
     }
   }
@@ -308,21 +307,19 @@ class _AddMachinesState extends State<AddMachines> {
 
       // Search for the business by name
       for (var business in businesses) {
-        print(
-            'Comparing: user input "$businessName" with API value "${business['name']}"');
+        debugPrint('Comparing: user input "$businessName" with API value "${business['name']}"');
 
         if (business['name'] == businessName) {
-          print(
-              'Match found for business name: ${business['name']}, ${business['id']}');
+          debugPrint('Match found for company name: ${business['name']}, ${business['id']}');
           return business['id']; // Return the business_id
         }
       }
 
       // If no business matches, log and return null
-      print('No match found for business name: $businessName');
+      debugPrint('No match found for company name: $businessName');
       return null;
     } catch (e) {
-      print('Error fetching business id: $e');
+      debugPrint('Error fetching company id: $e');
       return null;
     }
   }
@@ -343,8 +340,7 @@ class _AddMachinesState extends State<AddMachines> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(
-                  top: 12.0, left: 14.0, right: 10.0, bottom: 8.0),
+              padding: const EdgeInsets.only(top: 12.0, left: 14.0, right: 10.0, bottom: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -368,16 +364,14 @@ class _AddMachinesState extends State<AddMachines> {
                   ),
                   SizedBox(height: screenHeight * 0.01),
                   _buildDropdown(
-                    labelText: 'Business Name',
+                    labelText: 'Company Name',
                     icon: FontAwesomeIcons.briefcase,
                     items: _businessNames,
                     value: _selectedBusinessName,
                     onChanged: (value) {
                       setState(() {
-                        _selectedBusinessName =
-                            value; // Update the state with the selected value
-                        _businessNameController.text =
-                            value!; // Update the text controller
+                        _selectedBusinessName = value; // Update the state with the selected value
+                        _businessNameController.text = value!; // Update the text controller
                       });
                     },
                     screenWidth: screenWidth,
@@ -445,15 +439,14 @@ class _AddMachinesState extends State<AddMachines> {
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () {
-                    print("Cancel button pressed");
+                    debugPrint("Cancel button pressed");
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,

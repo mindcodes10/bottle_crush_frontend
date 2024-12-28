@@ -144,7 +144,7 @@ class _BusinessEmailState extends State<BusinessEmail> {
                 maxLines: 10,
                 style: TextStyle(fontSize: screenWidth * 0.03),
                 decoration: InputDecoration(
-                  labelText: 'Message Body',
+                  labelText: 'Message',
                   labelStyle: const TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
