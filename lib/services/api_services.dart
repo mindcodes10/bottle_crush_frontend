@@ -563,4 +563,89 @@ class ApiServices {
     }
   }
 
+  // function to get total business count
+  Future<int> fetchBusinessCount(String token) async {
+    try {
+      // Headers required for the request
+      final headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      // API endpoint from ApiConstants
+      final url = Uri.parse(ApiConstants.businessCount);
+
+      // Send GET request
+      final response = await http.get(url, headers: headers);
+
+      // Check for successful response
+      if (response.statusCode == 200) {
+        // Parse the response body as an integer
+        return int.parse(response.body);
+      } else {
+        throw Exception('Failed to fetch business count: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error occurred: $e');
+    }
+  }
+
+  // function to get total machines count
+  Future<int> fetchMachinesCount(String token) async {
+    try {
+      // Headers required for the request
+      final headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      // API endpoint for machine count
+      final url = Uri.parse(ApiConstants.machinesCount);
+
+      // Send GET request
+      final response = await http.get(url, headers: headers);
+
+      // Check for successful response
+      if (response.statusCode == 200) {
+        // Parse the response body as an integer
+        return int.parse(response.body);
+      } else {
+        throw Exception('Failed to fetch machines count: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error occurred: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchAdminBottleStats(String token) async {
+    try {
+      // Headers required for the request
+      final headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      // API endpoint for bottle statistics
+      final url = Uri.parse(ApiConstants.bottleStats);
+
+      // Send GET request
+      final response = await http.get(url, headers: headers);
+
+      // Check for successful response
+      if (response.statusCode == 200) {
+        // Parse the response body as JSON
+        final data = json.decode(response.body);
+
+        // Return the parsed data as a map
+        return {
+          'total_count': data['total_count'],
+          'total_weight': data['total_weight'],
+        };
+      } else {
+        throw Exception('Failed to fetch bottle stats: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error occurred: $e');
+    }
+  }
 }

@@ -43,4 +43,13 @@ class ApiConstants {
 
   // get all the bottle count and bottle weight by business
   static const String myBottleStats = '$baseUrl/my-bottle-stats';
+
+  // get total business count
+  static const String businessCount = "$baseUrl/business-count";
+  // get total machine count
+  static const String machinesCount = "$baseUrl/machines-count";
+  // get total bottle count and bottle weight
+  static const String bottleStats = "$baseUrl/bottle-stats";
+
+
 }
