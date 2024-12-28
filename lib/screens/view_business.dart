@@ -187,6 +187,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  // Inside the ListView.builder in ViewBusiness
                   Expanded(
                     child: ListView.builder(
                       itemCount: businessDetails.length,
@@ -264,7 +265,16 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                         color: AppTheme.backgroundBlue,
                                       ),
                                       onPressed: () {
-                                        // Handle Edit action here
+                                        // Navigate to AddBusiness with the selected business data
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => AddBusiness(business:business),
+                                          ),
+                                        ).then((_) {
+                                          // Refresh the business list after returning
+                                          _fetchTokenAndBusinessDetails();
+                                        });
                                       },
                                     ),
                                     IconButton(

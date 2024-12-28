@@ -446,7 +446,7 @@ class _AddMachinesState extends State<AddMachines> {
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () {
-                    debugPrint("Cancel button pressed");
+                   Navigator.pop(context);
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,
