@@ -73,6 +73,56 @@ class _ViewBusinessState extends State<ViewBusiness> {
     }
   }
 
+  void _showBusinessDetailsPopup(Map<String, dynamic> business) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppTheme.backgroundWhite,
+          title: Text(
+            'Business Details: ${business['name']}',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          content: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Machine Count: ${business['machine_count'] ?? 'N/A'}',
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Bottle Count: ${business['bottle_count'] ?? 'N/A'}',
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Bottle Weight: ${business['bottle_weight'] ?? 'N/A'} kg',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            CustomElevatedButton(
+              buttonText: 'Close',
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              backgroundColor: AppTheme.backgroundBlue,
+              textColor: Colors.white,
+              width: 100,
+              height: 40,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   // Function to show confirmation dialog before deletion
   void _showDeleteConfirmationDialog(int businessId) {
     showDialog(

@@ -1,11 +1,13 @@
 import 'package:bottle_crush/screens/email.dart';
 import 'package:bottle_crush/screens/view_business.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
+import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Dashboard extends StatefulWidget {
@@ -23,6 +25,11 @@ class _DashboardState extends State<Dashboard> {
   int totalBusinessCount = 0;
   int totalBottleCount = 0;
   double totalBottleWeight = 0.0;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  final ApiServices _apiService = ApiServices(); // Instance of ApiService
+  String? token;
+   // Replace with the actual token
 
   @override
   void initState() {
@@ -31,16 +38,30 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _fetchDashboardData() async {
-    // Simulating a network/API call
-    await Future.delayed(const Duration(seconds: 2), () {
+    token = await _secureStorage.read(key: 'access_token');
+    try {
+      // Fetch the business count using ApiService
+      int businessCount = await _apiService.fetchBusinessCount(token!);
+
+      // Fetch the machines count using ApiService
+      int machineCount = await _apiService.fetchMachinesCount(token!);
+
+      // Fetch the bottle statistics using the new function
+      Map<String, dynamic> bottleStats = await _apiService.fetchAdminBottleStats(token!);
+
+      // Update the state with the fetched values
       setState(() {
-        totalMachineCount = 25;
-        totalBusinessCount = 12;
-        totalBottleCount = 1400;
-        totalBottleWeight = 320.5;
+        totalBusinessCount = businessCount;
+        totalMachineCount = machineCount;
+        totalBottleCount = bottleStats['total_count'].toInt();  // Ensure the count is an integer
+        totalBottleWeight = bottleStats['total_weight'];
       });
-    });
+    } catch (e) {
+      // Handle errors appropriately (e.g., show a snack bar)
+      debugPrint('Error fetching dashboard data: $e');
+    }
   }
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -138,6 +159,13 @@ class _DashboardState extends State<Dashboard> {
                       iconSize: iconSize,
                       titleFontSize: titleFontSize,
                       valueFontSize: valueFontSize,
+                      onTap: () {
+                        // Navigate to ViewBusiness screen when the card is tapped
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ViewBusiness()),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -175,7 +203,6 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-
   Widget _buildDashboardCard({
     required String title,
     required String value,
@@ -185,30 +212,35 @@ class _DashboardState extends State<Dashboard> {
     required double iconSize,
     required double titleFontSize,
     required double valueFontSize,
+    VoidCallback? onTap,  // Add an onTap callback
   }) {
-    return Card(
-      color: AppTheme.backgroundWhite,
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: SizedBox(
-        width: cardWidth,
-        height: cardHeight,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
-            const SizedBox(height: 10),
-            Text(title, style: TextStyle(fontSize: titleFontSize)),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: valueFontSize,
-                fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: onTap,  // Trigger the onTap callback when the card is tapped
+      child: Card(
+        color: AppTheme.backgroundWhite,
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: SizedBox(
+          width: cardWidth,
+          height: cardHeight,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
+              const SizedBox(height: 10),
+              Text(title, style: TextStyle(fontSize: titleFontSize)),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: valueFontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+
 }
