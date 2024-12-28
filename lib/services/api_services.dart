@@ -477,4 +477,32 @@ class ApiServices {
     }
   }
 
+  // Function to fetch the machine details by company
+  Future<List<Map<String, dynamic>>?> fetchMachines(String token) async {
+    final url = Uri.parse(ApiConstants.myMachines);
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((e) => e as Map<String, dynamic>).toList();
+      } else {
+        // Handle non-200 responses
+        debugPrint("Error: ${response.statusCode}, ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      // Handle connection or parsing errors
+      debugPrint("Exception: $e");
+      return null;
+    }
+  }
+
 }

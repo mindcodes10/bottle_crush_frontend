@@ -34,4 +34,7 @@ class ApiConstants {
 
   // Endpoint for "Get My Business"
   static const String myBusiness = "$baseUrl/my-business";
+
+  // get machines by business
+  static const String myMachines = "$baseUrl/my-machines";
 }
