@@ -40,4 +40,7 @@ class ApiConstants {
 
   // update company details
   static const String updateBusiness = '$baseUrl/businesses/{business_id}';
+
+  // get all the bottle count and bottle weight by business
+  static const String myBottleStats = '$baseUrl/my-bottle-stats';
 }

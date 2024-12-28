@@ -538,6 +538,29 @@ class ApiServices {
     }
   }
 
+  // function to fetch bottle count and bottle weight by business
+  Future<Map<String, dynamic>> fetchBottleStats(String token) async {
+    const url = ApiConstants.myBottleStats;
 
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the response body
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        return data;
+      } else {
+        throw Exception('Failed to fetch bottle stats. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching bottle stats: $e');
+    }
+  }
 
 }
