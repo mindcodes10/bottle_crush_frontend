@@ -54,6 +54,14 @@ class ApiConstants {
   // send email
   static const String sendEmailEndpoint = '$baseUrl/send-email';
 
+  // export to excel for admin
+  static const String dayWiseBottleStats = "$baseUrl/daywise-bottle-stats";
 
+  // export to excel for company
+  static const String dayWiseBottleStatsCompany = '$baseUrl/my-daywise-bottle-stats';
+
+  static const String machineDetails = "$baseUrl/machine"; // Endpoint for machine details
+
+  static const String businessStats = '$baseUrl/business-stats/{business_id}';
 
 }

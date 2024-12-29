@@ -10,6 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:async';
+import 'package:excel/excel.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
 
 class BusinessDashboard extends StatefulWidget {
   final int id;
@@ -92,6 +97,99 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     }
   }
 
+  Future<void> exportToExcel(BuildContext context) async {
+    try {
+      print('Starting exportToExcel function...');
+
+      // Retrieve token from secure storage
+      String? token = await _secureStorage.read(key: 'access_token');
+      if (token == null || token.isEmpty) {
+        throw Exception("Access token is missing or invalid.");
+      }
+      print('Token retrieved: $token');
+
+      // Fetch day-wise bottle stats
+      final data = await _apiServices.getDayWiseBottleStatsCompany(token);
+      if (data == null || data.isEmpty) {
+        throw Exception("No data received from API.");
+      }
+      print('Response from getDayWiseBottleStatsCompany: $data');
+
+      if (data is Map<String, dynamic>) {
+        var excel = Excel.createExcel();
+        Sheet sheetObject = excel['DayWiseStats'];
+
+        // Add headers
+        sheetObject.appendRow(['Date', 'Machine Name', 'Total Bottle Count', 'Total Bottle Weight']);
+        print('Excel headers added.');
+
+        // Process each date and its corresponding records
+        for (var date in data.keys) {
+          List records = data[date];
+          for (var record in records) {
+            String machineId = record['machine_id']?.toString() ?? '';
+            String machineName = '';
+
+            if (machineId.isNotEmpty) {
+              try {
+                // Fetch machine details using machine_id
+                Map<String, dynamic> machineDetails =
+                await _apiServices.getMachineDetails(machineId, token);
+                machineName = machineDetails['name'] ?? 'Unknown Machine';
+              } catch (e) {
+                print('Error fetching machine details for ID $machineId: $e');
+                machineName = 'Unknown Machine';
+              }
+            }
+
+            // Append row to Excel
+            sheetObject.appendRow([
+              date,
+              machineName,
+              record['total_bottles']?.toString() ?? '0',
+              record['total_weight']?.toString() ?? '0.0',
+            ]);
+          }
+        }
+
+        // Encode the Excel file
+        List<int>? encodedFile = excel.encode();
+        if (encodedFile == null) {
+          throw Exception("Error encoding Excel file.");
+        }
+
+        // Open file picker for user to select save location
+        String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+        if (selectedDirectory != null) {
+          // User selected a directory, save the file
+          String filePath = '$selectedDirectory/DayWiseBottleStats.xlsx';
+          File file = File(filePath);
+          file.createSync(recursive: true);
+          file.writeAsBytesSync(encodedFile);
+
+          // Notify user about the saved file
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Excel file saved at $filePath')),
+          );
+        } else {
+          // User canceled the save dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('File save operation canceled.')),
+          );
+        }
+      } else {
+        throw Exception("Unexpected data format received from API.");
+      }
+    } catch (e) {
+      print('Error occurred in exportToExcel: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error exporting data to Excel: $e')),
+      );
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -128,7 +226,9 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                     ),
                     CustomElevatedButton(
                       buttonText: 'Export to Excel',
-                      onPressed: () {},
+                      onPressed: () {
+                        exportToExcel(context);
+                      },
                       width: screenWidth * 0.45,
                       height: 45,
                       backgroundColor: AppTheme.backgroundBlue,
