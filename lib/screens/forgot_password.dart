@@ -137,10 +137,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   isOtpSent = true;
                                 });
                               } else {
-                                showSnackbar("Unexpected response from the server.");
+                                showSnackbar("Email not found... please enter valid email");
                               }
                             } catch (e) {
-                              showSnackbar("Failed to send OTP. Please try again.");
+                              showSnackbar("Email not found... please enter valid email");
                               debugPrint(e.toString());
                             }
                           },

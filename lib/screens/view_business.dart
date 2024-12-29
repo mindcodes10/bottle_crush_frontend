@@ -24,6 +24,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
   final ApiServices _apiServices = ApiServices();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
+
   int _selectedIndex = 1;
 
   // Callback for bottom nav item tap
@@ -73,54 +74,82 @@ class _ViewBusinessState extends State<ViewBusiness> {
     }
   }
 
-  void _showBusinessDetailsPopup(Map<String, dynamic> business) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: AppTheme.backgroundWhite,
-          title: Text(
-            'Business Details: ${business['name']}',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          content: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Machine Count: ${business['machine_count'] ?? 'N/A'}',
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Bottle Count: ${business['bottle_count'] ?? 'N/A'}',
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Bottle Weight: ${business['bottle_weight'] ?? 'N/A'} kg',
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ],
+  void _showBusinessDetailsPopup(String businessId) async {
+    String? token = await _secureStorage.read(key: 'access_token');
+
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not authenticated.')),
+      );
+      return;
+    }
+
+    // Fetch business stats using the API
+    final businessStats = await ApiServices.getBusinessStats(businessId, token);
+
+    debugPrint('Response of getBusinessStats : $businessStats');
+
+    if (businessStats != null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: AppTheme.backgroundWhite,
+            title: Text(
+              'Company Name: ${businessStats['business_name']?.toString() ?? 'N/A'}',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              maxLines: null, // Allows unlimited lines
+              overflow: TextOverflow.visible, // Text wraps to the next line
             ),
-          ),
-          actions: <Widget>[
-            CustomElevatedButton(
-              buttonText: 'Close',
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              backgroundColor: AppTheme.backgroundBlue,
-              textColor: Colors.white,
-              width: 100,
-              height: 40,
+            content: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Machine Count: ${businessStats['total_machines']?.toString() ?? 'N/A'}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Bottle Count: ${businessStats['total_bottle_count']?.toString() ?? 'N/A'}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Bottle Weight: ${businessStats['total_bottle_weight']?.toStringAsFixed(1) ?? 'N/A'} kg',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ],
-        );
-      },
-    );
+            actions: <Widget>[
+              CustomElevatedButton(
+                buttonText: 'Close',
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                backgroundColor: AppTheme.backgroundBlue,
+                textColor: Colors.white,
+                width: 100,
+                height: 40,
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load business details.')),
+      );
+    }
   }
+
+
+
 
 
   // Function to show confirmation dialog before deletion
@@ -201,6 +230,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
+
     return Scaffold(
       appBar: const CustomAppBar(),
       bottomNavigationBar: CustomBottomAppBar(
@@ -243,109 +273,112 @@ class _ViewBusinessState extends State<ViewBusiness> {
                       itemCount: businessDetails.length,
                       itemBuilder: (context, index) {
                         var business = businessDetails[index];
-                        return Card(
-                          elevation: 4,
-                          color: AppTheme.backgroundWhite,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 25,
-                                            backgroundColor: Colors.grey[300],
-                                            backgroundImage: business['logo_image'] != null &&
-                                                business['logo_image'].isNotEmpty
-                                                ? MemoryImage(base64Decode(business['logo_image']))
-                                                : const AssetImage('assets/images/leaf.png'),
-                                          ),
-                                          const SizedBox(width: 16),
-                                          Expanded(
-                                            child: Text(
-                                              business['name'] ?? 'Company Name',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                              maxLines: 2,
-                                              softWrap: true,
+                        return GestureDetector(
+                          onTap: () {
+                            _showBusinessDetailsPopup(business['id'].toString()); // Pass the 'id' as a string (or use it as a string directly)
+                          },
+                          child: Card(
+                            elevation: 4,
+                            color: AppTheme.backgroundWhite,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 25,
+                                              backgroundColor: Colors.grey[300],
+                                              backgroundImage: business['logo_image'] != null &&
+                                                  business['logo_image'].isNotEmpty
+                                                  ? MemoryImage(base64Decode(business['logo_image']))
+                                                  : const AssetImage('assets/images/leaf.png'),
                                             ),
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: Text(
+                                                business['name'] ?? 'Company Name',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                ),
+                                                maxLines: 2,
+                                                softWrap: true,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 3),
+                                        Text(
+                                          business['owner_email'] ?? 'company@email.com',
+                                          style: const TextStyle(
+                                            fontSize: 12,
                                           ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        business['owner_email'] ?? 'company@email.com',
-                                        style: const TextStyle(
-                                          fontSize: 12,
                                         ),
-                                      ),
-                                      Text(
-                                        business['mobile'] ?? '+1 234 567 890',
-                                        style: const TextStyle(
-                                          fontSize: 12,
+                                        Text(
+                                          business['mobile'] ?? '+1 234 567 890',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
                                         ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Container(
+                                      height: 100,
+                                      width: 0.3,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                          FontAwesomeIcons.solidPenToSquare,
+                                          color: AppTheme.backgroundBlue,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => AddBusiness(business: business),
+                                            ),
+                                          ).then((_) {
+                                            _fetchTokenAndBusinessDetails();
+                                          });
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          FontAwesomeIcons.solidTrashCan,
+                                          color: AppTheme.backgroundBlue,
+                                        ),
+                                        onPressed: () {
+                                          _showDeleteConfirmationDialog(business['id']);
+                                        },
                                       ),
                                     ],
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: Container(
-                                    height: 100,
-                                    width: 0.3,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        FontAwesomeIcons.solidPenToSquare,
-                                        color: AppTheme.backgroundBlue,
-                                      ),
-                                      onPressed: () {
-                                        // Navigate to AddBusiness with the selected business data
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => AddBusiness(business:business),
-                                          ),
-                                        ).then((_) {
-                                          // Refresh the business list after returning
-                                          _fetchTokenAndBusinessDetails();
-                                        });
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        FontAwesomeIcons.solidTrashCan,
-                                        color: AppTheme.backgroundBlue,
-                                      ),
-                                      onPressed: () {
-                                        // Call the delete confirmation dialog
-                                        _showDeleteConfirmationDialog(business['id']);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         );
                       },
                     ),
                   ),
+
                   CustomElevatedButton(
                     buttonText: ' + ADD COMPANY',
                     onPressed: () {

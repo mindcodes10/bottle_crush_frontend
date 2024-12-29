@@ -47,23 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (decodedData != null) {
         final email = decodedData['sub'];
         debugPrint("Token found for: $email");
-
-        // Navigate to Dashboard
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const Dashboard()),
-        // );
       }
     }
   }
-  //
-  // // method to load the admin details from json
-  // Future<Map<String, dynamic>> _fetchAdminDetails() async {
-  //   // Load the JSON file
-  //   final String response = await rootBundle.loadString('assets/json/admin_details.json');
-  //   return json.decode(response);
-  // }
-
 
 
   Future<void> submitPressed() async {
@@ -135,13 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             );
           }
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Login successful!'),
-              backgroundColor: Colors.green,
-            ),
-          );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -185,21 +164,24 @@ class _LoginScreenState extends State<LoginScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(height: screenHeight * 0.08),
-          const Center(
-            child: CircleAvatar(
-              radius: 50,
-              backgroundColor: AppTheme.textWhite,
-              child: Icon(
-                Icons.eco_rounded,
-                color: AppTheme.backgroundBlue,
-                size: 50,
+          Center(
+            child: ClipOval(
+              child: SizedBox(
+                width: 150, // Set a specific width
+                height: 150, // Set a specific height
+                child: Image.asset(
+                  'assets/images/aquazen_logo.jpg',
+                  fit: BoxFit.cover, // Ensures the image fits proportionally
+                ),
               ),
             ),
           ),
+
+
           const SizedBox(height: 20),
           const Center(
             child: Text(
-              "Welcome to Bottle Crush!",
+              "Welcome to Aquazen!",
               style: TextStyle(
                 color: AppTheme.textWhite,
                 fontSize: 26,

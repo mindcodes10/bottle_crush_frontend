@@ -1,3 +1,8 @@
+import 'dart:io';
+import 'package:excel/excel.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
+import 'package:file_picker/file_picker.dart'; // For file picker functionality
 import 'package:bottle_crush/screens/email.dart';
 import 'package:bottle_crush/screens/view_business.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
@@ -86,6 +91,72 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+
+
+  Future<void> exportToExcel() async {
+    // Fetch the token from secure storage
+    token = await _secureStorage.read(key: 'access_token');
+
+    try {
+      // Fetch the daywise bottle stats from the API
+      Map<String, dynamic>? bottleStats = await _apiService.getDaywiseBottleStats(token!);
+
+      var excel = Excel.createExcel(); // Create a new Excel file
+      Sheet sheet = excel['Sheet1']; // Create a sheet
+
+      // Set headers for the Excel sheet
+      sheet.appendRow(['Date', 'Business Name', 'Machine Name', 'Bottle Count', 'Bottle Weight']);
+
+      // Loop through the bottle stats and add data to the sheet
+      bottleStats?.forEach((date, businesses) {
+        businesses.forEach((businessName, machines) {
+          for (var machine in machines) {
+            sheet.appendRow([
+              date,
+              businessName,
+              machine['machine_name'],
+              machine['total_bottles'],
+              machine['total_weight']
+            ]);
+          }
+        });
+      });
+
+      // Encode the Excel file
+      var bytes = await excel.encode();
+
+      // Open file picker for user to select save location
+      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+      if (selectedDirectory != null) {
+        // User selected a directory, save the file
+        String filePath = '$selectedDirectory/bottle_stats.xlsx';
+        File file = File(filePath);
+        file.createSync(recursive: true);
+        file.writeAsBytesSync(bytes!);
+
+        // Notify user about the saved file
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('File saved to $filePath')),
+        );
+
+        // Optionally open the file after saving
+       // OpenFile.open(filePath);
+      } else {
+        // User canceled the save dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('File save canceled.')),
+        );
+      }
+    } catch (e) {
+      // Handle any errors
+      debugPrint('Error exporting to Excel: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to export file.')),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // Getting screen width and height for responsiveness
@@ -125,7 +196,7 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     CustomElevatedButton(
                       buttonText: 'Export to Excel',
-                      onPressed: () {}, // Call validateCredentials on submit
+                      onPressed: exportToExcel, // Call validateCredentials on submit
                       width: screenWidth * 0.45,
                       height: 45,
                       backgroundColor: AppTheme.backgroundBlue,

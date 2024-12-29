@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 
 class ApiServices {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  final String _acceptHeader = 'application/json';
 
   // Function to perform login
   Future<Map<String, dynamic>?> login(String email, String password) async {
@@ -700,5 +701,114 @@ class ApiServices {
       };
     }
   }
+
+  // function to export data in excel for admin
+  Future<Map<String, dynamic>?> getDaywiseBottleStats(String token) async {
+    final url = Uri.parse(ApiConstants.dayWiseBottleStats);
+
+    // Prepare headers including Bearer token for authorization
+    final headers = {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    try {
+      // Send GET request to the API
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        // If the server returns a successful response
+        final Map<String, dynamic> data = json.decode(response.body);
+        return data;
+      } else {
+        // If the server returns an error
+        debugPrint('Error: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      // Handle errors like network issues
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  // function to export data in excel for company
+  Future<Map<String, dynamic>> getDayWiseBottleStatsCompany(String token) async {
+    final url = Uri.parse(ApiConstants.dayWiseBottleStatsCompany);
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        return json.decode(response.body) as Map<String, dynamic>;
+      } else {
+        // Handle non-200 responses
+        throw Exception('Failed to fetch data: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle errors
+      throw Exception('Error fetching data: $error');
+    }
+  }
+
+
+
+  // Function to fetch machine details by ID
+  Future<Map<String, dynamic>> getMachineDetails(String machineId, String token) async {
+    final url = '${ApiConstants.machineDetails}/$machineId';
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Accept': _acceptHeader,
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        // Handle non-200 responses
+        throw Exception('Failed to fetch machine details. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any errors
+      throw Exception('Error fetching machine details: $e');
+    }
+  }
+
+  // function to get the machine count, bottle count, bottle weight as per business
+  static Future<Map<String, dynamic>?> getBusinessStats(String businessId, String token) async {
+    final url = ApiConstants.businessStats.replaceFirst('{business_id}', businessId);
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Response body: ${response.body}');
+        return json.decode(response.body); // Parse and return the JSON response
+      } else {
+        print('Error: ${response.statusCode}, ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Exception: $e');
+      return null;
+    }
+  }
+
 
 }
