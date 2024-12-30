@@ -8,6 +8,7 @@ class AppTheme {
   static const Color textBlack = Colors.black;        // White text color
   static const Color backgroundWhite = Colors.white;
   static const Color backgroundBlue = Color(0xFF0B499E);
+  static const Color backgroundCard = Color(0xFFFAFAFA);
 
   // Define the gradient
   static const LinearGradient appGradient = LinearGradient(

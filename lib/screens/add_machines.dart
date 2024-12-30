@@ -154,7 +154,6 @@ class _AddMachinesState extends State<AddMachines> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill in all fields!'),
-          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -164,7 +163,6 @@ class _AddMachinesState extends State<AddMachines> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Pin code must be exactly 6 digits!'),
-          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -178,7 +176,6 @@ class _AddMachinesState extends State<AddMachines> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Token is missing or expired! Please log in again.'),
-          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -191,7 +188,6 @@ class _AddMachinesState extends State<AddMachines> {
         const SnackBar(
           content: Text(
               'Machine number already exists! Please enter a unique machine number.'),
-          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -205,7 +201,6 @@ class _AddMachinesState extends State<AddMachines> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Company name not found!'),
-          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -230,7 +225,6 @@ class _AddMachinesState extends State<AddMachines> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Machine created successfully!'),
-              backgroundColor: Colors.green,
             ),
           );
           Navigator.pop(context, true); // Return true on success
@@ -254,18 +248,17 @@ class _AddMachinesState extends State<AddMachines> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Machine updated successfully!'),
-              backgroundColor: Colors.green,
             ),
           );
           Navigator.pop(context, true); // Return true on success
         } else {
           // Handle the error response
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to update machine: ${response.body}'),
-              backgroundColor: Colors.red,
+            const SnackBar(
+              content: Text('Failed to update machine'),
             ),
           );
+          debugPrint('Failed to update machine: ${response.body}');
         }
       }
     }
@@ -273,9 +266,8 @@ class _AddMachinesState extends State<AddMachines> {
       debugPrint('Error occurred: $e');
       debugPrint('Stack Trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
+        const SnackBar(
+          content: Text('Something went wrong..please try again later'),
         ),
       );
     }
@@ -329,6 +321,12 @@ class _AddMachinesState extends State<AddMachines> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
+    bool isTablet = screenWidth > 600;
+
+    double fontSize = isTablet ? 20 : 14;
+    double iconSize = isTablet ? 30 : 24;
+    double fieldHeight = isTablet ? 70 : 50;
+
     return Scaffold(
       appBar: const CustomAppBar(),
       bottomNavigationBar: CustomBottomAppBar(
@@ -346,7 +344,7 @@ class _AddMachinesState extends State<AddMachines> {
                 children: [
                   Text(
                     widget.machine == null ? 'Add Machine' : 'Update Machine',
-                    style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: screenHeight * 0.01),
                   _buildTextFormField(
@@ -407,15 +405,15 @@ class _AddMachinesState extends State<AddMachines> {
                   TextFormField(
                     controller: _pincodeController,
                     style: TextStyle(
-                      fontSize: screenWidth * 0.03,
+                      fontSize: fontSize,
                       color: AppTheme.textBlack,
                     ),
                     decoration: InputDecoration(
                       labelText: 'Pin Code',
-                      labelStyle: TextStyle(fontSize: screenWidth * 0.03),
+                      labelStyle: TextStyle(fontSize: fontSize),
                       prefixIcon: Icon(
                         FontAwesomeIcons.locationDot,
-                        size: screenWidth * 0.05,
+                        size: iconSize,
                         color: AppTheme.backgroundBlue,
                       ),
                       border: OutlineInputBorder(
@@ -484,18 +482,26 @@ class _AddMachinesState extends State<AddMachines> {
     TextInputType? keyboardType,
     String? Function(String?)? validator,
   }) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    bool isTablet = screenWidth > 600;
+
+    double fontSize = isTablet ? 20 : 14;
+    double iconSize = isTablet ? 30 : 24;
+    double fieldHeight = isTablet ? 70 : 50;
     return TextFormField(
       controller: controller,
       style: TextStyle(
-        fontSize: screenWidth * 0.03,
+        fontSize: fontSize,
         color: AppTheme.textBlack,
       ),
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(fontSize: screenWidth * 0.03),
+        labelStyle: TextStyle(fontSize: fontSize),
         prefixIcon: Icon(
           icon,
-          size: screenWidth * 0.05,
+          size: iconSize,
           color: AppTheme.backgroundBlue,
         ),
         border: OutlineInputBorder(
@@ -513,36 +519,48 @@ class _AddMachinesState extends State<AddMachines> {
     required ValueChanged<String?> onChanged,
     required double screenWidth,
   }) {
-    return DropdownButtonFormField<String>(
-      value: value ??
-          (items.isNotEmpty ? items[0] : null), // Correct grouping of condition
-      items: items
-          .map<DropdownMenuItem<String>>(
-            (String value) => DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontSize: screenWidth * 0.03,
-                  color: AppTheme.textBlack,
-                ),
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    bool isTablet = screenWidth > 600;
+
+    double fontSize = isTablet ? 18 : 14;
+    double iconSize = isTablet ? 30 : 24;
+    double fieldHeight = isTablet ? 70 : 50;
+
+    return Container(
+      color: AppTheme.backgroundWhite, // Set the background color
+      //padding: const EdgeInsets.all(8.0), // Optional: Padding for spacing
+      child: DropdownButtonFormField<String>(
+        value: value ?? (items.isNotEmpty ? items[0] : null),
+        items: items
+            .map<DropdownMenuItem<String>>(
+              (String value) => DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: fontSize,
+                color: AppTheme.textBlack,
               ),
             ),
-          )
-          .toList(),
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: labelText,
-        labelStyle: TextStyle(fontSize: screenWidth * 0.03),
-        prefixIcon: Icon(
-          icon,
-          size: screenWidth * 0.05,
-          color: AppTheme.backgroundBlue,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          ),
+        )
+            .toList(),
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: TextStyle(fontSize: fontSize),
+          prefixIcon: Icon(
+            icon,
+            size: iconSize,
+            color: AppTheme.backgroundBlue,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
         ),
       ),
     );
   }
+
 }
