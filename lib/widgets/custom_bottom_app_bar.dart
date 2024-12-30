@@ -100,7 +100,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 6),
+          const SizedBox(height: 3),
           Icon(
             icon,
             color: _selectedIndex == index

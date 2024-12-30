@@ -28,7 +28,7 @@ class _ViewMachinesState extends State<ViewMachines> {
   @override
   void initState() {
     super.initState();
-    fetchMachines(); // Fetch machine details when the widget is initialized
+    fetchMachines();
   }
 
   // Fetch machine details
@@ -57,11 +57,11 @@ class _ViewMachinesState extends State<ViewMachines> {
       // If the deletion is successful, refresh the machine list
       fetchMachines();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Machine deleted successfully!'), backgroundColor: Colors.green,),
+        const SnackBar(content: Text('Machine deleted successfully!'),),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to delete machine!'),backgroundColor: Colors.red,),
+        const SnackBar(content: Text('Failed to delete machine!'),),
       );
     }
   }
@@ -174,7 +174,7 @@ class _ViewMachinesState extends State<ViewMachines> {
                   padding: const EdgeInsets.only(top: 10.0, left: 14.0, right: 12.0, bottom: 10.0),
                   child: Card(
                     elevation: 4,
-                    color: AppTheme.backgroundWhite,
+                    color: AppTheme.backgroundCard,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

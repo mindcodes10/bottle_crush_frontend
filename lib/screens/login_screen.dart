@@ -1,4 +1,3 @@
-
 import 'package:bottle_crush/screens/forgot_password.dart';
 import 'dart:io';
 import 'package:bottle_crush/screens/business_dashboard.dart';
@@ -47,10 +46,24 @@ class _LoginScreenState extends State<LoginScreen> {
       if (decodedData != null) {
         final email = decodedData['sub'];
         debugPrint("Token found for: $email");
+
+        // Navigate based on the role
+        final role = decodedData['role'];
+        final id = decodedData['id'];
+        if (role == 't_admin') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+        } else if (role == 't_customer') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => BusinessDashboard(id:id)),
+          );
+        }
       }
     }
   }
-
 
   Future<void> submitPressed() async {
     String enteredEmail = _emailController.text.trim();
@@ -77,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-      // Call the API login function
+    // Call the API login function
     final apiService = ApiServices();
 
     try {
@@ -117,7 +130,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Invalid role.'),
-                backgroundColor: Colors.red,
               ),
             );
           }
@@ -126,7 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid credentials. Please try again.'),
-            backgroundColor: Colors.red,
           ),
         );
       }
@@ -134,23 +145,17 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No internet connection. Please check your network and try again.'),
-          backgroundColor: Colors.red,
         ),
       );
     } catch (e) {
       debugPrint('Error during login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Something went wrong. Please try again later.'),
-          backgroundColor: Colors.red,
+          content: Text('Login failed. Please try again later.'),
         ),
       );
     }
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 150, // Set a specific width
                 height: 150, // Set a specific height
                 child: Image.asset(
-                  'assets/images/aquazen_logo.jpg',
+                  'assets/images/aquazen_logo.png',
                   fit: BoxFit.cover, // Ensures the image fits proportionally
                 ),
               ),
@@ -203,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(height: screenHeight * 0.1),
+          SizedBox(height: screenHeight * 0.09),
           Expanded(
             child: Container(
               width: double.infinity,
@@ -246,7 +251,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-
                       SizedBox(height: screenHeight * 0.03),
                       TextFormField(
                         controller: _passwordController,
@@ -275,15 +279,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-
                       SizedBox(height: screenHeight * 0.05),
-
-                      // forgot password
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=> const ForgotPassword()));
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPassword()));
                           },
                           child: const Text(
                             'Forgot Password?',
@@ -294,15 +295,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-
-                      SizedBox(height: screenHeight * 0.09,),
-
+                      SizedBox(height: screenHeight * 0.09),
                       CustomElevatedButton(
                         buttonText: 'Submit',
-                        onPressed: submitPressed, // Call validateCredentials on submit
+                        onPressed: submitPressed,
                         width: screenWidth * 0.3,
-                        height: 50,
+                        height: screenHeight * 0.06,
                         backgroundColor: AppTheme.backgroundBlue,
+                        icon: const Icon(Icons.check, color: AppTheme.textWhite),
                       ),
                     ],
                   ),

@@ -12,9 +12,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:async';
 import 'package:excel/excel.dart';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
+//import 'package:android_intent_plus/action.dart';
+
+
 
 class BusinessDashboard extends StatefulWidget {
   final int id;
@@ -61,15 +68,16 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         debugPrint('Total Bottle Weight : $totalBottleWeight');
       });
     } catch (e) {
-      // Handle error (e.g., show a snackbar or a message)
+      debugPrint('Error fetching dashboard data: $e');
+      // Handle error (e.g., show a snack  bar or a message)
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching dashboard data: $e')),
+        const SnackBar(content: Text('No data found')),
       );
     }
   }
 
   void _startAutoRefresh() {
-    _refreshTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _fetchDashboardData();
     });
   }
@@ -97,33 +105,61 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     }
   }
 
+  Future<void> requestStoragePermission() async {
+    PermissionStatus status = await Permission.storage.request();
+
+    if (status.isGranted) {
+      debugPrint('Permission granted');
+    } else if (status.isDenied) {
+      debugPrint('Permission denied');
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings(); // Let the user open settings to enable permission
+    }
+  }
+
+  // Example to get app-specific external storage path
+  Future<String> getAppStoragePath() async {
+    final directory = await getExternalStorageDirectory();
+    return directory?.path ?? '/storage/emulated/0/';
+  }
+
+
+
   Future<void> exportToExcel(BuildContext context) async {
     try {
-      print('Starting exportToExcel function...');
+      debugPrint('Starting exportToExcel function...');
+
+      // Request storage permission
+      if (await Permission.storage.request().isDenied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Storage permission is required to save the file.')),
+        );
+        return;
+      }
 
       // Retrieve token from secure storage
       String? token = await _secureStorage.read(key: 'access_token');
       if (token == null || token.isEmpty) {
         throw Exception("Access token is missing or invalid.");
       }
-      print('Token retrieved: $token');
+      debugPrint('Token retrieved: $token');
 
       // Fetch day-wise bottle stats
       final data = await _apiServices.getDayWiseBottleStatsCompany(token);
       if (data == null || data.isEmpty) {
         throw Exception("No data received from API.");
       }
-      print('Response from getDayWiseBottleStatsCompany: $data');
+      debugPrint('Response from getDayWiseBottleStatsCompany: $data');
 
       if (data is Map<String, dynamic>) {
         var excel = Excel.createExcel();
-        Sheet sheetObject = excel['DayWiseStats'];
+        //excel.delete('Sheet1'); // Delete default Sheet1
 
-        // Add headers
-        sheetObject.appendRow(['Date', 'Machine Name', 'Total Bottle Count', 'Total Bottle Weight']);
-        print('Excel headers added.');
+        //Sheet sheetObject = excel['DayWiseStats'];
+        Sheet sheet = excel['Sheet1'];
+        sheet.appendRow(['Date', 'Machine Name', 'Total Bottle Count', 'Total Bottle Weight']);
+        debugPrint('Excel headers added.');
 
-        // Process each date and its corresponding records
         for (var date in data.keys) {
           List records = data[date];
           for (var record in records) {
@@ -132,18 +168,16 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
 
             if (machineId.isNotEmpty) {
               try {
-                // Fetch machine details using machine_id
                 Map<String, dynamic> machineDetails =
                 await _apiServices.getMachineDetails(machineId, token);
                 machineName = machineDetails['name'] ?? 'Unknown Machine';
               } catch (e) {
-                print('Error fetching machine details for ID $machineId: $e');
+                debugPrint('Error fetching machine details for ID $machineId: $e');
                 machineName = 'Unknown Machine';
               }
             }
 
-            // Append row to Excel
-            sheetObject.appendRow([
+            sheet.appendRow([
               date,
               machineName,
               record['total_bottles']?.toString() ?? '0',
@@ -152,41 +186,116 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
           }
         }
 
-        // Encode the Excel file
         List<int>? encodedFile = excel.encode();
         if (encodedFile == null) {
           throw Exception("Error encoding Excel file.");
         }
 
-        // Open file picker for user to select save location
-        String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-        if (selectedDirectory != null) {
-          // User selected a directory, save the file
-          String filePath = '$selectedDirectory/DayWiseBottleStats.xlsx';
-          File file = File(filePath);
-          file.createSync(recursive: true);
-          file.writeAsBytesSync(encodedFile);
-
-          // Notify user about the saved file
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Excel file saved at $filePath')),
-          );
-        } else {
-          // User canceled the save dialog
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('File save operation canceled.')),
-          );
+        // Get the public directory for saving the file
+        Directory? externalDir = Directory('/storage/emulated/0/Download/Bottle Crush'); // Example: Download folder
+        if (!await externalDir.exists()) {
+          externalDir.createSync(recursive: true);
         }
+
+        // Generate a filename with the current date and time
+        String formattedDateTime = DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now());
+        String filePath = '${externalDir.path}/CompanyBottleStats_$formattedDateTime.xlsx';
+
+        // Save the Excel file in the device storage
+        File file = File(filePath);
+        file.writeAsBytesSync(encodedFile);
+
+        debugPrint('Excel file saved at $filePath');
+
+        //showFileSavedSnackBar(context, filePath);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Excel file saved at $filePath')),
+        );
+        // Delay opening the folder for 1 second
+        // Future.delayed(Duration(seconds: 1), () {
+        //   openFolder('/storage/emulated/0/Download/Bottle Crush');
+        // });
+
       } else {
         throw Exception("Unexpected data format received from API.");
       }
     } catch (e) {
-      print('Error occurred in exportToExcel: $e');
+      debugPrint('Error occurred in exportToExcel: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error exporting data to Excel: $e')),
+        const SnackBar(content: Text('File not exported')),
       );
     }
   }
+
+  void openFolder(String folderPath) async {
+    final intent = AndroidIntent(
+      action: 'android.intent.action.VIEW',
+      data: 'file://$folderPath',  // Pass the string URI directly
+      type: 'resource/folder',  // Type for folder
+    );
+
+    try {
+      await intent.launch();
+    } catch (e) {
+      print("Could not open folder: $e");
+    }
+  }
+
+  void showFileSavedSnackBar(BuildContext context, String filePath) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Excel file saved at $filePath'),
+        action: SnackBarAction(
+          label: 'Open Folder',
+          onPressed: () async {
+            try {
+              // Get the directory path from the file path
+              final directoryPath = filePath.substring(0, filePath.lastIndexOf(Platform.pathSeparator));
+
+              // Check if the directory exists
+              final directory = Directory(directoryPath);
+              if (!directory.existsSync()) {
+                debugPrint('Directory does not exist at $directoryPath');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Directory does not exist')),
+                );
+                return;
+              }
+
+              // Call platform-specific code to open the directory
+              await openDirectory(directoryPath);
+            } catch (e) {
+              debugPrint('Error: ${e.toString()}');
+              // Handle any errors and provide the user with feedback
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('An error occurred while opening the directory')),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+// Method to open the directory using platform channels
+  Future<void> openDirectory(String path) async {
+    try {
+      const platform = MethodChannel('com.example.openDirectory');
+      // Check if the path is not empty
+      if (path.isEmpty) {
+        debugPrint('The directory path is empty');
+        throw PlatformException(code: 'INVALID_PATH', message: 'Invalid directory path');
+      }
+      await platform.invokeMethod('openDirectory', {'path': path});
+    } on PlatformException catch (e) {
+      debugPrint("Failed to open directory: '${e.message}'");
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+
 
 
 
@@ -221,7 +330,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Company Dashboard',
+                      'Dashboard',
                       style: TextStyle(fontSize: titleFontSize, fontWeight: FontWeight.bold),
                     ),
                     CustomElevatedButton(
@@ -284,7 +393,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     required double valueFontSize,
   }) {
     return Card(
-      color: AppTheme.backgroundWhite,
+      color: AppTheme.backgroundCard,
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: SizedBox(

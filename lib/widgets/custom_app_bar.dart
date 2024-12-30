@@ -34,9 +34,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
         child: AppBar(
           leading: Padding(
-            padding: const EdgeInsets.all(0),
+            padding: const EdgeInsets.only(left: 7),
             child: Image.asset(
-              'assets/images/bottle_crusher_logo.png',
+              'assets/images/aquazen_logo.png',
               fit: BoxFit.cover, // Ensure the image covers the space
               width: 70, // Set a fixed width to maximize the size (adjust as needed)
               height: 70, // Set a fixed height to keep the logo proportionate (adjust as needed)

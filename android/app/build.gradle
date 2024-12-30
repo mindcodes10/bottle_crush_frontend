@@ -4,8 +4,6 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-
-
 android {
     namespace = "com.example.bottle_crush"
     compileSdk = flutter.compileSdkVersion
@@ -36,5 +34,5 @@ android {
 }
 
 flutter {
-    source = "../.."
+    source = "../.." // This points to the Flutter SDK location
 }

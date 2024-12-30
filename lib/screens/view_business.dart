@@ -143,7 +143,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load business details.')),
+        const SnackBar(content: Text('Business not found.')),
       );
     }
   }
@@ -196,11 +196,11 @@ class _ViewBusinessState extends State<ViewBusiness> {
                       // Refresh the business details after deletion
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Company deleted successfully'),backgroundColor: Colors.green,),
+                        const SnackBar(content: Text('Company deleted successfully'),),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Failed to delete company'), backgroundColor: Colors.red,),
+                        const SnackBar(content: Text('Failed to delete company'), ),
                       );
                     }
                     Navigator.of(context).pop();
@@ -279,7 +279,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                           },
                           child: Card(
                             elevation: 4,
-                            color: AppTheme.backgroundWhite,
+                            color: AppTheme.backgroundCard,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),

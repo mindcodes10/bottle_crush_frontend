@@ -9,10 +9,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../services/api_services.dart';
 import '../widgets/custom_elevated_button.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io'; // <-- Add this import for File operations
+import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:convert'; // <-- Add this import for json encoding
-import 'package:crypto/crypto.dart';
+
 
 
 class AddBusiness extends StatefulWidget {
@@ -38,7 +37,7 @@ class _AddBusinessState extends State<AddBusiness> {
   final ApiServices apiServices = ApiServices(); // Create an instance of ApiServices
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage(); // Create an instance of FlutterSecureStorage
   String? token; // Variable to hold the token
-  bool _isEditable = false; // Add this variable to track if fields are editable or not
+  final bool _isEditable = false; // Add this variable to track if fields are editable or not
 
 
   void _onItemTapped(int index) {
@@ -135,7 +134,7 @@ class _AddBusinessState extends State<AddBusiness> {
       debugPrint('Error : $e');
       // Handle error response
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update company details')),
+        const SnackBar(content: Text('Failed to update company details')),
       );
     }
   }
@@ -144,6 +143,8 @@ class _AddBusinessState extends State<AddBusiness> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    double fontSizeFactor = screenWidth < 600 ? 0.03 : 0.025; // Adjust font size based on screen size
+
     return Scaffold(
       appBar: const CustomAppBar(),
       backgroundColor: AppTheme.backgroundWhite,
@@ -151,7 +152,6 @@ class _AddBusinessState extends State<AddBusiness> {
        children: [
          Expanded(
            child: SingleChildScrollView(
-             // Wrap the body in a SingleChildScrollView
              child: Padding(
                padding: const EdgeInsets.only(left: 12.0, top: 8.0, right: 12.0),
                child: Column(
@@ -165,7 +165,7 @@ class _AddBusinessState extends State<AddBusiness> {
                        style: TextStyle(
                          fontWeight: FontWeight.bold,
                          color: Colors.black,
-                         fontSize: screenWidth * 0.04,
+                           fontSize: screenWidth * fontSizeFactor,
                        ),
                      ),
                    ),
@@ -177,13 +177,13 @@ class _AddBusinessState extends State<AddBusiness> {
                        controller: _businessNameController,
                        enabled: widget.business == null ? !_isEditable : !_isEditable ,
                        style: TextStyle(
-                           fontSize: screenWidth * 0.03, color: AppTheme.textBlack),
+                           fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
                        decoration: InputDecoration(
                          labelText: 'Company Name',
-                         labelStyle: TextStyle(fontSize: screenWidth * 0.03),
+                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor,),
                          prefixIcon: Icon(
                            FontAwesomeIcons.briefcase,
-                           size: screenWidth * 0.05,
+                           size: screenWidth * fontSizeFactor,
                            color: AppTheme.backgroundBlue,
                          ),
                          border: OutlineInputBorder(
@@ -200,13 +200,13 @@ class _AddBusinessState extends State<AddBusiness> {
                        controller: _businessEmailController,
                        enabled: widget.business == null ? !_isEditable : _isEditable ,
                        style: TextStyle(
-                           fontSize: screenWidth * 0.03, color: AppTheme.textBlack),
+                           fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
                        decoration: InputDecoration(
                          labelText: 'Company Email',
-                         labelStyle: TextStyle(fontSize: screenWidth * 0.03),
+                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor,),
                          prefixIcon: Icon(
                            FontAwesomeIcons.solidEnvelope,
-                           size: screenWidth * 0.05,
+                           size: screenWidth * fontSizeFactor,
                            color: AppTheme.backgroundBlue,
                          ),
                          border: OutlineInputBorder(
@@ -224,13 +224,13 @@ class _AddBusinessState extends State<AddBusiness> {
                        enabled: widget.business == null ? !_isEditable : !_isEditable ,
                        keyboardType: TextInputType.number,
                        style: TextStyle(
-                           fontSize: screenWidth * 0.03, color: AppTheme.textBlack),
+                           fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
                        decoration: InputDecoration(
                          labelText: 'Company Mobile',
-                         labelStyle: TextStyle(fontSize: screenWidth * 0.03),
+                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor),
                          prefixIcon: Icon(
                            FontAwesomeIcons.phone,
-                           size: screenWidth * 0.05,
+                           size: screenWidth * fontSizeFactor,
                            color: AppTheme.backgroundBlue,
                          ),
                          border: OutlineInputBorder(
@@ -248,13 +248,13 @@ class _AddBusinessState extends State<AddBusiness> {
                        enabled: widget.business == null ? !_isEditable : _isEditable ,
                        obscureText: !_isPasswordVisible,
                        style: TextStyle(
-                           fontSize: screenWidth * 0.03, color: AppTheme.textBlack),
+                           fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
                        decoration: InputDecoration(
                          labelText: 'Password',
-                         labelStyle: TextStyle(fontSize: screenWidth * 0.03),
+                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor),
                          prefixIcon: Icon(
                            FontAwesomeIcons.lock,
-                           size: screenWidth * 0.05,
+                           size: screenWidth * fontSizeFactor,
                            color: AppTheme.backgroundBlue,
                          ),
                          suffixIcon: IconButton(
@@ -284,21 +284,21 @@ class _AddBusinessState extends State<AddBusiness> {
                        controller: _logoPathController,
                        enabled: widget.business == null ? !_isEditable : _isEditable ,
                        style: TextStyle(
-                         fontSize: screenWidth * 0.03,
+                         fontSize: screenWidth * fontSizeFactor,
                          color: AppTheme.textBlack,
                        ),
                        decoration: InputDecoration(
                          labelText: 'Logo',
-                         labelStyle: TextStyle(fontSize: screenWidth * 0.03),
+                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor),
                          prefixIcon: Icon(
                            FontAwesomeIcons.solidFileImage,
-                           size: screenWidth * 0.05,
+                           size: screenWidth * fontSizeFactor,
                            color: AppTheme.backgroundBlue,
                          ),
                          suffixIcon: IconButton(
                            icon: Icon(
                              FontAwesomeIcons.cloudArrowUp,
-                             size: screenWidth * 0.06,
+                             size: screenWidth * fontSizeFactor,
                              color: AppTheme.backgroundBlue,
                            ),
                            onPressed: () async {
@@ -311,9 +311,9 @@ class _AddBusinessState extends State<AddBusiness> {
                                  _selectedImage = File(image.path);
                                  _logoPathController.text = image.path;
                                });
-                               print('Selected image: ${image.path}');
+                               debugPrint('Selected image: ${image.path}');
                              } else {
-                               print('Image selection canceled.');
+                               debugPrint('Image selection canceled.');
                              }
                            },
                          ),

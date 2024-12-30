@@ -123,6 +123,9 @@ class _EmailState extends State<Email> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    bool isTablet = screenWidth > 600;
+
+    double fontSize = isTablet ? 20 : 14;
     return Scaffold(
       appBar: const CustomAppBar(),
       bottomNavigationBar: CustomBottomAppBar(
@@ -141,7 +144,7 @@ class _EmailState extends State<Email> {
                   Text(
                     'Send Email',
                     style: TextStyle(
-                      fontSize: screenWidth * 0.04,
+                      fontSize: fontSize,
                       fontWeight: FontWeight.bold,
                       color: AppTheme.textBlack,
                     ),
@@ -149,20 +152,20 @@ class _EmailState extends State<Email> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _toController,
-                    style: TextStyle(fontSize: screenWidth * 0.03),
+                    style: TextStyle(fontSize: fontSize),
                     decoration: InputDecoration(
                       labelText: 'To',
-                      labelStyle: TextStyle(color: Colors.grey, fontSize: screenWidth * 0.03),
+                      labelStyle: TextStyle(color: Colors.grey, fontSize: fontSize),
                       contentPadding: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 12.0),
                     ),
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
                     controller: _subjectController,
-                    style: TextStyle(fontSize: screenWidth * 0.03),
+                    style: TextStyle(fontSize: fontSize),
                     decoration: InputDecoration(
                       labelText: 'Subject',
-                      labelStyle: TextStyle(color: Colors.grey, fontSize: screenWidth * 0.03),
+                      labelStyle: TextStyle(color: Colors.grey, fontSize: fontSize),
                       contentPadding: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 12.0),
                     ),
                   ),
@@ -174,7 +177,7 @@ class _EmailState extends State<Email> {
                           selectedFileName.isNotEmpty ? selectedFileName : 'No file selected',
                           style: TextStyle(
                             color: AppTheme.backgroundBlue,
-                            fontSize: screenWidth * 0.03,
+                            fontSize: fontSize,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -206,7 +209,7 @@ class _EmailState extends State<Email> {
                   TextFormField(
                     controller: _messageBodyController,
                     maxLines: 10,
-                    style: TextStyle(fontSize: screenWidth * 0.03),
+                    style: TextStyle(fontSize: fontSize),
                     decoration: InputDecoration(
                       labelText: 'Message',
                       labelStyle: const TextStyle(color: Colors.grey),
