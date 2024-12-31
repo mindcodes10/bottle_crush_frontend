@@ -78,18 +78,31 @@ class _CustomAppBarState extends State<CustomAppBar> {
       color: AppTheme.backgroundBlue,
       context: context,
       position: RelativeRect.fromLTRB(x, y, x, y), // Adjust position based on icon
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0), // Adjust the radius as needed
+      ),
       items: [
         PopupMenuItem(
           value: 'logout',
-          child: ListTile(
-            leading: const Icon(Icons.exit_to_app, color: AppTheme.backgroundWhite),
-            title: const Text('Logout', style: TextStyle(color: AppTheme.textWhite)),
-            onTap: () {
-              // Handle logout action
-              debugPrint("Logging out");
-              Navigator.pop(context); // Close the menu
-              _logoutUser (context); // Call the logout function
-            },
+          padding: EdgeInsets.zero, // Set padding to zero
+          child: Container(
+            height: 30.0, // Set a fixed height for the item
+            alignment: Alignment.center, // Center the content vertically
+            child: const Row(
+              mainAxisSize: MainAxisSize.min, // Use minimum size for the row
+              mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+              children: [
+                Icon(Icons.exit_to_app, color: AppTheme.backgroundWhite),
+                SizedBox(width: 4.0), // Add minimal space between the icon and text
+                Text(
+                  'Logout',
+                  style: TextStyle(
+                    color: AppTheme.textWhite,
+                    height: 1.0, // Adjust line height to reduce vertical space
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
