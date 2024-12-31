@@ -1,5 +1,6 @@
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/screens/email.dart';
+import 'package:bottle_crush/screens/view_business.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
@@ -48,6 +49,12 @@ class _AddBusinessState extends State<AddBusiness> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const Dashboard()),
+      );
+    }
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ViewBusiness()),
       );
     }
     if (index == 2) {

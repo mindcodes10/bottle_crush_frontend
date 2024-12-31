@@ -1,6 +1,7 @@
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/screens/email.dart';
 import 'package:bottle_crush/screens/view_business.dart';
+import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:bottle_crush/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -105,6 +106,12 @@ class _AddMachinesState extends State<AddMachines> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ViewBusiness()),
+      );
+    }
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ViewMachines()),
       );
     }
     if (index == 3) {
