@@ -12,8 +12,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-
-
 class AddBusiness extends StatefulWidget {
   final dynamic business;
 
@@ -197,7 +195,7 @@ class _AddBusinessState extends State<AddBusiness> {
                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                      child: TextFormField(
                        controller: _businessEmailController,
-                       enabled: widget.business == null ? !_isEditable : _isEditable ,
+                       enabled: widget.business == null ? !_isEditable : !_isEditable ,
                        style: TextStyle(
                            fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
                        decoration: InputDecoration(
@@ -244,7 +242,7 @@ class _AddBusinessState extends State<AddBusiness> {
                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                      child: TextFormField(
                        controller: _businessPasswordController,
-                       enabled: widget.business == null ? !_isEditable : _isEditable ,
+                       enabled: widget.business == null ? !_isEditable : !_isEditable ,
                        obscureText: !_isPasswordVisible,
                        style: TextStyle(
                            fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
@@ -281,7 +279,7 @@ class _AddBusinessState extends State<AddBusiness> {
                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                      child: TextFormField(
                        controller: _logoPathController,
-                       enabled: widget.business == null ? !_isEditable : _isEditable ,
+                       enabled: widget.business == null ? !_isEditable : !_isEditable ,
                        style: TextStyle(
                          fontSize: screenWidth * fontSizeFactor,
                          color: AppTheme.textBlack,
