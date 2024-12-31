@@ -13,7 +13,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AddMachines extends StatefulWidget {
   final dynamic machine;
-  const AddMachines({super.key,this.machine});
+  const AddMachines({super.key, this.machine});
 
   @override
   State<AddMachines> createState() => _AddMachinesState();
@@ -122,7 +122,6 @@ class _AddMachinesState extends State<AddMachines> {
     }
   }
 
-  // Fetch company names from API and populate the list
   Future<void> _fetchBusinessNames() async {
     try {
       final String? token = await _secureStorage.read(key: "access_token");
@@ -148,7 +147,6 @@ class _AddMachinesState extends State<AddMachines> {
       debugPrint('Error fetching company names: $e');
     }
   }
-
 
   void _submitPressed() async {
     // Validate form fields
@@ -274,8 +272,7 @@ class _AddMachinesState extends State<AddMachines> {
           debugPrint('Failed to update machine: ${response.body}');
         }
       }
-    }
-    catch (e, stackTrace) {
+    } catch (e, stackTrace) {
       debugPrint('Error occurred: $e');
       debugPrint('Stack Trace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -286,7 +283,6 @@ class _AddMachinesState extends State<AddMachines> {
     }
   }
 
-
   Future<bool> _checkMachineNumberExists(
       String token, String machineNumber) async {
     try {
@@ -295,7 +291,6 @@ class _AddMachinesState extends State<AddMachines> {
 
       // Check if the machine number exists in the fetched list
       bool exists = machines.any((machine) {
-        // Assuming each machine has a 'machineNumber' field in its data
         return machine['number'] == machineNumber;
       });
 
@@ -321,13 +316,132 @@ class _AddMachinesState extends State<AddMachines> {
         }
       }
 
-      // If no business matches, log and return null
       debugPrint('No match found for company name: $businessName');
       return null;
     } catch (e) {
       debugPrint('Error fetching company id: $e');
       return null;
     }
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData icon,
+    required double screenWidth,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    double fontSize = MediaQuery.of(context).size.width > 600 ? 18 : 13;
+    double iconSize = MediaQuery.of(context).size.width > 600 ? 30 : 20;
+
+    return TextFormField(
+      controller: controller,
+      style: TextStyle(
+        fontSize: fontSize,
+        color: AppTheme.textBlack,
+      ),
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: TextStyle(fontSize: fontSize),
+        prefixIcon: Icon(
+          icon,
+          size: iconSize,
+          color: AppTheme.backgroundBlue,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+    );
+  }
+
+  void _showDialog(String title, List<String> items, ValueChanged<String?> onSelected) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        double fontSize = MediaQuery.of(context).size.width > 600 ? 23 : 18;
+
+        return AlertDialog(
+          backgroundColor: AppTheme.backgroundWhite,
+          title: Text(title, style: TextStyle(fontSize: fontSize),), // Set the title dynamically
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: items.map((String item) {
+                return GestureDetector(
+                  onTap: () {
+                    onSelected(item);
+                    Navigator.of(context).pop();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      item,
+                      style: const TextStyle(fontSize: 16), // Adjust font size as needed
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDropdown({
+    required String labelText,
+    required IconData icon,
+    required List<String> items,
+    required String? value,
+    required ValueChanged<String?> onChanged,
+    required double screenWidth,
+  }) {
+    double fontSize = MediaQuery.of(context).size.width > 600 ? 18 : 13;
+    double iconSize = MediaQuery.of(context).size.width > 600 ? 30 : 20;
+
+    return GestureDetector(
+      onTap: () {
+        _showDialog(
+          labelText == 'Company Name' ? 'Select Company' : 'Select State', // Set title based on dropdown
+          items,
+              (selectedValue) {
+            setState(() {
+              if (labelText == 'Company Name') {
+                _selectedBusinessName = selectedValue;
+                _businessNameController.text = selectedValue!;
+              } else if (labelText == 'State') {
+                _selectedState = selectedValue;
+              }
+              onChanged(selectedValue);
+            });
+          },
+        );
+      },
+      child: Container(
+        height: 56.0, // Set the height to match the text fields
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppTheme.backgroundBlue),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                value ?? 'Select $labelText',
+                style: TextStyle(fontSize: fontSize, color: AppTheme.textBlack),
+                overflow: TextOverflow.ellipsis, // Handle overflow for the selected value
+                maxLines: 1, // Limit to one line for the selected value
+              ),
+            ),
+            Icon(Icons.arrow_drop_down, color: AppTheme.backgroundBlue),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -380,12 +494,7 @@ class _AddMachinesState extends State<AddMachines> {
                     icon: FontAwesomeIcons.briefcase,
                     items: _businessNames,
                     value: _selectedBusinessName,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedBusinessName = value; // Update the state with the selected value
-                        _businessNameController.text = value!; // Update the text controller
-                      });
-                    },
+                    onChanged: (value) {},
                     screenWidth: screenWidth,
                   ),
                   SizedBox(height: screenHeight * 0.01),
@@ -394,11 +503,7 @@ class _AddMachinesState extends State<AddMachines> {
                     icon: FontAwesomeIcons.solidFlag,
                     items: _states,
                     value: _selectedState,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedState = value;
-                      });
-                    },
+                    onChanged: (value) {},
                     screenWidth: screenWidth,
                   ),
                   SizedBox(height: screenHeight * 0.01),
@@ -445,7 +550,6 @@ class _AddMachinesState extends State<AddMachines> {
                       return null;
                     },
                   ),
-
                 ],
               ),
             ),
@@ -458,19 +562,18 @@ class _AddMachinesState extends State<AddMachines> {
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () {
-                   Navigator.pop(context);
+                    Navigator.pop(context);
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,
                   textColor: AppTheme.backgroundBlue,
                   borderColor: AppTheme.backgroundBlue,
                   icon: const Icon(
-                    Icons.cancel,
-                    color: AppTheme.backgroundBlue,
-                  ),
+                      Icons.cancel,
+                      color: AppTheme.backgroundBlue ),
                 ),
                 CustomElevatedButton(
-                  buttonText: widget.machine == null ? 'Add ' : 'Update ',
+                  buttonText: widget.machine == null ? 'Add' : 'Update',
                   onPressed: _submitPressed,
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundBlue,
@@ -487,119 +590,4 @@ class _AddMachinesState extends State<AddMachines> {
       ),
     );
   }
-
-  Widget _buildTextFormField({
-    required TextEditingController controller,
-    required String labelText,
-    required IconData icon,
-    required double screenWidth,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
-    bool isTablet = screenWidth > 600;
-
-    double fontSize = isTablet ? 18 : 13;
-    double iconSize = isTablet ? 30 : 20;
-    double fieldHeight = isTablet ? 70 : 50;
-    return TextFormField(
-      controller: controller,
-      style: TextStyle(
-        fontSize: fontSize,
-        color: AppTheme.textBlack,
-      ),
-      decoration: InputDecoration(
-        labelText: labelText,
-        labelStyle: TextStyle(fontSize: fontSize),
-        prefixIcon: Icon(
-          icon,
-          size: iconSize,
-          color: AppTheme.backgroundBlue,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDropdown({
-    required String labelText,
-    required IconData icon,
-    required List<String> items,
-    required String? value,
-    required ValueChanged<String?> onChanged,
-    required double screenWidth,
-  }) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    bool isTablet = screenWidth > 600;
-
-    double fontSize = isTablet ? 18 : 13;
-    double iconSize = isTablet ? 30 : 20;
-    double fieldHeight = isTablet ? 70 : 50;
-
-    return Container(
-      color: AppTheme.backgroundWhite,
-      child: Row(
-        children: [
-          Expanded(
-            child: DropdownButtonFormField<String>(
-              isExpanded: true, // Allow the dropdown to expand
-              value: value ?? (items.isNotEmpty ? items[0] : null),
-              items: items
-                  .map<DropdownMenuItem<String>>(
-                    (String item) => DropdownMenuItem<String>(
-                  value: item,
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: screenWidth * 0.8), // Set a max width
-                    child: Text(
-                      item, // Show full text in dropdown
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        color: AppTheme.textBlack,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-                  .toList(),
-              onChanged: onChanged,
-              decoration: InputDecoration(
-                labelText: labelText,
-                labelStyle: TextStyle(fontSize: fontSize),
-                prefixIcon: Icon(
-                  icon,
-                  size: iconSize,
-                  color: AppTheme.backgroundBlue,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              // Use a custom widget for the selected item
-              selectedItemBuilder: (BuildContext context) {
-                return items.map<Widget>((String item) {
-                  return Container(
-                    constraints: BoxConstraints(maxWidth: screenWidth * 0.8), // Set a max width
-                    child: Text(
-                      item,
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        color: AppTheme.textBlack,
-                        overflow: TextOverflow.ellipsis, // Truncate selected value
-                      ),
-                    ),
-                  );
-                }).toList();
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
 }
