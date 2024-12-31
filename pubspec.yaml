@@ -12,7 +12,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_native_splash: ^2.4.3
   http: ^1.2.2
   dart_jsonwebtoken: ^2.4.1
   font_awesome_flutter: ^10.8.0
@@ -33,19 +32,18 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.4
 
 
 
 
   flutter_lints: ^4.0.0
 
-#flutter_native_splash:
-#  color: "#0B499D" # Background color
-#  image: assets/images/bottle_logo.png # Path to your logo image
-#  android: true # Enable Android splash screen
-#  ios: false # Enable iOS splash screen
-#  web: false
-
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/aquazen_logo.png"
 
 flutter:
 
@@ -55,11 +53,8 @@ flutter:
   assets:
     - assets/images/leaf.png
     - assets/images/aquazen_logo.png
-    - assets/json/user_credentials.json
-    - assets/json/admin_details.json
-    - assets/images/bottle_crusher_logo.png
-    - assets/json/business_details.json
-    - assets/json/machine_details.json
+    - assets/images/aquazen.png
+
 
 
   fonts:
