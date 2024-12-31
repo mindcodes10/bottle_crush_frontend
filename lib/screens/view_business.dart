@@ -298,10 +298,16 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                             CircleAvatar(
                                               radius: 25,
                                               backgroundColor: Colors.grey[300],
-                                              backgroundImage: business['logo_image'] != null &&
-                                                  business['logo_image'].isNotEmpty
+                                              backgroundImage: business['logo_image'] != null && business['logo_image'].isNotEmpty
                                                   ? MemoryImage(base64Decode(business['logo_image']))
-                                                  : const AssetImage('assets/images/leaf.png'),
+                                                  : null, // Set to null to use the child widget instead
+                                              child: business['logo_image'] == null || business['logo_image'].isEmpty
+                                                  ? const Icon(
+                                                FontAwesomeIcons.briefcase,
+                                                size: 25, // Adjust size as needed
+                                                color: AppTheme.backgroundBlue, // Set the color of the icon
+                                              )
+                                                  : null, // No child if logo_image is available
                                             ),
                                             const SizedBox(width: 16),
                                             Expanded(
