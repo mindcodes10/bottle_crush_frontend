@@ -86,7 +86,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           value: 'logout',
           padding: EdgeInsets.zero, // Set padding to zero
           child: Container(
-            height: 30.0, // Set a fixed height for the item
+            height: 29.0, // Set a fixed height for the item
             alignment: Alignment.center, // Center the content vertically
             child: const Row(
               mainAxisSize: MainAxisSize.min, // Use minimum size for the row
