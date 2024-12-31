@@ -64,11 +64,6 @@ class _DashboardState extends State<Dashboard> {
         totalMachineCount = machineCount;
         totalBottleCount = bottleStats['total_count'].toInt(); // Ensure the count is an integer
         totalBottleWeight = bottleStats['total_weight'];
-
-        debugPrint('Total Business Count : $totalBusinessCount');
-        debugPrint('Total Machine Weight : $totalMachineCount');
-        debugPrint('Total Bottle Count : $totalBottleCount');
-        debugPrint('Total Bottle Weight : $totalBottleWeight');
       });
     } catch (e) {
       debugPrint('Error fetching dashboard data: $e');

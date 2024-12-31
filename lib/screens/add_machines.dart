@@ -501,8 +501,8 @@ class _AddMachinesState extends State<AddMachines> {
 
     bool isTablet = screenWidth > 600;
 
-    double fontSize = isTablet ? 20 : 14;
-    double iconSize = isTablet ? 30 : 24;
+    double fontSize = isTablet ? 18 : 13;
+    double iconSize = isTablet ? 30 : 20;
     double fieldHeight = isTablet ? 70 : 50;
     return TextFormField(
       controller: controller,
@@ -529,7 +529,7 @@ class _AddMachinesState extends State<AddMachines> {
     required String labelText,
     required IconData icon,
     required List<String> items,
-    required String? value, // Change to nullable String
+    required String? value,
     required ValueChanged<String?> onChanged,
     required double screenWidth,
   }) {
@@ -537,42 +537,67 @@ class _AddMachinesState extends State<AddMachines> {
 
     bool isTablet = screenWidth > 600;
 
-    double fontSize = isTablet ? 18 : 14;
-    double iconSize = isTablet ? 30 : 24;
+    double fontSize = isTablet ? 18 : 13;
+    double iconSize = isTablet ? 30 : 20;
     double fieldHeight = isTablet ? 70 : 50;
 
     return Container(
-      color: AppTheme.backgroundWhite, // Set the background color
-      //padding: const EdgeInsets.all(8.0), // Optional: Padding for spacing
-      child: DropdownButtonFormField<String>(
-        value: value ?? (items.isNotEmpty ? items[0] : null),
-        items: items
-            .map<DropdownMenuItem<String>>(
-              (String value) => DropdownMenuItem<String>(
-            value: value,
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: fontSize,
-                color: AppTheme.textBlack,
+      color: AppTheme.backgroundWhite,
+      child: Row(
+        children: [
+          Expanded(
+            child: DropdownButtonFormField<String>(
+              isExpanded: true, // Allow the dropdown to expand
+              value: value ?? (items.isNotEmpty ? items[0] : null),
+              items: items
+                  .map<DropdownMenuItem<String>>(
+                    (String item) => DropdownMenuItem<String>(
+                  value: item,
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: screenWidth * 0.8), // Set a max width
+                    child: Text(
+                      item, // Show full text in dropdown
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        color: AppTheme.textBlack,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+                  .toList(),
+              onChanged: onChanged,
+              decoration: InputDecoration(
+                labelText: labelText,
+                labelStyle: TextStyle(fontSize: fontSize),
+                prefixIcon: Icon(
+                  icon,
+                  size: iconSize,
+                  color: AppTheme.backgroundBlue,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
               ),
+              // Use a custom widget for the selected item
+              selectedItemBuilder: (BuildContext context) {
+                return items.map<Widget>((String item) {
+                  return Container(
+                    constraints: BoxConstraints(maxWidth: screenWidth * 0.8), // Set a max width
+                    child: Text(
+                      item,
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        color: AppTheme.textBlack,
+                        overflow: TextOverflow.ellipsis, // Truncate selected value
+                      ),
+                    ),
+                  );
+                }).toList();
+              },
             ),
           ),
-        )
-            .toList(),
-        onChanged: onChanged,
-        decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: TextStyle(fontSize: fontSize),
-          prefixIcon: Icon(
-            icon,
-            size: iconSize,
-            color: AppTheme.backgroundBlue,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
+        ],
       ),
     );
   }

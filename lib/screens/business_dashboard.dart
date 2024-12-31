@@ -63,16 +63,10 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
       setState(() {
         totalBottleCount = stats['total_count']?.toInt() ?? 0;
         totalBottleWeight = stats['total_weight']?.toDouble() ?? 0.0;
-
-        debugPrint('Total Bottle Count : $totalBottleCount');
-        debugPrint('Total Bottle Weight : $totalBottleWeight');
       });
     } catch (e) {
       debugPrint('Error fetching dashboard data: $e');
-      // Handle error (e.g., show a snack  bar or a message)
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No data found')),
-      );
+
     }
   }
 
