@@ -109,17 +109,17 @@ class _ViewBusinessState extends State<ViewBusiness> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Machine Count: ${businessStats['total_machines']?.toString() ?? 'N/A'}',
+                      'Total Machine Count: ${businessStats['total_machines']?.toString() ?? 'N/A'}',
                       style: const TextStyle(fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Bottle Count: ${businessStats['total_bottle_count']?.toString() ?? 'N/A'}',
+                      'Total Bottle Count: ${businessStats['total_bottle_count']?.toString() ?? 'N/A'}',
                       style: const TextStyle(fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Bottle Weight: ${businessStats['total_bottle_weight']?.toStringAsFixed(1) ?? 'N/A'} kg',
+                      'Total Bottle Weight: ${businessStats['total_bottle_weight']?.toStringAsFixed(1) ?? 'N/A'} kg',
                       style: const TextStyle(fontSize: 14),
                     ),
                   ],
@@ -244,7 +244,8 @@ class _ViewBusinessState extends State<ViewBusiness> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            debugPrint('Error: ${snapshot.error}');
+            return const Center(child: Text('No company details available'));
           } else if (snapshot.hasData) {
             List<dynamic> businessDetails = snapshot.data!;
             if (businessDetails.isEmpty) {
