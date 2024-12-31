@@ -95,34 +95,32 @@ class _AddBusinessState extends State<AddBusiness> {
   submitPressed() async {
     try {
       if (widget.business == null) {
-
+        // New business creation logic
         if (_businessNameController.text.isEmpty ||
             _businessEmailController.text.isEmpty ||
             _businessMobileController.text.isEmpty ||
             _businessPasswordController.text.isEmpty) {
-          // Show error message
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Please fill all fields')),
           );
           return;
         }
-        // If the business is new, create it
         final response = await apiServices.createBusiness(
           token: token!,
           name: _businessNameController.text,
           mobile: _businessMobileController.text,
           email: _businessEmailController.text,
           password: _businessPasswordController.text,
-          logoImage: _selectedImage != null ? _selectedImage : null, // Updated line
+          logoImage: _selectedImage != null ? _selectedImage : null,
         );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response['message'])),
         );
       } else {
-        // If the business is being updated, call the updateBusiness API
+        // Business update logic
         final response = await apiServices.updateBusiness(
           token!,
-          widget.business['id'], // Use the business ID from the widget
+          widget.business['id'],
           _businessNameController.text,
           _businessMobileController.text,
         );
@@ -130,9 +128,10 @@ class _AddBusinessState extends State<AddBusiness> {
           SnackBar(content: Text(response['message'])),
         );
       }
+      // Pop the current screen and return true to indicate success
+      Navigator.pop(context, true);
     } catch (e) {
       debugPrint('Error : $e');
-      // Handle error response
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to update company details')),
       );

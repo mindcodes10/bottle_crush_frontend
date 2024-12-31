@@ -265,11 +265,17 @@ class _ViewMachinesState extends State<ViewMachines> {
             padding: const EdgeInsets.all(16.0),
             child: CustomElevatedButton(
               buttonText: ' + ADD MACHINE',
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                // Wait for the result from AddMachines
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const AddMachines()),
                 );
+
+                // If the result is true, refresh the machine list
+                if (result == true) {
+                  fetchMachines(); // Refresh the machine list
+                }
               },
               width: double.infinity,
               height: 50,
