@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.bottle_crush"
+    namespace = "com.aquazen.aquazen"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -19,9 +19,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.bottle_crush"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        applicationId = "com.aquazen.aquazen"
+        minSdk = 21
+        targetSdk = 33
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

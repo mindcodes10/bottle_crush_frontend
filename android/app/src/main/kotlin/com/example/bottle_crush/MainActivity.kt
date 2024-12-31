@@ -1,4 +1,4 @@
-package com.example.bottle_crush
+package com.aquazen.aquazen
 
 import io.flutter.embedding.android.FlutterActivity
 

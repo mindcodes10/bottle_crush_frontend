@@ -17,8 +17,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
-import 'package:android_intent_plus/android_intent.dart';
-import 'package:android_intent_plus/flag.dart';
+//import 'package:android_intent_plus/android_intent.dart';
+//import 'package:android_intent_plus/flag.dart';
 //import 'package:android_intent_plus/action.dart';
 
 
@@ -228,19 +228,19 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     }
   }
 
-  void openFolder(String folderPath) async {
-    final intent = AndroidIntent(
-      action: 'android.intent.action.VIEW',
-      data: 'file://$folderPath',  // Pass the string URI directly
-      type: 'resource/folder',  // Type for folder
-    );
-
-    try {
-      await intent.launch();
-    } catch (e) {
-      print("Could not open folder: $e");
-    }
-  }
+  // void openFolder(String folderPath) async {
+  //   final intent = AndroidIntent(
+  //     action: 'android.intent.action.VIEW',
+  //     data: 'file://$folderPath',  // Pass the string URI directly
+  //     type: 'resource/folder',  // Type for folder
+  //   );
+  //
+  //   try {
+  //     await intent.launch();
+  //   } catch (e) {
+  //     print("Could not open folder: $e");
+  //   }
+  // }
 
   void showFileSavedSnackBar(BuildContext context, String filePath) {
     ScaffoldMessenger.of(context).showSnackBar(
