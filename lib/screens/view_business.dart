@@ -354,8 +354,10 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                             MaterialPageRoute(
                                               builder: (context) => AddBusiness(business: business),
                                             ),
-                                          ).then((_) {
-                                            _fetchTokenAndBusinessDetails();
+                                          ).then((result) {
+                                            if (result == true) {
+                                              _fetchTokenAndBusinessDetails(); // Refresh the business details
+                                            }
                                           });
                                         },
                                       ),
@@ -385,7 +387,11 @@ class _ViewBusinessState extends State<ViewBusiness> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const AddBusiness()),
-                      );
+                      ).then((result) {
+                        if (result == true) {
+                          _fetchTokenAndBusinessDetails(); // Refresh the business details
+                        }
+                      });
                     },
                     width: double.infinity,
                     height: 50,
