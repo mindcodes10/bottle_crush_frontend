@@ -181,9 +181,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 // Store the reset token from the response
                                 setState(() {
                                   resetToken = response['reset_token']; // Store the reset token
-                                  isOtpVerified = true;
                                 });
-                                debugPrint('Generated Reset Token : $resetToken');
+
+                                // Add delay before showing the new password fields
+                                Future.delayed(const Duration(seconds: 5), () {
+                                  setState(() {
+                                    isOtpVerified = true;  // OTP is verified, now show password fields
+                                  });
+                                });
                               } else {
                                 showSnackbar("Failed to verify OTP. Please try again.");
                               }
@@ -193,9 +198,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             }
                           },
                         ),
+
                       ],
                       if (isOtpVerified) ...[
-                        // New Password and Confirm New Password Fields
+                        // New Password and Confirm New Password Fields (only visible after OTP is verified)
                         _buildTextField(
                           controller: newPasswordController,
                           labelText: "New Password",
@@ -231,7 +237,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             onPressed: () {
                               setState(() {
                                 isConfirmPasswordObscured =
-                                    !isConfirmPasswordObscured;
+                                !isConfirmPasswordObscured;
                               });
                             },
                           ),
@@ -269,8 +275,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 Navigator.pop(context); // Redirect to Login Page
                               } else {
                                 showSnackbar("Failed to reset password. Please try again.");
-                               // throw Exception('Failed to reset password: Status ${response.statusCode}, Response: ${response.body}');
-
                               }
                             } catch (e) {
                               showSnackbar("Error resetting password. Please try again.");
@@ -278,7 +282,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             }
                           },
                         ),
-
                       ],
                     ],
                   ),
@@ -290,6 +293,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       ),
     );
   }
+
 
   // OTP Input Fields as Individual Fields
   Widget _buildOtpFields() {
