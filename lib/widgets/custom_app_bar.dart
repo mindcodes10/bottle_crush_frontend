@@ -1,6 +1,7 @@
+import 'package:bottle_crush/services/api_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:bottle_crush/utils/theme.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Import Flutter Secure Storage
 import 'package:bottle_crush/screens/login_screen.dart'; // Import your LoginScreen
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -16,6 +17,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   final GlobalKey _iconKey = GlobalKey(); // Key for the profile icon
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); // Initialize secure storage
+  final ApiServices _apiService = ApiServices(); // Initialize ApiService
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +39,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
             padding: const EdgeInsets.only(left: 7),
             child: Image.asset(
               'assets/images/aquazen_logo.png',
-              fit: BoxFit.cover, // Ensure the image covers the space
-              width: 70, // Set a fixed width to maximize the size (adjust as needed)
-              height: 70, // Set a fixed height to keep the logo proportionate (adjust as needed)
+              fit: BoxFit.cover,
+              width: 70,
+              height: 70,
             ),
           ),
           actions: [
@@ -64,41 +66,40 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   // Function to show the logout menu
   void _showLogoutMenu(BuildContext context) {
-    // Check if the key's current context is available
     if (_iconKey.currentContext == null) {
-      return; // Exit if the context is not available
+      return;
     }
 
     RenderBox renderBox = _iconKey.currentContext!.findRenderObject() as RenderBox;
     Offset offset = renderBox.localToGlobal(Offset.zero);
     double x = offset.dx;
-    double y = offset.dy + renderBox.size.height; // Position below the icon
+    double y = offset.dy + renderBox.size.height;
 
     showMenu(
       color: AppTheme.backgroundBlue,
       context: context,
-      position: RelativeRect.fromLTRB(x, y, x, y), // Adjust position based on icon
+      position: RelativeRect.fromLTRB(x, y, x, y),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0), // Adjust the radius as needed
+        borderRadius: BorderRadius.circular(12.0),
       ),
       items: [
         PopupMenuItem(
           value: 'logout',
-          padding: EdgeInsets.zero, // Set padding to zero
+          padding: EdgeInsets.zero,
           child: Container(
-            height: 29.0, // Set a fixed height for the item
-            alignment: Alignment.center, // Center the content vertically
+            height: 29.0,
+            alignment: Alignment.center,
             child: const Row(
-              mainAxisSize: MainAxisSize.min, // Use minimum size for the row
-              mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.exit_to_app, color: AppTheme.backgroundWhite),
-                SizedBox(width: 4.0), // Add minimal space between the icon and text
+                SizedBox(width: 4.0),
                 Text(
                   'Logout',
                   style: TextStyle(
                     color: AppTheme.textWhite,
-                    height: 1.0, // Adjust line height to reduce vertical space
+                    height: 1.0,
                   ),
                 ),
               ],
@@ -107,18 +108,45 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ),
       ],
       elevation: 8.0,
-    );
+    ).then((value) {
+      if (value == 'logout') {
+        _logoutUser(context);
+      }
+    });
   }
 
   // Function to handle user logout
-  void _logoutUser (BuildContext context) async {
-    // Clear the token or user session from secure storage
-    await _secureStorage.delete(key: 'access_token'); // Replace 'userToken' with your actual key
+  void _logoutUser(BuildContext context) async {
+    try {
+      // Retrieve token from secure storage
+      String? token = await _secureStorage.read(key: 'access_token');
+      if (token == null || token.isEmpty) {
+        throw Exception("Access token is missing or invalid.");
+      }
 
-    // Redirect to the login page
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const LoginScreen()), // Replace with your login screen
-          (Route<dynamic> route) => false, // Remove all previous routes
-    );
+      // Call the logout API
+      bool isLoggedOut = await _apiService.logout(token);
+      if (isLoggedOut) {
+        // Clear the token from secure storage
+        await _secureStorage.delete(key: 'access_token');
+
+        // Redirect to the login page
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+              (Route<dynamic> route) => false,
+        );
+      } else {
+        // Show an error message if logout failed
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Logout failed. Please try again.')),
+        );
+      }
+    } catch (e) {
+      // Handle errors during logout
+      print('Error during logout: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred during logout.')),
+      );
+    }
   }
 }
