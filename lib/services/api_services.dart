@@ -810,6 +810,31 @@ class ApiServices {
     }
   }
 
+  Future<bool> logout(String token) async {
+    final url = Uri.parse(ApiConstants.logoutEndpoint);
 
+    // Make a POST request to logout
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',  // Assuming the API requires a Bearer token
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Logout successful
+        return true;
+      } else {
+        // Handle failure
+        print('Logout failed: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      // Handle error
+      print('Error during logout: $e');
+      return false;
+    }
+  }
 
 }
