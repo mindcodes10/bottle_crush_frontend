@@ -32,22 +32,19 @@ class _BusinessViewState extends State<BusinessView> {
     if (index == 0) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => BusinessDashboard(id: widget.id),
-        ),
+        MaterialPageRoute(builder: (context) => BusinessDashboard(id: widget.id)),
       );
     }
     if (index == 2) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MachineView(id: widget.id),
-        ),
+        MaterialPageRoute(builder: (context) => MachineView(id: widget.id)),
       );
     }
     if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => BusinessEmail(id: widget.id),
-        ),
+        MaterialPageRoute(builder: (context) => BusinessEmail(id: widget.id)),
       );
     }
   }
@@ -74,7 +71,6 @@ class _BusinessViewState extends State<BusinessView> {
       throw Exception('An error occurred: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -124,42 +120,35 @@ class _BusinessViewState extends State<BusinessView> {
                         var business = businessDetails[index];
                         return Card(
                           elevation: 4,
-                          color: AppTheme.backgroundWhite,
+                          color: AppTheme.backgroundCard,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.grey[300],
+                                  backgroundImage: (business['logo_image'] != null && business['logo_image'].isNotEmpty)
+                                      ? MemoryImage(base64Decode(business['logo_image']))
+                                      : const AssetImage('assets/images/leaf.png'),
+                                ),
+                                const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 25,
-                                            backgroundColor: Colors.grey[300],
-                                            backgroundImage: business['logo_image'] != null &&
-                                                business['logo_image'].isNotEmpty
-                                                ? MemoryImage(base64Decode(business['logo_image']))
-                                                : const AssetImage('assets/images/leaf.png'),
-                                          ),
-                                          const SizedBox(width: 16),
-                                          Expanded(
-                                            child: Text(
-                                              business['name'] ?? 'Company Name',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                              maxLines: 2,
-                                              softWrap: true,
-                                            ),
-                                          ),
-                                        ],
+                                      Text(
+                                        business['name'] ?? 'Company Name',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                        maxLines: 2,
+                                        softWrap: true,
                                       ),
                                       const SizedBox(height: 3),
                                       Text(
