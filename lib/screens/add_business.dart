@@ -1,3 +1,5 @@
+import 'dart:convert'; // Import this for base64Decode
+import 'dart:typed_data'; // Import this for Uint8List
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/screens/email.dart';
 import 'package:bottle_crush/screens/view_business.dart';
@@ -16,7 +18,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class AddBusiness extends StatefulWidget {
   final dynamic business;
 
-  const AddBusiness({super.key,this.business});
+  const AddBusiness({super.key, this.business});
 
   @override
   State<AddBusiness> createState() => _AddBusinessState();
@@ -38,6 +40,7 @@ class _AddBusinessState extends State<AddBusiness> {
   String? token; // Variable to hold the token
   final bool _isEditable = false; // Add this variable to track if fields are editable or not
 
+  Uint8List? _logoImageBytes; // Variable to hold the logo image bytes
 
   void _onItemTapped(int index) {
     setState(() {
@@ -80,8 +83,11 @@ class _AddBusinessState extends State<AddBusiness> {
       _businessNameController.text = widget.business['name'] ?? '';
       _businessEmailController.text = widget.business['owner_email'] ?? '';
       _businessMobileController.text = widget.business['mobile'] ?? '';
-      _logoPathController.text = widget.business['logo_image'] ?? '';
 
+      // Decode the logo image if it exists
+      if (widget.business['logo_image'] != null) {
+        _logoImageBytes = base64Decode(widget.business['logo_image']);
+      }
     }
   }
 
@@ -93,7 +99,6 @@ class _AddBusinessState extends State<AddBusiness> {
 
   @override
   void dispose() {
-    _logoPathController.dispose();
     super.dispose();
   }
 
@@ -147,266 +152,325 @@ class _AddBusinessState extends State<AddBusiness> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    double fontSizeFactor = screenWidth < 600 ? 0.03 : 0.025; // Adjust font size based on screen size
+    double fontSizeFactor = screenWidth < 600
+        ? 0.03
+        : 0.025; // Adjust font size based on screen size
 
     return Scaffold(
       appBar: const CustomAppBar(),
       backgroundColor: AppTheme.backgroundWhite,
       body: Column(
-       children: [
-         Expanded(
-           child: SingleChildScrollView(
-             child: Padding(
-               padding: const EdgeInsets.only(left: 12.0, top: 8.0, right: 12.0),
-               child: Column(
-                 mainAxisSize: MainAxisSize.min, // Set mainAxisSize to min
-                 crossAxisAlignment: CrossAxisAlignment.start,
-                 children: [
-                   Padding(
-                     padding: const EdgeInsets.all(8.0),
-                     child: Text(
-                       widget.business == null ? 'Add Company' : 'Update Company',
-                       style: TextStyle(
-                         fontWeight: FontWeight.bold,
-                         color: Colors.black,
-                           fontSize: screenWidth * fontSizeFactor,
-                       ),
-                     ),
-                   ),
-                   // 1
-                   Padding(
-                     padding:
-                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-                     child: TextFormField(
-                       controller: _businessNameController,
-                       enabled: widget.business == null ? !_isEditable : !_isEditable ,
-                       style: TextStyle(
-                           fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
-                       decoration: InputDecoration(
-                         labelText: 'Company Name',
-                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor,),
-                         prefixIcon: Icon(
-                           FontAwesomeIcons.briefcase,
-                           size: screenWidth * fontSizeFactor,
-                           color: AppTheme.backgroundBlue,
-                         ),
-                         border: OutlineInputBorder(
-                           borderRadius: BorderRadius.circular(8.0),
-                         ),
-                       ),
-                     ),
-                   ),
-                   // 2
-                   Padding(
-                     padding:
-                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-                     child: TextFormField(
-                       controller: _businessEmailController,
-                       enabled: widget.business == null ? !_isEditable : !_isEditable ,
-                       style: TextStyle(
-                           fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
-                       decoration: InputDecoration(
-                         labelText: 'Company Email',
-                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor,),
-                         prefixIcon: Icon(
-                           FontAwesomeIcons.solidEnvelope,
-                           size: screenWidth * fontSizeFactor,
-                           color: AppTheme.backgroundBlue,
-                         ),
-                         border: OutlineInputBorder(
-                           borderRadius: BorderRadius.circular(8.0),
-                         ),
-                       ),
-                     ),
-                   ),
-                   // 3
-                   Padding(
-                     padding:
-                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-                     child: TextFormField(
-                       controller: _businessMobileController,
-                       enabled: widget.business == null ? !_isEditable : !_isEditable ,
-                       keyboardType: TextInputType.number,
-                       style: TextStyle(
-                           fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
-                       decoration: InputDecoration(
-                         labelText: 'Company Mobile',
-                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor),
-                         prefixIcon: Icon(
-                           FontAwesomeIcons.phone,
-                           size: screenWidth * fontSizeFactor,
-                           color: AppTheme.backgroundBlue,
-                         ),
-                         border: OutlineInputBorder(
-                           borderRadius: BorderRadius.circular(8.0),
-                         ),
-                       ),
-                     ),
-                   ),
-                   // 4
-                   Padding(
-                     padding:
-                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-                     child: TextFormField(
-                       controller: _businessPasswordController,
-                       enabled: widget.business == null ? !_isEditable : !_isEditable ,
-                       obscureText: !_isPasswordVisible,
-                       style: TextStyle(
-                           fontSize: screenWidth * fontSizeFactor, color: AppTheme.textBlack),
-                       decoration: InputDecoration(
-                         labelText: 'Password',
-                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor),
-                         prefixIcon: Icon(
-                           FontAwesomeIcons.lock,
-                           size: screenWidth * fontSizeFactor,
-                           color: AppTheme.backgroundBlue,
-                         ),
-                         suffixIcon: IconButton(
-                           icon: Icon(
-                             _isPasswordVisible
-                                 ? Icons.visibility
-                                 : Icons.visibility_off,
-                             color: AppTheme.backgroundBlue,
-                           ),
-                           onPressed: () {
-                             setState(() {
-                               _isPasswordVisible = !_isPasswordVisible;
-                             });
-                           },
-                         ),
-                         border: OutlineInputBorder(
-                           borderRadius: BorderRadius.circular(8.0),
-                         ),
-                       ),
-                     ),
-                   ),
-                   // 5
-                   Padding(
-                     padding:
-                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-                     child: TextFormField(
-                       controller: _logoPathController,
-                       enabled: widget.business == null ? !_isEditable : !_isEditable ,
-                       style: TextStyle(
-                         fontSize: screenWidth * fontSizeFactor,
-                         color: AppTheme.textBlack,
-                       ),
-                       decoration: InputDecoration(
-                         labelText: 'Logo',
-                         labelStyle: TextStyle(fontSize: screenWidth * fontSizeFactor),
-                         prefixIcon: Icon(
-                           FontAwesomeIcons.solidFileImage,
-                           size: screenWidth * fontSizeFactor,
-                           color: AppTheme.backgroundBlue,
-                         ),
-                         suffixIcon: IconButton(
-                           icon: Icon(
-                             FontAwesomeIcons.cloudArrowUp,
-                             size: screenWidth * fontSizeFactor,
-                             color: AppTheme.backgroundBlue,
-                           ),
-                           onPressed: () async {
-                             final XFile? image = await _picker.pickImage(
-                               source: ImageSource.gallery,
-                             );
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding:
+                const EdgeInsets.only(left: 12.0, top: 8.0, right: 12.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        widget.business == null
+                            ? 'Add Company'
+                            : 'Update Company',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: screenWidth * fontSizeFactor,
+                        ),
+                      ),
+                    ),
+                    // 1
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 6.0),
+                      child: TextFormField(
+                        controller: _businessNameController,
+                        enabled: widget.business == null
+                            ? !_isEditable
+                            : !_isEditable,
+                        style: TextStyle(
+                            fontSize: screenWidth * fontSizeFactor,
+                            color: AppTheme.textBlack),
+                        decoration: InputDecoration(
+                          labelText: 'Company Name',
+                          labelStyle: TextStyle(
+                            fontSize: screenWidth * fontSizeFactor,
+                          ),
+                          prefixIcon: Icon(
+                            FontAwesomeIcons.briefcase,
+                            size: screenWidth * fontSizeFactor,
+                            color: AppTheme.backgroundBlue,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 2
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 6.0),
+                      child: TextFormField(
+                        controller: _businessEmailController,
+                        enabled: widget.business == null
+                            ? !_isEditable
+                            : !_isEditable,
+                        style: TextStyle(
+                            fontSize: screenWidth * fontSizeFactor,
+                            color: AppTheme.textBlack),
+                        decoration: InputDecoration(
+                          labelText: 'Company Email',
+                          labelStyle: TextStyle(
+                            fontSize: screenWidth * fontSizeFactor,
+                          ),
+                          prefixIcon: Icon(
+                            FontAwesomeIcons.solidEnvelope,
+                            size: screenWidth * fontSizeFactor,
+                            color: AppTheme.backgroundBlue,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 3
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 6.0),
+                      child: TextFormField(
+                        controller: _businessMobileController,
+                        enabled: widget.business == null
+                            ? !_isEditable
+                            : !_isEditable,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                            fontSize: screenWidth * fontSizeFactor,
+                            color: AppTheme.textBlack),
+                        decoration: InputDecoration(
+                          labelText: 'Company Mobile',
+                          labelStyle : TextStyle(fontSize: screenWidth * fontSizeFactor),
+                          prefixIcon: Icon(
+                            FontAwesomeIcons.phone,
+                            size: screenWidth * fontSizeFactor,
+                            color: AppTheme.backgroundBlue,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 4
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 6.0),
+                      child: TextFormField(
+                        controller: _businessPasswordController,
+                        enabled: widget.business == null
+                            ? !_isEditable
+                            : !_isEditable,
+                        obscureText: !_isPasswordVisible,
+                        style: TextStyle(
+                            fontSize: screenWidth * fontSizeFactor,
+                            color: AppTheme.textBlack),
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          labelStyle:
+                          TextStyle(fontSize: screenWidth * fontSizeFactor),
+                          prefixIcon: Icon(
+                            FontAwesomeIcons.lock,
+                            size: screenWidth * fontSizeFactor,
+                            color: AppTheme.backgroundBlue,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: AppTheme.backgroundBlue,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 5
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 6.0),
+                      child: TextFormField(
+                        controller: _logoPathController,
+                        enabled: true, // Disable editing for the logo path
+                        style: TextStyle(
+                          fontSize: screenWidth * fontSizeFactor,
+                          color: AppTheme.textBlack,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Logo',
+                          labelStyle:
+                          TextStyle(fontSize: screenWidth * fontSizeFactor),
+                          prefixIcon: Icon(
+                            FontAwesomeIcons.solidFileImage,
+                            size: screenWidth * fontSizeFactor,
+                            color: AppTheme.backgroundBlue,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              FontAwesomeIcons.cloudArrowUp,
+                              size: screenWidth * fontSizeFactor,
+                              color: AppTheme.backgroundBlue,
+                            ),
+                            onPressed: () async {
+                              final XFile? image = await _picker.pickImage(
+                                source: ImageSource.gallery,
+                              );
 
-                             if (image != null) {
-                               setState(() {
-                                 _selectedImage = File(image.path);
-                                 _logoPathController.text = image.path;
-                               });
-                               debugPrint('Selected image: ${image.path}');
-                             } else {
-                               debugPrint('Image selection canceled.');
-                             }
-                           },
-                         ),
-                         border: OutlineInputBorder(
-                           borderRadius: BorderRadius.circular(8.0),
-                         ),
-                       ),
-                     ),
-                   ),
-                   // Display selected image if available
-                   if (_selectedImage != null)
-                     Padding(
-                       padding: const EdgeInsets.only(left: 12.0, top: 12.0),
-                       child: Stack(
-                         children: [
-                           Image.file(
-                             File(_selectedImage!.path),
-                             height: 100,
-                             width: 100,
-                             fit: BoxFit.cover,
-                           ),
-                           Positioned(
-                             top: 0,
-                             right: 0,
-                             child: GestureDetector(
-                               onTap: () {
-                                 setState(() {
-                                   _selectedImage = null;
-                                   _logoPathController.clear();
-                                 });
-                               },
-                               child: Container(
-                                 decoration: const BoxDecoration(
-                                   color: AppTheme.backgroundBlue,
-                                   shape: BoxShape.circle,
-                                 ),
-                                 padding: const EdgeInsets.all(4.0),
-                                 child: const Icon(
-                                   Icons.close,
-                                   size: 16.0,
-                                   color: AppTheme.backgroundWhite,
-                                 ),
-                               ),
-                             ),
-                           ),
-                         ],
-                       ),
-                     ),
-                   // Remove Spacer and use SizedBox for spacing
-                   SizedBox(height: screenHeight * 0.12),
-
-                 ],
-               ),
-             ),
-           ),
-         ),
-         Padding(
-           padding: const EdgeInsets.symmetric(vertical: 16.0),
-           child: Row(
-             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-             children: [
-               CustomElevatedButton(
-                 buttonText: 'Cancel',
-                 onPressed: () {
-                   Navigator.pop(context);
-                 },
-                 width: screenWidth * 0.4,
-                 backgroundColor: AppTheme.backgroundWhite,
-                 textColor: AppTheme.backgroundBlue,
-                 borderColor: AppTheme.backgroundBlue,
-                 icon: const Icon(Icons.cancel,
-                     color: AppTheme.backgroundBlue),
-               ),
-               CustomElevatedButton(
-                 buttonText: widget.business == null ? 'Add ' : 'Update ',
-                 onPressed: submitPressed,
-                 width: screenWidth * 0.4,
-                 backgroundColor: AppTheme.backgroundBlue,
-                 textColor: AppTheme.textWhite,
-                 icon: const Icon(Icons.check, color: AppTheme.textWhite),
-               ),
-             ],
-           ),
-         ),
-       ]
-
+                              if (image != null) {
+                                setState(() {
+                                  _selectedImage = File(image.path);
+                                  _logoPathController.text = image.path;
+                                });
+                                debugPrint('Selected image: ${image.path}');
+                              } else {
+                                debugPrint('Image selection canceled.');
+                              }
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Display the logo image if available
+                    if (_logoImageBytes != null)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12.0, top: 12.0),
+                        child: Stack(
+                          children: [
+                            Image.memory(
+                              _logoImageBytes!,
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _logoImageBytes = null; // Clear the logo image
+                                  });
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: AppTheme.backgroundBlue,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 16.0,
+                                    color: AppTheme.backgroundWhite,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    // Display selected image if available
+                    if (_selectedImage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12.0, top: 12.0),
+                        child: Stack(
+                          children: [
+                            Image.file(
+                              File(_selectedImage!.path),
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedImage = null; // Clear the selected image
+                                    _logoPathController.clear(); // Clear the logo path
+                                  });
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: AppTheme.backgroundBlue,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 16.0,
+                                    color: AppTheme.backgroundWhite,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    // Remove Spacer and use SizedBox for spacing
+                    SizedBox(height: screenHeight * 0.12),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                CustomElevatedButton(
+                  buttonText: 'Cancel',
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  width: screenWidth * 0.4,
+                  backgroundColor: AppTheme.backgroundWhite,
+                  textColor: AppTheme.backgroundBlue,
+                  borderColor: AppTheme.backgroundBlue,
+                  icon: const Icon(Icons.cancel, color: AppTheme.backgroundBlue),
+                ),
+                CustomElevatedButton(
+                  buttonText: widget.business == null ? 'Add ' : 'Update ',
+                  onPressed: submitPressed,
+                  width: screenWidth * 0.4,
+                  backgroundColor: AppTheme.backgroundBlue,
+                  textColor: AppTheme.textWhite,
+                  icon: const Icon(Icons.check, color: AppTheme.textWhite),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: CustomBottomAppBar(
-        onItemTapped: _onItemTapped, selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+        selectedIndex: _selectedIndex,
       ),
     );
   }
