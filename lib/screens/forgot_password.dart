@@ -42,21 +42,22 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(height: screenHeight * 0.08),
-          const Center(
-            child: CircleAvatar(
-              radius: 50,
-              backgroundColor: AppTheme.textWhite,
-              child: Icon(
-                Icons.eco_rounded,
-                color: AppTheme.backgroundBlue,
-                size: 50,
+          Center(
+            child: ClipOval(
+              child: SizedBox(
+                width: 150, // Set a specific width
+                height: 150, // Set a specific height
+                child: Image.asset(
+                  'assets/images/aquazen_logo.png',
+                  fit: BoxFit.cover, // Ensures the image fits proportionally
+                ),
               ),
             ),
           ),
           const SizedBox(height: 20),
           const Center(
             child: Text(
-              "Welcome to Bottle Crush!",
+              "Welcome to Aquazen!",
               style: TextStyle(
                 color: AppTheme.textWhite,
                 fontSize: 26,
