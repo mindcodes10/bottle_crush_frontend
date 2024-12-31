@@ -120,8 +120,7 @@ class _AddMachinesState extends State<AddMachines> {
     try {
       final String? token = await _secureStorage.read(key: "access_token");
       if (token != null) {
-        List<dynamic> businesses =
-            await apiServices.fetchBusinessDetails(token);
+        List<dynamic> businesses = await apiServices.fetchBusinessDetails(token);
 
         setState(() {
           _businessNames.clear();
@@ -129,8 +128,10 @@ class _AddMachinesState extends State<AddMachines> {
             _businessNames.add(business['name']);
           }
 
-          // Optionally set the first business name as the default selection
-          if (_businessNames.isNotEmpty) {
+          // Avoid overwriting if editing
+          if (widget.machine != null) {
+            _selectedBusinessName = widget.machine['business_name'];
+          } else if (_businessNames.isNotEmpty) {
             _selectedBusinessName = _businessNames[0];
             _businessNameController.text = _selectedBusinessName!;
           }
@@ -140,6 +141,7 @@ class _AddMachinesState extends State<AddMachines> {
       debugPrint('Error fetching company names: $e');
     }
   }
+
 
   void _submitPressed() async {
     // Validate form fields
