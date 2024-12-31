@@ -106,7 +106,7 @@ class _MachineViewState extends State<MachineView> {
                       top: 10.0, left: 14.0, right: 12.0, bottom: 10.0),
                   child: Card(
                     elevation: 4,
-                    color: AppTheme.backgroundWhite,
+                    color: AppTheme.backgroundCard,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
