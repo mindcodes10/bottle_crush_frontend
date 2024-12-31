@@ -158,6 +158,7 @@ class _AddMachinesState extends State<AddMachines> {
       );
       return;
     }
+
     // Validate pin code to be exactly 6 digits
     if (_pincodeController.text.length != 6 || !RegExp(r'^\d{6}$').hasMatch(_pincodeController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -181,18 +182,6 @@ class _AddMachinesState extends State<AddMachines> {
       return;
     }
 
-    // Validate machine number uniqueness
-    bool isMachineNumberExist = await _checkMachineNumberExists(token, _machineNumberController.text);
-    if (isMachineNumberExist) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'Machine number already exists! Please enter a unique machine number.'),
-        ),
-      );
-      return;
-    }
-
     // Fetch the business ID by business name
     String businessName = _businessNameController.text;
     int? businessId = await _getBusinessIdByName(token, businessName);
@@ -206,8 +195,23 @@ class _AddMachinesState extends State<AddMachines> {
       return;
     }
 
-    // Prepare machine data for API request
     try {
+      // If updating an existing machine, check if the machine number has changed
+      bool isMachineNumberExist = false;
+      if (widget.machine == null || widget.machine!['number'] != _machineNumberController.text) {
+        // Check for machine number uniqueness only if it is being changed
+        isMachineNumberExist = await _checkMachineNumberExists(token, _machineNumberController.text);
+      }
+
+      if (isMachineNumberExist) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Machine number already exists! Please enter a unique machine number.'),
+          ),
+        );
+        return;
+      }
+
       if (widget.machine == null) {
         // Create new machine
         bool success = await apiServices.createMachine(
@@ -272,6 +276,7 @@ class _AddMachinesState extends State<AddMachines> {
       );
     }
   }
+
 
   Future<bool> _checkMachineNumberExists(
       String token, String machineNumber) async {
