@@ -719,6 +719,9 @@ class ApiServices {
       if (response.statusCode == 200) {
         // If the server returns a successful response
         final Map<String, dynamic> data = json.decode(response.body);
+
+        // Process the data if necessary (e.g., filter, format)
+        // The data has dates as keys, and each key contains multiple businesses with their respective machine stats
         return data;
       } else {
         // If the server returns an error
@@ -732,8 +735,9 @@ class ApiServices {
     }
   }
 
+
   // function to export data in excel for company
-  Future<Map<String, dynamic>> getDayWiseBottleStatsCompany(String token) async {
+  Future<Map<String, List<Map<String, dynamic>>>> getDayWiseBottleStatsCompany(String token) async {
     final url = Uri.parse(ApiConstants.dayWiseBottleStatsCompany);
 
     try {
@@ -747,7 +751,17 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         // Parse the JSON response
-        return json.decode(response.body) as Map<String, dynamic>;
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+        // Cast each date key's value to a list of maps
+        final parsedData = jsonResponse.map<String, List<Map<String, dynamic>>>(
+              (key, value) => MapEntry(
+            key,
+            List<Map<String, dynamic>>.from(value),
+          ),
+        );
+
+        return parsedData;
       } else {
         // Handle non-200 responses
         throw Exception('Failed to fetch data: ${response.statusCode}');

@@ -134,75 +134,57 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
       debugPrint('Token retrieved: $token');
 
       // Fetch day-wise bottle stats
-      final data = await _apiServices.getDayWiseBottleStatsCompany(token);
-      if (data == null || data.isEmpty) {
-        throw Exception("No data received from API.");
+      final Map<String, List<Map<String, dynamic>>> data = await _apiServices.getDayWiseBottleStatsCompany(token);
+      if (data.isEmpty) {
+        // No machines found
+        debugPrint('No machines found for this company.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('You do not have any machines, so cannot create Excel.')),
+        );
+        return;
       }
       debugPrint('Response from getDayWiseBottleStatsCompany: $data');
 
-      if (data is Map<String, dynamic>) {
-        var excel = Excel.createExcel();
-        //excel.delete('Sheet1'); // Delete default Sheet1
+      // Initialize Excel file
+      var excel = Excel.createExcel();
+      Sheet sheet = excel['Sheet1'];
+      sheet.appendRow(['Date', 'Machine Name', 'Total Bottle Count', 'Total Bottle Weight']);
+      debugPrint('Excel headers added.');
 
-        //Sheet sheetObject = excel['DayWiseStats'];
-        Sheet sheet = excel['Sheet1'];
-        sheet.appendRow(['Date', 'Machine Name', 'Total Bottle Count', 'Total Bottle Weight']);
-        debugPrint('Excel headers added.');
-
-        for (var date in data.keys) {
-          List records = data[date];
-          for (var record in records) {
-            String machineId = record['machine_id']?.toString() ?? '';
-            String machineName = '';
-
-            if (machineId.isNotEmpty) {
-              try {
-                Map<String, dynamic> machineDetails =
-                await _apiServices.getMachineDetails(machineId, token);
-                machineName = machineDetails['name'] ?? 'Unknown Machine';
-              } catch (e) {
-                debugPrint('Error fetching machine details for ID $machineId: $e');
-                machineName = 'Unknown Machine';
-              }
-            }
-
-            sheet.appendRow([
-              date,
-              machineName,
-              record['total_bottles']?.toString() ?? '0',
-              record['total_weight']?.toString() ?? '0.0',
-            ]);
-          }
+      // Process the data
+      data.forEach((date, records) {
+        for (var record in records) {
+          sheet.appendRow([
+            date,
+            record['machine_name'] ?? 'Unknown Machine',
+            record['total_bottles']?.toString() ?? '0',
+            record['total_weight']?.toString() ?? '0.0',
+          ]);
         }
+      });
 
-        List<int>? encodedFile = excel.encode();
-        if (encodedFile == null) {
-          throw Exception("Error encoding Excel file.");
-        }
-
-        // Get the public directory for saving the file
-        Directory? externalDir = Directory('/storage/emulated/0/Download/Bottle Crush'); // Example: Download folder
-        if (!await externalDir.exists()) {
-          externalDir.createSync(recursive: true);
-        }
-
-        // Generate a filename with the current date and time
-        String formattedDateTime = DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now());
-        String filePath = '${externalDir.path}/CompanyBottleStats_$formattedDateTime.xlsx';
-
-        // Save the Excel file in the device storage
-        File file = File(filePath);
-        file.writeAsBytesSync(encodedFile);
-
-        debugPrint('Excel file saved at $filePath');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Excel file saved at $filePath')),
-        );
-
-      } else {
-        throw Exception("Unexpected data format received from API.");
+      // Encode the Excel file
+      List<int>? encodedFile = excel.encode();
+      if (encodedFile == null) {
+        throw Exception("Error encoding Excel file.");
       }
+
+      // Save the file in the device storage
+      Directory externalDir = Directory('/storage/emulated/0/Download/BottleCrush');
+      if (!await externalDir.exists()) {
+        externalDir.createSync(recursive: true);
+      }
+
+      String formattedDateTime = DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now());
+      String filePath = '${externalDir.path}/CompanyBottleStats_$formattedDateTime.xlsx';
+      File file = File(filePath);
+      file.writeAsBytesSync(encodedFile);
+
+      debugPrint('Excel file saved at $filePath');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Excel file saved at $filePath')),
+      );
     } catch (e) {
       debugPrint('Error occurred in exportToExcel: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -210,6 +192,8 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
       );
     }
   }
+
+
 
 
   void showFileSavedSnackBar(BuildContext context, String filePath) {
