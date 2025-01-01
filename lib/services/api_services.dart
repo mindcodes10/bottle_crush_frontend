@@ -719,6 +719,9 @@ class ApiServices {
       if (response.statusCode == 200) {
         // If the server returns a successful response
         final Map<String, dynamic> data = json.decode(response.body);
+
+        // Process the data if necessary (e.g., filter, format)
+        // The data has dates as keys, and each key contains multiple businesses with their respective machine stats
         return data;
       } else {
         // If the server returns an error
@@ -732,8 +735,9 @@ class ApiServices {
     }
   }
 
+
   // function to export data in excel for company
-  Future<Map<String, dynamic>> getDayWiseBottleStatsCompany(String token) async {
+  Future<Map<String, List<Map<String, dynamic>>>> getDayWiseBottleStatsCompany(String token) async {
     final url = Uri.parse(ApiConstants.dayWiseBottleStatsCompany);
 
     try {
@@ -747,7 +751,17 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         // Parse the JSON response
-        return json.decode(response.body) as Map<String, dynamic>;
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+        // Cast each date key's value to a list of maps
+        final parsedData = jsonResponse.map<String, List<Map<String, dynamic>>>(
+              (key, value) => MapEntry(
+            key,
+            List<Map<String, dynamic>>.from(value),
+          ),
+        );
+
+        return parsedData;
       } else {
         // Handle non-200 responses
         throw Exception('Failed to fetch data: ${response.statusCode}');
@@ -836,5 +850,58 @@ class ApiServices {
       return false;
     }
   }
+
+  Future<Map<String, dynamic>> updateBusinessNew(
+      int businessId,
+      String token,
+      Map<String, dynamic> businessData,
+      Map<String, dynamic> userData,
+      {File? logoImage}
+      ) async {
+    try {
+      final Uri url = Uri.parse(ApiConstants.UPDATE_BUSINESS.replaceFirst("{business_id}", businessId.toString()));
+
+      // Creating headers
+      Map<String, String> headers = {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+        "Content-Type": "multipart/form-data",
+      };
+
+      // Preparing the body for multipart form-data
+      var request = http.MultipartRequest('PUT', url)
+        ..headers.addAll(headers)
+        ..fields['business_data'] = json.encode(businessData)
+        ..fields['user_data'] = json.encode(userData);
+
+      if (logoImage != null) {
+        var image = await http.MultipartFile.fromPath('logo_image', logoImage.path);
+        request.files.add(image);
+      }
+
+      // Sending request
+      var response = await request.send();
+
+      // Log the response status code
+      print('Response Status: ${response.statusCode}');
+
+      // Read the response body
+      final responseBody = await response.stream.bytesToString();
+      print('Response Body: $responseBody');
+
+      // Handling response based on status code
+      if (response.statusCode == 200) {
+        return json.decode(responseBody);
+      } else {
+        // Log error details
+        throw Exception('Failed to update business. Status Code: ${response.statusCode}, Response: $responseBody');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return {'message': 'Error updating business'};
+    }
+  }
+
+
 
 }

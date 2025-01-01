@@ -562,7 +562,8 @@ class _AddMachinesState extends State<AddMachines> {
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const ViewMachines()));
+                    Navigator.pop(context);
+                    //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const ViewMachines()));
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,

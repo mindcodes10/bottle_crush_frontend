@@ -121,18 +121,27 @@ class _AddBusinessState extends State<AddBusiness> {
           mobile: _businessMobileController.text,
           email: _businessEmailController.text,
           password: _businessPasswordController.text,
-          logoImage: _selectedImage != null ? _selectedImage : null,
+          logoImage: _selectedImage != null ? _selectedImage : null, // Pass File? directly
         );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response['message'])),
         );
       } else {
-        // Business update logic
-        final response = await apiServices.updateBusiness(
-          token!,
-          widget.business['id'],
-          _businessNameController.text,
-          _businessMobileController.text,
+        // Business update logic using updateBusinessNew
+        final response = await apiServices.updateBusinessNew(
+          //int.parse(widget.business['id']),
+          widget.business['id'],// widget.business['id'].toString(), // Convert integer ID to string
+
+          token!, // Bearer token
+          {
+            'name': _businessNameController.text,
+            'mobile': _businessMobileController.text,
+          }, // businessData
+          {
+            'email': _businessEmailController.text,
+            'password': _businessPasswordController.text,
+          }, // userData
+          logoImage: _selectedImage != null ? _selectedImage : null, // Pass File? directly
         );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response['message'])),
@@ -147,6 +156,8 @@ class _AddBusinessState extends State<AddBusiness> {
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -449,7 +460,8 @@ class _AddBusinessState extends State<AddBusiness> {
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const ViewBusiness()));
+                    Navigator.pop(context);
+                    //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const ViewBusiness()));
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,

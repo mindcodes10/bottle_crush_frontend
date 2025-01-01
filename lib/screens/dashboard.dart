@@ -159,14 +159,20 @@ class _DashboardState extends State<Dashboard> {
       // Populate Excel file with data
       bottleStats.forEach((date, businesses) {
         businesses.forEach((businessName, machines) {
-          for (var machine in machines) {
-            sheet.appendRow([
-              date,
-              businessName,
-              machine['machine_name'] ?? '',
-              machine['total_bottles']?.toString() ?? '0',
-              machine['total_weight']?.toString() ?? '0.0',
-            ]);
+          if (machines.isNotEmpty) {
+            for (var machine in machines) {
+              // Safely retrieve values, with defaults for null or missing data
+              sheet.appendRow([
+                date,
+                businessName,
+                machine['machine_name'] ?? '',
+                machine['total_bottles']?.toString() ?? '0',
+                machine['total_weight']?.toString() ?? '0.0',
+              ]);
+            }
+          } else {
+            // In case there are no machines for a business
+            sheet.appendRow([date, businessName, 'No Machines', '0', '0.0']);
           }
         });
       });
@@ -201,7 +207,6 @@ class _DashboardState extends State<Dashboard> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
