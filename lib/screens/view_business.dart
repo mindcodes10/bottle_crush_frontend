@@ -35,19 +35,19 @@ class _ViewBusinessState extends State<ViewBusiness> {
 
     // Navigate to respective screen based on the selected index
     if (index == 0) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Dashboard()),
       );
     }
     if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ViewMachines()),
       );
     }
     if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Email()),
       );
@@ -356,7 +356,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                           color: AppTheme.backgroundBlue,
                                         ),
                                         onPressed: () {
-                                          Navigator.push(
+                                          Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => AddBusiness(business: business),
@@ -391,7 +391,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                   CustomElevatedButton(
                     buttonText: ' + ADD COMPANY',
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => const AddBusiness()),
                       ).then((result) {

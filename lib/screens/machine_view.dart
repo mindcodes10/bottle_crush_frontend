@@ -56,19 +56,19 @@ class _MachineViewState extends State<MachineView> {
 
     // Navigate to respective screen based on the selected index
     if (index == 0) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessDashboard(id: widget.id)), // Home or Dashboard screen
       );
     }
     if (index == 1) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessView(id: widget.id)), // Home or Dashboard screen
       );
     }
     if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessEmail(id: widget.id)), // Home or Dashboard screen
       );

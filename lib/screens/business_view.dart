@@ -30,19 +30,19 @@ class _BusinessViewState extends State<BusinessView> {
 
     // Navigate to respective screen based on the selected index
     if (index == 0) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessDashboard(id: widget.id)),
       );
     }
     if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MachineView(id: widget.id)),
       );
     }
     if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessEmail(id: widget.id)),
       );
@@ -90,7 +90,8 @@ class _BusinessViewState extends State<BusinessView> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            debugPrint('Error: ${snapshot.error}');
+            return const Center(child: Text('No company details available'));
           } else if (snapshot.hasData) {
             List<dynamic> businessDetails = snapshot.data!;
             if (businessDetails.isEmpty) {
