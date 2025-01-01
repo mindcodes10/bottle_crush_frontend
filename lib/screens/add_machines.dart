@@ -97,25 +97,25 @@ class _AddMachinesState extends State<AddMachines> {
 
     // Navigate to respective screen based on the selected index
     if (index == 0) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Dashboard()),
       );
     }
     if (index == 1) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ViewBusiness()),
       );
     }
     if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ViewMachines()),
       );
     }
     if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Email()),
       );
@@ -266,7 +266,7 @@ class _AddMachinesState extends State<AddMachines> {
           // Handle the error response
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Failed to update machine'),
+              content: Text('Machine not updated'),
             ),
           );
           debugPrint('Failed to update machine: ${response.body}');
@@ -428,7 +428,7 @@ class _AddMachinesState extends State<AddMachines> {
         child: Row(
           children: [
             Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 value ?? 'Select $labelText',
@@ -437,7 +437,7 @@ class _AddMachinesState extends State<AddMachines> {
                 maxLines: 1, // Limit to one line for the selected value
               ),
             ),
-            Icon(Icons.arrow_drop_down, color: AppTheme.backgroundBlue),
+            const Icon(Icons.arrow_drop_down, color: AppTheme.backgroundBlue),
           ],
         ),
       ),
@@ -562,7 +562,7 @@ class _AddMachinesState extends State<AddMachines> {
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const ViewMachines()));
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,

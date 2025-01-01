@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:excel/excel.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:bottle_crush/screens/email.dart';
 import 'package:bottle_crush/screens/view_business.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
@@ -88,17 +87,17 @@ class _DashboardState extends State<Dashboard> {
     });
 
     if (index == 1) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ViewBusiness()),
       );
     } else if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ViewMachines()),
       );
     } else if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Email()),
       );
@@ -287,7 +286,7 @@ class _DashboardState extends State<Dashboard> {
                       titleFontSize: titleFontSize,
                       valueFontSize: valueFontSize,
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => const ViewBusiness()),
                         );

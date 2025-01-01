@@ -15,12 +15,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
-//import 'package:android_intent_plus/android_intent.dart';
-//import 'package:android_intent_plus/flag.dart';
-//import 'package:android_intent_plus/action.dart';
-
 
 
 class BusinessDashboard extends StatefulWidget {
@@ -82,17 +77,17 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     });
 
     if (index == 1) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessView(id: widget.id)),
       );
     } else if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MachineView(id: widget.id)),
       );
     } else if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessEmail(id: widget.id)),
       );
@@ -201,15 +196,9 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
 
         debugPrint('Excel file saved at $filePath');
 
-        //showFileSavedSnackBar(context, filePath);
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Excel file saved at $filePath')),
         );
-        // Delay opening the folder for 1 second
-        // Future.delayed(Duration(seconds: 1), () {
-        //   openFolder('/storage/emulated/0/Download/Bottle Crush');
-        // });
 
       } else {
         throw Exception("Unexpected data format received from API.");
@@ -222,19 +211,6 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     }
   }
 
-  // void openFolder(String folderPath) async {
-  //   final intent = AndroidIntent(
-  //     action: 'android.intent.action.VIEW',
-  //     data: 'file://$folderPath',  // Pass the string URI directly
-  //     type: 'resource/folder',  // Type for folder
-  //   );
-  //
-  //   try {
-  //     await intent.launch();
-  //   } catch (e) {
-  //     print("Could not open folder: $e");
-  //   }
-  // }
 
   void showFileSavedSnackBar(BuildContext context, String filePath) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -299,6 +275,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     double cardWidth = screenWidth * 0.4;
+
     double cardHeight = screenHeight * 0.2;
     double iconSize = cardWidth * 0.2;
     double titleFontSize = cardWidth * 0.09;

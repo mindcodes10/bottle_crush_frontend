@@ -73,19 +73,19 @@ class _ViewMachinesState extends State<ViewMachines> {
 
     // Navigate to respective screen based on the selected index
     if (index == 0) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Dashboard()), // Home or Dashboard screen
       );
     }
     if (index == 1) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ViewBusiness()), // Home or Dashboard screen
       );
     }
     if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Email()), // Home or Dashboard screen
       );
@@ -267,7 +267,7 @@ class _ViewMachinesState extends State<ViewMachines> {
               buttonText: ' + ADD MACHINE',
               onPressed: () async {
                 // Wait for the result from AddMachines
-                final result = await Navigator.push(
+                final result = await Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const AddMachines()),
                 );

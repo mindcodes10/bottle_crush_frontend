@@ -49,25 +49,25 @@ class _AddBusinessState extends State<AddBusiness> {
 
     // Navigate to respective screen based on the selected index
     if (index == 0) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Dashboard()),
       );
     }
     if (index == 1) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ViewBusiness()),
       );
     }
     if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ViewMachines()),
       );
     }
     if (index == 3) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Email()),
       );
@@ -152,9 +152,11 @@ class _AddBusinessState extends State<AddBusiness> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    double fontSizeFactor = screenWidth < 600
-        ? 0.03
-        : 0.025; // Adjust font size based on screen size
+    bool isTablet = screenWidth > 600;
+
+    double fontSize = isTablet ? 20 : 14;
+    double iconSize = isTablet ? 30 : 24;
+    double fieldHeight = isTablet ? 70 : 50;
 
     return Scaffold(
       appBar: const CustomAppBar(),
@@ -179,7 +181,7 @@ class _AddBusinessState extends State<AddBusiness> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                          fontSize: screenWidth * fontSizeFactor,
+                          fontSize: fontSize,
                         ),
                       ),
                     ),
@@ -193,16 +195,16 @@ class _AddBusinessState extends State<AddBusiness> {
                             ? !_isEditable
                             : !_isEditable,
                         style: TextStyle(
-                            fontSize: screenWidth * fontSizeFactor,
+                            fontSize: fontSize,
                             color: AppTheme.textBlack),
                         decoration: InputDecoration(
                           labelText: 'Company Name',
                           labelStyle: TextStyle(
-                            fontSize: screenWidth * fontSizeFactor,
+                            fontSize: fontSize,
                           ),
                           prefixIcon: Icon(
                             FontAwesomeIcons.briefcase,
-                            size: screenWidth * fontSizeFactor,
+                            size: iconSize,
                             color: AppTheme.backgroundBlue,
                           ),
                           border: OutlineInputBorder(
@@ -221,16 +223,16 @@ class _AddBusinessState extends State<AddBusiness> {
                             ? !_isEditable
                             : !_isEditable,
                         style: TextStyle(
-                            fontSize: screenWidth * fontSizeFactor,
+                            fontSize: fontSize,
                             color: AppTheme.textBlack),
                         decoration: InputDecoration(
                           labelText: 'Company Email',
                           labelStyle: TextStyle(
-                            fontSize: screenWidth * fontSizeFactor,
+                            fontSize: fontSize,
                           ),
                           prefixIcon: Icon(
                             FontAwesomeIcons.solidEnvelope,
-                            size: screenWidth * fontSizeFactor,
+                            size: iconSize,
                             color: AppTheme.backgroundBlue,
                           ),
                           border: OutlineInputBorder(
@@ -250,14 +252,14 @@ class _AddBusinessState extends State<AddBusiness> {
                             : !_isEditable,
                         keyboardType: TextInputType.number,
                         style: TextStyle(
-                            fontSize: screenWidth * fontSizeFactor,
+                            fontSize: fontSize,
                             color: AppTheme.textBlack),
                         decoration: InputDecoration(
                           labelText: 'Company Mobile',
-                          labelStyle : TextStyle(fontSize: screenWidth * fontSizeFactor),
+                          labelStyle : TextStyle(fontSize: fontSize),
                           prefixIcon: Icon(
                             FontAwesomeIcons.phone,
-                            size: screenWidth * fontSizeFactor,
+                            size: iconSize,
                             color: AppTheme.backgroundBlue,
                           ),
                           border: OutlineInputBorder(
@@ -277,15 +279,15 @@ class _AddBusinessState extends State<AddBusiness> {
                             : !_isEditable,
                         obscureText: !_isPasswordVisible,
                         style: TextStyle(
-                            fontSize: screenWidth * fontSizeFactor,
+                            fontSize: fontSize,
                             color: AppTheme.textBlack),
                         decoration: InputDecoration(
                           labelText: 'Password',
                           labelStyle:
-                          TextStyle(fontSize: screenWidth * fontSizeFactor),
+                          TextStyle(fontSize: fontSize),
                           prefixIcon: Icon(
                             FontAwesomeIcons.lock,
-                            size: screenWidth * fontSizeFactor,
+                            size: iconSize,
                             color: AppTheme.backgroundBlue,
                           ),
                           suffixIcon: IconButton(
@@ -315,22 +317,22 @@ class _AddBusinessState extends State<AddBusiness> {
                         controller: _logoPathController,
                         enabled: true, // Disable editing for the logo path
                         style: TextStyle(
-                          fontSize: screenWidth * fontSizeFactor,
+                          fontSize: fontSize,
                           color: AppTheme.textBlack,
                         ),
                         decoration: InputDecoration(
                           labelText: 'Logo',
                           labelStyle:
-                          TextStyle(fontSize: screenWidth * fontSizeFactor),
+                          TextStyle(fontSize: fontSize),
                           prefixIcon: Icon(
                             FontAwesomeIcons.solidFileImage,
-                            size: screenWidth * fontSizeFactor,
+                            size: iconSize,
                             color: AppTheme.backgroundBlue,
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               FontAwesomeIcons.cloudArrowUp,
-                              size: screenWidth * fontSizeFactor,
+                              size: iconSize,
                               color: AppTheme.backgroundBlue,
                             ),
                             onPressed: () async {
@@ -447,7 +449,7 @@ class _AddBusinessState extends State<AddBusiness> {
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const ViewBusiness()));
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,

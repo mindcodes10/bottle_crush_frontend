@@ -38,17 +38,17 @@ class _BusinessEmailState extends State<BusinessEmail> {
       _selectedIndex = index;
     });
     if (index == 0) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessDashboard(id: widget.id)),
       );
     } else if (index == 1) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => BusinessView(id: widget.id)),
       );
     } else if (index == 2) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MachineView(id: widget.id,)),
       );
@@ -63,7 +63,7 @@ class _BusinessEmailState extends State<BusinessEmail> {
 
     if (toEmail.isEmpty || subject.isEmpty || message.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill in all the required fields."), backgroundColor: Colors.red,),
+        const SnackBar(content: Text("Please fill in all the required fields.")),
       );
       return;
     }
@@ -73,7 +73,7 @@ class _BusinessEmailState extends State<BusinessEmail> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Sending email... Please wait."), backgroundColor: Colors.green,),
+      const SnackBar(content: Text("Sending email... Please wait.")),
     );
 
     try {
@@ -87,7 +87,7 @@ class _BusinessEmailState extends State<BusinessEmail> {
 
       if (response.containsKey('message')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Email sent successfully!"), backgroundColor: Colors.green,),
+          const SnackBar(content: Text("Email sent successfully!")),
         );
 
         // Clear all input fields and file selection
@@ -104,13 +104,13 @@ class _BusinessEmailState extends State<BusinessEmail> {
       } else {
         debugPrint("Error : ${response['error']}");
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Email not sent"), backgroundColor: Colors.red,),
+          const SnackBar(content: Text("Email not sent")),
         );
       }
     } catch (e) {
       debugPrint("Error: ${e.toString()}");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email not sent"), backgroundColor: Colors.red,),
+        const SnackBar(content: Text("Email not sent")),
       );
     } finally {
       setState(() {
