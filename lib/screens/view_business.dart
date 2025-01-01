@@ -356,7 +356,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                           color: AppTheme.backgroundBlue,
                                         ),
                                         onPressed: () {
-                                          Navigator.pushReplacement(
+                                          Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => AddBusiness(business: business),
@@ -391,7 +391,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                   CustomElevatedButton(
                     buttonText: ' + ADD COMPANY',
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const AddBusiness()),
                       ).then((result) {

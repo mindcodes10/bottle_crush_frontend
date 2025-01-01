@@ -267,7 +267,7 @@ class _ViewMachinesState extends State<ViewMachines> {
               buttonText: ' + ADD MACHINE',
               onPressed: () async {
                 // Wait for the result from AddMachines
-                final result = await Navigator.pushReplacement(
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const AddMachines()),
                 );

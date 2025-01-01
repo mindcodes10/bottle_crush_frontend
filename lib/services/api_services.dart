@@ -851,4 +851,57 @@ class ApiServices {
     }
   }
 
+  Future<Map<String, dynamic>> updateBusinessNew(
+      int businessId,
+      String token,
+      Map<String, dynamic> businessData,
+      Map<String, dynamic> userData,
+      {File? logoImage}
+      ) async {
+    try {
+      final Uri url = Uri.parse(ApiConstants.UPDATE_BUSINESS.replaceFirst("{business_id}", businessId.toString()));
+
+      // Creating headers
+      Map<String, String> headers = {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+        "Content-Type": "multipart/form-data",
+      };
+
+      // Preparing the body for multipart form-data
+      var request = http.MultipartRequest('PUT', url)
+        ..headers.addAll(headers)
+        ..fields['business_data'] = json.encode(businessData)
+        ..fields['user_data'] = json.encode(userData);
+
+      if (logoImage != null) {
+        var image = await http.MultipartFile.fromPath('logo_image', logoImage.path);
+        request.files.add(image);
+      }
+
+      // Sending request
+      var response = await request.send();
+
+      // Log the response status code
+      print('Response Status: ${response.statusCode}');
+
+      // Read the response body
+      final responseBody = await response.stream.bytesToString();
+      print('Response Body: $responseBody');
+
+      // Handling response based on status code
+      if (response.statusCode == 200) {
+        return json.decode(responseBody);
+      } else {
+        // Log error details
+        throw Exception('Failed to update business. Status Code: ${response.statusCode}, Response: $responseBody');
+      }
+    } catch (e) {
+      print("Error: $e");
+      return {'message': 'Error updating business'};
+    }
+  }
+
+
+
 }

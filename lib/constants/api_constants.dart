@@ -67,4 +67,6 @@ class ApiConstants {
   // Endpoint for logout
   static const String logoutEndpoint = "$baseUrl/logout";
 
+  static const String UPDATE_BUSINESS = "$baseUrl/update_business/{business_id}";
+
 }
