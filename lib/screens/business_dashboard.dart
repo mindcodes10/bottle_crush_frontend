@@ -50,21 +50,6 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     super.dispose();
   }
 
-  Future<void> _fetchDashboardData() async {
-    try {
-      String? token = await _secureStorage.read(key: 'access_token');
-      final stats = await _apiServices.fetchBottleStats(token!);
-
-      setState(() {
-        totalBottleCount = stats['total_count']?.toInt() ?? 0;
-        totalBottleWeight = stats['total_weight']?.toDouble() ?? 0.0;
-      });
-    } catch (e) {
-      debugPrint('Error fetching dashboard data: $e');
-
-    }
-  }
-
   void _startAutoRefresh() {
     _refreshTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _fetchDashboardData();
@@ -94,6 +79,22 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     }
   }
 
+  Future<void> _fetchDashboardData() async {
+    try {
+      String? token = await _secureStorage.read(key: 'access_token');
+      final stats = await _apiServices.fetchBottleStats(token!);
+
+      setState(() {
+        totalBottleCount = stats['total_count']?.toInt() ?? 0;
+        totalBottleWeight = stats['total_weight']?.toDouble() ?? 0.0;
+      });
+    } catch (e) {
+      debugPrint('Error fetching dashboard data: $e');
+
+    }
+  }
+
+
   Future<void> requestStoragePermission() async {
     PermissionStatus status = await Permission.storage.request();
 
@@ -106,25 +107,10 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     }
   }
 
-  // Example to get app-specific external storage path
-  Future<String> getAppStoragePath() async {
-    final directory = await getExternalStorageDirectory();
-    return directory?.path ?? '/storage/emulated/0/';
-  }
-
-
 
   Future<void> exportToExcel(BuildContext context) async {
     try {
       debugPrint('Starting exportToExcel function...');
-
-      // Request storage permission
-      if (await Permission.storage.request().isDenied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Storage permission is required to save the file.')),
-        );
-        return;
-      }
 
       // Retrieve token from secure storage
       String? token = await _secureStorage.read(key: 'access_token');
@@ -192,65 +178,6 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
       );
     }
   }
-
-
-
-
-  void showFileSavedSnackBar(BuildContext context, String filePath) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Excel file saved at $filePath'),
-        action: SnackBarAction(
-          label: 'Open Folder',
-          onPressed: () async {
-            try {
-              // Get the directory path from the file path
-              final directoryPath = filePath.substring(0, filePath.lastIndexOf(Platform.pathSeparator));
-
-              // Check if the directory exists
-              final directory = Directory(directoryPath);
-              if (!directory.existsSync()) {
-                debugPrint('Directory does not exist at $directoryPath');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Directory does not exist')),
-                );
-                return;
-              }
-
-              // Call platform-specific code to open the directory
-              await openDirectory(directoryPath);
-            } catch (e) {
-              debugPrint('Error: ${e.toString()}');
-              // Handle any errors and provide the user with feedback
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('An error occurred while opening the directory')),
-              );
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-// Method to open the directory using platform channels
-  Future<void> openDirectory(String path) async {
-    try {
-      const platform = MethodChannel('com.example.openDirectory');
-      // Check if the path is not empty
-      if (path.isEmpty) {
-        debugPrint('The directory path is empty');
-        throw PlatformException(code: 'INVALID_PATH', message: 'Invalid directory path');
-      }
-      await platform.invokeMethod('openDirectory', {'path': path});
-    } on PlatformException catch (e) {
-      debugPrint("Failed to open directory: '${e.message}'");
-    } catch (e) {
-      debugPrint('Error: $e');
-    }
-  }
-
-
-
 
 
   @override
