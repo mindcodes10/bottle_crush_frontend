@@ -45,6 +45,22 @@ class _DashboardState extends State<Dashboard> {
     _startAutoRefresh();
   }
 
+  Future<void> requestStoragePermission() async {
+    PermissionStatus status = await Permission.storage.request();
+
+    if (status.isGranted) {
+      debugPrint('Storage permission granted');
+    } else if (status.isDenied) {
+      debugPrint('Storage permission denied');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Storage permission is required to proceed.')),
+      );
+    } else if (status.isPermanentlyDenied) {
+      debugPrint('Storage permission permanently denied');
+      openAppSettings(); // Let the user open settings to enable permission
+    }
+  }
+
   Future<void> _fetchDashboardData() async {
     token = await _secureStorage.read(key: 'access_token');
     try {
@@ -104,36 +120,11 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  Future<void> requestStoragePermission() async {
-    PermissionStatus status = await Permission.storage.request();
-
-    if (status.isGranted) {
-      debugPrint('Permission granted');
-    } else if (status.isDenied) {
-      debugPrint('Permission denied');
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings(); // Let the user open settings to enable permission
-    }
-  }
-
-  // Example to get app-specific external storage path
-  Future<String> getAppStoragePath() async {
-    final directory = await getExternalStorageDirectory();
-    return directory?.path ?? '/storage/emulated/0/';
-  }
-
   Future<void> exportToExcel(BuildContext context) async {
     try {
       debugPrint('Starting exportToExcel function...');
 
-      // Request storage permission
-      if (await Permission.storage.request().isDenied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Storage permission is required to save the file.')),
-        );
-        return;
-      }
-
+      // Proceed with the export logic if permission is granted
       // Retrieve the token from secure storage
       token = await _secureStorage.read(key: 'access_token');
       if (token == null || token!.isEmpty) {
@@ -150,8 +141,6 @@ class _DashboardState extends State<Dashboard> {
 
       // Create Excel file
       var excel = Excel.createExcel();
-      //excel.delete('Sheet1'); // Delete default sheet
-
       Sheet sheet = excel['Sheet1'];
       sheet.appendRow(['Date', 'Business Name', 'Machine Name', 'Bottle Count', 'Bottle Weight']);
       debugPrint('Excel headers added.');
@@ -161,7 +150,6 @@ class _DashboardState extends State<Dashboard> {
         businesses.forEach((businessName, machines) {
           if (machines.isNotEmpty) {
             for (var machine in machines) {
-              // Safely retrieve values, with defaults for null or missing data
               sheet.appendRow([
                 date,
                 businessName,
@@ -171,7 +159,6 @@ class _DashboardState extends State<Dashboard> {
               ]);
             }
           } else {
-            // In case there are no machines for a business
             sheet.appendRow([date, businessName, 'No Machines', '0', '0.0']);
           }
         });
@@ -182,12 +169,10 @@ class _DashboardState extends State<Dashboard> {
         throw Exception("Error encoding Excel file.");
       }
 
-      // Generate a unique file name with the current date and time
       String formattedDate = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
       String fileName = 'BottleStats_$formattedDate.xlsx';
 
-      // Save file to device storage (e.g., Download directory)
-      Directory externalDir = Directory('/storage/emulated/0/Download/Bottle Crush'); // Common Download directory
+      Directory externalDir = Directory('/storage/emulated/0/Download/Bottle Crush');
       if (!await externalDir.exists()) {
         externalDir.createSync(recursive: true);
       }
@@ -207,6 +192,7 @@ class _DashboardState extends State<Dashboard> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

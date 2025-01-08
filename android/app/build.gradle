@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.aquazen.aquazen"
-    compileSdk = flutter.compileSdkVersion
+    compileSdkVersion 34
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.aquazen.aquazen"
         minSdk = 21
-        targetSdk = 33
+        targetSdkVersion 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
