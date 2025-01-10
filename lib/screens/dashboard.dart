@@ -13,8 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -44,22 +45,22 @@ class _DashboardState extends State<Dashboard> {
     _fetchDashboardData();
     _startAutoRefresh();
   }
-
-  Future<void> requestStoragePermission() async {
-    PermissionStatus status = await Permission.storage.request();
-
-    if (status.isGranted) {
-      debugPrint('Storage permission granted');
-    } else if (status.isDenied) {
-      debugPrint('Storage permission denied');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Storage permission is required to proceed.')),
-      );
-    } else if (status.isPermanentlyDenied) {
-      debugPrint('Storage permission permanently denied');
-      openAppSettings(); // Let the user open settings to enable permission
-    }
-  }
+  //
+  // Future<void> requestStoragePermission() async {
+  //   PermissionStatus status = await Permission.storage.request();
+  //
+  //   if (status.isGranted) {
+  //     debugPrint('Storage permission granted');
+  //   } else if (status.isDenied) {
+  //     debugPrint('Storage permission denied');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Storage permission is required to proceed.')),
+  //     );
+  //   } else if (status.isPermanentlyDenied) {
+  //     debugPrint('Storage permission permanently denied');
+  //     openAppSettings(); // Let the user open settings to enable permission
+  //   }
+  // }
 
   Future<void> _fetchDashboardData() async {
     token = await _secureStorage.read(key: 'access_token');
@@ -124,22 +125,51 @@ class _DashboardState extends State<Dashboard> {
     try {
       debugPrint('Starting exportToExcel function...');
 
-      // Proceed with the export logic if permission is granted
-      // Retrieve the token from secure storage
-      token = await _secureStorage.read(key: 'access_token');
-      if (token == null || token!.isEmpty) {
+      // Retrieve device information
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      debugPrint('Android Version: ${androidInfo.version.release}');
+
+      // Request storage permissions based on the Android version
+      if (androidInfo.version.release.compareTo('12') < 0) {
+        // Request permission for Android versions below 12
+        if (await Permission.storage.request().isGranted) {
+          await _exportFileLogic(context);
+        } else {
+          debugPrint('Storage permission denied');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission denied. Please enable it in settings.')),
+          );
+        }
+      } else {
+        // No permission request for Android 12 and above (due to Scoped Storage)
+        await _exportFileLogic(context);
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Android Version not found')),
+      );
+    }
+  }
+
+  Future<void> _exportFileLogic(BuildContext context) async {
+    try {
+      // Proceed with the export logic
+      String? token = await _secureStorage.read(key: 'access_token');
+      if (token == null || token.isEmpty) {
         throw Exception("Access token is missing or invalid.");
       }
       debugPrint('Token retrieved: $token');
 
       // Fetch day-wise bottle stats
-      Map<String, dynamic>? bottleStats = await _apiService.getDaywiseBottleStats(token!);
+      Map<String, dynamic>? bottleStats = await _apiService.getDaywiseBottleStats(token);
       if (bottleStats == null || bottleStats.isEmpty) {
         throw Exception("No data received from API.");
       }
       debugPrint('Response from getDaywiseBottleStats: $bottleStats');
 
-      // Create Excel file
+      // Create Excel file and populate data
       var excel = Excel.createExcel();
       Sheet sheet = excel['Sheet1'];
       sheet.appendRow(['Date', 'Business Name', 'Machine Name', 'Bottle Count', 'Bottle Weight']);
@@ -172,19 +202,9 @@ class _DashboardState extends State<Dashboard> {
       String formattedDate = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
       String fileName = 'BottleStats_$formattedDate.xlsx';
 
-      Directory externalDir = Directory('/storage/emulated/0/Download/Bottle Crush');
-      if (!await externalDir.exists()) {
-        externalDir.createSync(recursive: true);
-      }
+      // Proceed with file saving logic
+      await _saveFileToDownloads(fileName, encodedFile, context);
 
-      String filePath = '${externalDir.path}/$fileName';
-      File file = File(filePath);
-      file.writeAsBytesSync(encodedFile);
-
-      debugPrint('Excel file saved at $filePath');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Excel file saved at $filePath')),
-      );
     } catch (e) {
       debugPrint('Error exporting to Excel: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -192,6 +212,33 @@ class _DashboardState extends State<Dashboard> {
       );
     }
   }
+
+  Future<void> _saveFileToDownloads(String fileName, List<int> encodedFile, BuildContext context) async {
+    try {
+      final downloadDir = Directory('/storage/emulated/0/Download');
+
+      // Ensure the directory exists
+      if (!await downloadDir.exists()) {
+        await downloadDir.create(recursive: true);
+      }
+
+      // Save file directly to the Downloads folder
+      String filePath = '${downloadDir.path}/$fileName';
+      File file = File(filePath);
+      await file.writeAsBytes(encodedFile);
+
+      debugPrint('Excel file saved at $filePath');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Excel file saved in "Downloads" folder')),
+      );
+    } catch (e) {
+      debugPrint('Error while saving the file: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error saving Excel file.')),
+      );
+    }
+  }
+
 
 
   @override

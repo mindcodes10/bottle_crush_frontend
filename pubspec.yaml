@@ -28,6 +28,9 @@ dependencies:
   flutter_dropdown: ^1.0.0
   flutter_native_splash: ^2.4.4
   cupertino_icons: ^1.0.8
+  device_info_plus: ^11.2.0
+  flutter_plugin_android_lifecycle: ^2.0.24
+
 
 
 dev_dependencies:

@@ -16,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 
 class BusinessDashboard extends StatefulWidget {
@@ -94,25 +95,58 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     }
   }
 
-
-  Future<void> requestStoragePermission() async {
-    PermissionStatus status = await Permission.storage.request();
-
-    if (status.isGranted) {
-      debugPrint('Permission granted');
-    } else if (status.isDenied) {
-      debugPrint('Permission denied');
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings(); // Let the user open settings to enable permission
-    }
-  }
+  //
+  // Future<void> requestStoragePermission() async {
+  //   PermissionStatus status = await Permission.storage.request();
+  //
+  //   if (status.isGranted) {
+  //     debugPrint('Permission granted');
+  //   } else if (status.isDenied) {
+  //     debugPrint('Permission denied');
+  //   } else if (status.isPermanentlyDenied) {
+  //     openAppSettings(); // Let the user open settings to enable permission
+  //   }
+  // }
 
 
   Future<void> exportToExcel(BuildContext context) async {
     try {
       debugPrint('Starting exportToExcel function...');
 
-      // Retrieve token from secure storage
+      // Retrieve device information
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      debugPrint('Android Version: ${androidInfo.version.release}');
+
+      // Request storage permissions based on the Android version
+      if (androidInfo.version.release.compareTo('12') < 0) {
+        // Request permission for Android versions below 12
+        if (await Permission.storage.request().isGranted) {
+          await _exportFileLogic(context);
+        } else {
+          debugPrint('Storage permission denied');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission denied. Please enable it in settings.')),
+          );
+        }
+      } else {
+        // No permission request for Android 12 and above (due to Scoped Storage)
+        await _exportFileLogic(context);
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Android Version not found')),
+      );
+    }
+  }
+
+
+
+
+  Future<void> _exportFileLogic(BuildContext context) async {
+    try {
+    // Retrieve token from secure storage
       String? token = await _secureStorage.read(key: 'access_token');
       if (token == null || token.isEmpty) {
         throw Exception("Access token is missing or invalid.");
@@ -149,36 +183,50 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         }
       });
 
-      // Encode the Excel file
       List<int>? encodedFile = excel.encode();
       if (encodedFile == null) {
         throw Exception("Error encoding Excel file.");
       }
 
-      // Save the file in the device storage
-      Directory externalDir = Directory('/storage/emulated/0/Download/BottleCrush');
-      if (!await externalDir.exists()) {
-        externalDir.createSync(recursive: true);
-      }
+      String formattedDate = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      String fileName = 'CompanyBottleStats_$formattedDate.xlsx';
 
-      String formattedDateTime = DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now());
-      String filePath = '${externalDir.path}/CompanyBottleStats_$formattedDateTime.xlsx';
-      File file = File(filePath);
-      file.writeAsBytesSync(encodedFile);
+      // Proceed with file saving logic
+      await _saveFileToDownloads(fileName, encodedFile, context);
 
-      debugPrint('Excel file saved at $filePath');
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Excel file saved at $filePath')),
-      );
     } catch (e) {
-      debugPrint('Error occurred in exportToExcel: $e');
+      debugPrint('Error exporting to Excel: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('File not exported')),
+        const SnackBar(content: Text('Failed to export Excel file.')),
       );
     }
   }
 
+  Future<void> _saveFileToDownloads(String fileName, List<int> encodedFile, BuildContext context) async {
+    try {
+      final downloadDir = Directory('/storage/emulated/0/Download');
+
+      // Ensure the directory exists
+      if (!await downloadDir.exists()) {
+        await downloadDir.create(recursive: true);
+      }
+
+      // Save file directly to the Downloads folder
+      String filePath = '${downloadDir.path}/$fileName';
+      File file = File(filePath);
+      await file.writeAsBytes(encodedFile);
+
+      debugPrint('Excel file saved at $filePath');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Excel file saved in "Downloads" folder')),
+      );
+    } catch (e) {
+      debugPrint('Error while saving the file: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error saving Excel file.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
