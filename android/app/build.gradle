@@ -25,6 +25,16 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+    signingConfigs {
+        release {
+            storeFile file('/Nisha/Mindcodes/Documents/Baalkalakaar/key_store.jks')
+
+            storePassword 'LVY%xG'
+            keyAlias 'key0'
+            keyPassword 'LVY%xG'
+        }
+    }
+
 
     buildTypes {
         release {
