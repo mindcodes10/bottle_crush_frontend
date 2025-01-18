@@ -152,7 +152,7 @@ class _AddBusinessState extends State<AddBusiness> {
     } catch (e) {
       debugPrint('Error : $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update company details')),
+        const SnackBar(content: Text('Something went wrong.. please try again later.')),
       );
     }
   }
@@ -459,9 +459,8 @@ class _AddBusinessState extends State<AddBusiness> {
               children: [
                 CustomElevatedButton(
                   buttonText: 'Cancel',
-                  onPressed: () {
+                  onPressed: () async  {
                     Navigator.pop(context);
-                    //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const ViewBusiness()));
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,
@@ -471,7 +470,10 @@ class _AddBusinessState extends State<AddBusiness> {
                 ),
                 CustomElevatedButton(
                   buttonText: widget.business == null ? 'Add ' : 'Update ',
-                  onPressed: submitPressed,
+                  // onPressed: submitPressed,
+                  onPressed: () async {
+                    await submitPressed();
+                  },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundBlue,
                   textColor: AppTheme.textWhite,

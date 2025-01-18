@@ -148,7 +148,7 @@ class _AddMachinesState extends State<AddMachines> {
     }
   }
 
-  void _submitPressed() async {
+  _submitPressed() async {
     // Validate form fields
     if (_machineNameController.text.isEmpty ||
         _machineNumberController.text.isEmpty ||
@@ -561,9 +561,8 @@ class _AddMachinesState extends State<AddMachines> {
               children: [
                 CustomElevatedButton(
                   buttonText: 'Cancel',
-                  onPressed: () {
+                  onPressed: () async  {
                     Navigator.pop(context);
-                    //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const ViewMachines()));
                   },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundWhite,
@@ -575,7 +574,9 @@ class _AddMachinesState extends State<AddMachines> {
                 ),
                 CustomElevatedButton(
                   buttonText: widget.machine == null ? 'Add' : 'Update',
-                  onPressed: _submitPressed,
+                  onPressed: () async {
+                    await _submitPressed();  // Ensure that _submitPressed is an async function
+                  },
                   width: screenWidth * 0.4,
                   backgroundColor: AppTheme.backgroundBlue,
                   textColor: AppTheme.textWhite,
