@@ -27,13 +27,14 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file('/Nisha/Mindcodes/Documents/Baalkalakaar/key_store.jks')
+            storeFile file('/home/yash/Documents/bottle_crush_essentials/key_store1.jks')
 
-            storePassword 'LVY%xG'
-            keyAlias 'key0'
-            keyPassword 'LVY%xG'
+            storePassword 'Bq!pAv'
+            keyAlias 'key1'
+            keyPassword 'Bq!pAv'
         }
     }
+
 
 
     buildTypes {
