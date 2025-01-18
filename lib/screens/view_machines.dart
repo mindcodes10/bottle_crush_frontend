@@ -112,7 +112,9 @@ class _ViewMachinesState extends State<ViewMachines> {
               children: [
                 CustomElevatedButton(
                   buttonText: 'Cancel',
-                  onPressed: () {
+                  onPressed: () async {
+                    await Future.delayed(Duration(milliseconds: 100));
+
                     Navigator.of(context).pop();
                   },
                   backgroundColor: AppTheme.backgroundWhite,

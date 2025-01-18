@@ -285,10 +285,11 @@ class _DashboardState extends State<Dashboard> {
                       style: TextStyle(
                           fontSize: titleFontSize, fontWeight: FontWeight.bold),
                     ),
+
                     CustomElevatedButton(
                       buttonText: 'Export to Excel',
-                      onPressed: () {
-                        exportToExcel(context);
+                      onPressed: () async {
+                        await exportToExcel(context); // Ensure exportToExcel is async
                       },
                       width: screenWidth * 0.45,
                       height: 45,
@@ -298,6 +299,20 @@ class _DashboardState extends State<Dashboard> {
                         color: AppTheme.backgroundWhite,
                       ),
                     ),
+
+                    // CustomElevatedButton(
+                    //   buttonText: 'Export to Excel',
+                    //   onPressed: () {
+                    //     exportToExcel(context);
+                    //   },
+                    //   width: screenWidth * 0.45,
+                    //   height: 45,
+                    //   backgroundColor: AppTheme.backgroundBlue,
+                    //   icon: const Icon(
+                    //     FontAwesomeIcons.solidFileExcel,
+                    //     color: AppTheme.backgroundWhite,
+                    //   ),
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 20),

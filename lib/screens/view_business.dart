@@ -129,7 +129,8 @@ class _ViewBusinessState extends State<ViewBusiness> {
             actions: <Widget>[
               CustomElevatedButton(
                 buttonText: 'Close',
-                onPressed: () {
+                onPressed: () async {
+                  await Future.delayed(Duration(milliseconds: 100));
                   Navigator.of(context).pop();
                 },
                 backgroundColor: AppTheme.backgroundBlue,
@@ -173,7 +174,8 @@ class _ViewBusinessState extends State<ViewBusiness> {
               children: [
                 CustomElevatedButton(
                   buttonText: 'Cancel',
-                  onPressed: () {
+                  onPressed: () async {
+                    await Future.delayed(Duration(milliseconds: 100));
                     Navigator.of(context).pop();
                   },
                   backgroundColor: AppTheme.backgroundWhite,
@@ -390,20 +392,40 @@ class _ViewBusinessState extends State<ViewBusiness> {
 
                   CustomElevatedButton(
                     buttonText: ' + ADD COMPANY',
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      // Navigate to AddBusiness and handle the result asynchronously
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const AddBusiness()),
-                      ).then((result) {
-                        if (result == true) {
-                          _fetchTokenAndBusinessDetails(); // Refresh the business details
-                        }
-                      });
+                      );
+
+                      // Check the result and refresh business details if necessary
+                      if (result == true) {
+                        await _fetchTokenAndBusinessDetails(); // Ensure the method is async
+                      }
                     },
                     width: double.infinity,
                     height: 50,
                     backgroundColor: AppTheme.backgroundBlue,
                   ),
+
+
+                  // CustomElevatedButton(
+                  //   buttonText: ' + ADD COMPANY',
+                  //   onPressed: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(builder: (context) => const AddBusiness()),
+                  //     ).then((result) {
+                  //       if (result == true) {
+                  //         _fetchTokenAndBusinessDetails(); // Refresh the business details
+                  //       }
+                  //     });
+                  //   },
+                  //   width: double.infinity,
+                  //   height: 50,
+                  //   backgroundColor: AppTheme.backgroundBlue,
+                  // ),
                 ],
               ),
             );

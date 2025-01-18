@@ -1,15 +1,15 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
-// Reusable Custom Button Widget
-class CustomElevatedButton extends StatelessWidget {
+class CustomElevatedButton extends StatefulWidget {
   final String buttonText;
-  final VoidCallback onPressed;
-  final double? width; // Optional width to make it flexible
-  final double? height; // Optional height to make it flexible
-  final Color backgroundColor; // Customizable background color
-  final Color textColor; // Customizable text color
-  final Color? borderColor; // Optional customizable border color
-  final Icon? icon; // Optional prefix icon
+  final Future<void> Function() onPressed;
+  final double? width;
+  final double? height;
+  final Color backgroundColor;
+  final Color textColor;
+  final Color? borderColor;
+  final Icon? icon;
 
   const CustomElevatedButton({
     super.key,
@@ -17,47 +17,71 @@ class CustomElevatedButton extends StatelessWidget {
     required this.onPressed,
     this.width,
     this.height,
-    this.backgroundColor = Colors.blue, // Default green background
-    this.textColor = Colors.white, // Default white text color
-    this.borderColor, // Optional border color
-    this.icon, // Optional prefix icon
+    this.backgroundColor = Colors.blue,
+    this.textColor = Colors.white,
+    this.borderColor,
+    this.icon,
   });
+
+  @override
+  _CustomElevatedButtonState createState() => _CustomElevatedButtonState();
+}
+
+class _CustomElevatedButtonState extends State<CustomElevatedButton> {
+  bool _isLoading = false;
+
+  void _handlePress() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await widget.onPressed();
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.center, // Center alignment
+      alignment: Alignment.center,
       child: SizedBox(
-        width: width ?? 200, // Default width if not provided
-        height: height ?? 50, // Default height if not provided
+        width: widget.width ?? 200,
+        height: widget.height ?? 50,
         child: ElevatedButton(
-          onPressed: onPressed,
+          onPressed: _handlePress, // Keep the button active during loading
           style: ElevatedButton.styleFrom(
-            backgroundColor: backgroundColor,
+            backgroundColor: widget.backgroundColor,
             padding: const EdgeInsets.symmetric(
               vertical: 10.0,
               horizontal: 15.0,
             ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0), // Rounded edges
-              side: borderColor != null
-                  ? BorderSide(color: borderColor!, width: 2.0) // Add border if specified
-                  : BorderSide.none, // No border if not specified
+              borderRadius: BorderRadius.circular(8.0),
+              side: widget.borderColor != null
+                  ? BorderSide(color: widget.borderColor!, width: 2.0)
+                  : BorderSide.none,
             ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (icon != null) ...[
-                icon!, // Display the prefix icon if provided
-                const SizedBox(width: 8.0), // Space between icon and text
+              if (_isLoading)
+                const DottedCircularProgressIndicator(),
+              if (!_isLoading && widget.icon != null) ...[
+                widget.icon!,
+                const SizedBox(width: 8.0),
               ],
+              const SizedBox(width: 8.0),
               Text(
-                buttonText,
+                widget.buttonText,
                 style: TextStyle(
-                  color: textColor, // Custom text color
-                  fontSize: 14, // Font size
-                  fontWeight: FontWeight.bold, // Bold text
+                  color: widget.textColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
@@ -65,5 +89,86 @@ class CustomElevatedButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class DottedCircularProgressIndicator extends StatefulWidget {
+  const DottedCircularProgressIndicator({Key? key}) : super(key: key);
+
+  @override
+  _DottedCircularProgressIndicatorState createState() =>
+      _DottedCircularProgressIndicatorState();
+}
+
+class _DottedCircularProgressIndicatorState
+    extends State<DottedCircularProgressIndicator>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 14),
+      vsync: this,
+      // Loop the animation indefinitely
+      lowerBound: 0,
+      upperBound: 2 * pi,
+    )..repeat();
+
+    _animation = Tween<double>(begin: 0, end: 2 * pi).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 20,
+      width: 20,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: _DottedProgressPainter(angle: _animation.value),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _DottedProgressPainter extends CustomPainter {
+  final double angle;
+
+  _DottedProgressPainter({required this.angle});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+
+    final double radius = size.width / 2;
+    final double dottedLength = 5.0;
+    final double gapLength = 3.0;
+
+    for (double currentAngle = 0.0; currentAngle < 2 * pi; currentAngle += (dottedLength + gapLength) / radius) {
+      final double x = radius + radius * cos(currentAngle + angle); // Apply rotation angle
+      final double y = radius + radius * sin(currentAngle + angle);
+      canvas.drawCircle(Offset(x, y), 1.0, paint); // Draw dotted circle
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
