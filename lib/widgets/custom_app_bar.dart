@@ -124,23 +124,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
         throw Exception("Access token is missing or invalid.");
       }
 
-      // Call the logout API
-      bool isLoggedOut = await _apiService.logout(token);
-      if (isLoggedOut) {
-        // Clear the token from secure storage
-        await _secureStorage.delete(key: 'access_token');
+      // Clear the token from secure storage
+      await _secureStorage.delete(key: 'access_token');
 
-        // Redirect to the login page
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-              (Route<dynamic> route) => false,
-        );
-      } else {
-        // Show an error message if logout failed
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Logout failed. Please try again.')),
-        );
-      }
+      // Redirect to the login page
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (Route<dynamic> route) => false,
+      );
     } catch (e) {
       // Handle errors during logout
       print('Error during logout: $e');
@@ -149,4 +140,5 @@ class _CustomAppBarState extends State<CustomAppBar> {
       );
     }
   }
+
 }
