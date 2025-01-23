@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   device_info_plus: ^11.2.0
   flutter_plugin_android_lifecycle: ^2.0.24
+  fl_chart: ^0.70.2
 
 
 

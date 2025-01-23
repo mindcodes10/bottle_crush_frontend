@@ -25,6 +25,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       preferredSize: const Size.fromHeight(56), // Adjust the height as needed
       child: Container(
         decoration: BoxDecoration(
+          color: AppTheme.backgroundWhite,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2), // Shadow color
@@ -58,7 +59,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
               },
             ),
           ],
-          backgroundColor: Colors.white,
+          scrolledUnderElevation: 0,
+          backgroundColor: AppTheme.backgroundWhite,
         ),
       ),
     );

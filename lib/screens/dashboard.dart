@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:excel/excel.dart';
 import 'package:bottle_crush/screens/email.dart';
 import 'package:bottle_crush/screens/view_business.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
@@ -12,9 +10,9 @@ import 'package:bottle_crush/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import '../widgets/export_to_excel.dart';
+import '../widgets/line_chart_widget.dart';
+
 
 
 class Dashboard extends StatefulWidget {
@@ -38,29 +36,13 @@ class _DashboardState extends State<Dashboard> {
 
   Timer? _refreshTimer;
 
-
   @override
   void initState() {
     super.initState();
     _fetchDashboardData();
     _startAutoRefresh();
   }
-  //
-  // Future<void> requestStoragePermission() async {
-  //   PermissionStatus status = await Permission.storage.request();
-  //
-  //   if (status.isGranted) {
-  //     debugPrint('Storage permission granted');
-  //   } else if (status.isDenied) {
-  //     debugPrint('Storage permission denied');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Storage permission is required to proceed.')),
-  //     );
-  //   } else if (status.isPermanentlyDenied) {
-  //     debugPrint('Storage permission permanently denied');
-  //     openAppSettings(); // Let the user open settings to enable permission
-  //   }
-  // }
+
 
   Future<void> _fetchDashboardData() async {
     token = await _secureStorage.read(key: 'access_token');
@@ -78,7 +60,7 @@ class _DashboardState extends State<Dashboard> {
       setState(() {
         totalBusinessCount = businessCount;
         totalMachineCount = machineCount;
-        totalBottleCount = bottleStats['total_count'].toInt(); // Ensure the count is an integer
+        totalBottleCount = bottleStats['total_count'].toInt();
         totalBottleWeight = bottleStats['total_weight'];
       });
     } catch (e) {
@@ -94,7 +76,8 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void dispose() {
-    _refreshTimer?.cancel(); // Cancel timer to prevent memory leaks
+    // Cancel timer to prevent memory leaks
+    _refreshTimer?.cancel();
     super.dispose();
   }
 
@@ -102,7 +85,6 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       _selectedIndex = index;
     });
-
     if (index == 1) {
       Navigator.pushReplacement(
         context,
@@ -121,125 +103,16 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  //Use the ExportToExcel class for exporting
   Future<void> exportToExcel(BuildContext context) async {
-    try {
-      debugPrint('Starting exportToExcel function...');
-
-      // Retrieve device information
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      debugPrint('Android Version: ${androidInfo.version.release}');
-
-      // Request storage permissions based on the Android version
-      if (androidInfo.version.release.compareTo('12') < 0) {
-        // Request permission for Android versions below 12
-        if (await Permission.storage.request().isGranted) {
-          await _exportFileLogic(context);
-        } else {
-          debugPrint('Storage permission denied');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Storage permission denied. Please enable it in settings.')),
-          );
-        }
-      } else {
-        // No permission request for Android 12 and above (due to Scoped Storage)
-        await _exportFileLogic(context);
-      }
-    } catch (e) {
-      debugPrint('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Android Version not found')),
-      );
-    }
-  }
-
-  Future<void> _exportFileLogic(BuildContext context) async {
-    try {
-      // Proceed with the export logic
+    await ExportToExcel.exportDataToExcel(context, () async {
       String? token = await _secureStorage.read(key: 'access_token');
       if (token == null || token.isEmpty) {
         throw Exception("Access token is missing or invalid.");
       }
-      debugPrint('Token retrieved: $token');
-
-      // Fetch day-wise bottle stats
-      Map<String, dynamic>? bottleStats = await _apiService.getDaywiseBottleStats(token);
-      if (bottleStats == null || bottleStats.isEmpty) {
-        throw Exception("No data received from API.");
-      }
-      debugPrint('Response from getDaywiseBottleStats: $bottleStats');
-
-      // Create Excel file and populate data
-      var excel = Excel.createExcel();
-      Sheet sheet = excel['Sheet1'];
-      sheet.appendRow(['Date', 'Business Name', 'Machine Name', 'Bottle Count', 'Bottle Weight']);
-      debugPrint('Excel headers added.');
-
-      // Populate Excel file with data
-      bottleStats.forEach((date, businesses) {
-        businesses.forEach((businessName, machines) {
-          if (machines.isNotEmpty) {
-            for (var machine in machines) {
-              sheet.appendRow([
-                date,
-                businessName,
-                machine['machine_name'] ?? '',
-                machine['total_bottles']?.toString() ?? '0',
-                machine['total_weight']?.toString() ?? '0.0',
-              ]);
-            }
-          } else {
-            sheet.appendRow([date, businessName, 'No Machines', '0', '0.0']);
-          }
-        });
-      });
-
-      List<int>? encodedFile = excel.encode();
-      if (encodedFile == null) {
-        throw Exception("Error encoding Excel file.");
-      }
-
-      String formattedDate = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      String fileName = 'BottleStats_$formattedDate.xlsx';
-
-      // Proceed with file saving logic
-      await _saveFileToDownloads(fileName, encodedFile, context);
-
-    } catch (e) {
-      debugPrint('Error exporting to Excel: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to export Excel file.')),
-      );
-    }
+      return await _apiService.getDaywiseBottleStats(token);
+    });
   }
-
-  Future<void> _saveFileToDownloads(String fileName, List<int> encodedFile, BuildContext context) async {
-    try {
-      final downloadDir = Directory('/storage/emulated/0/Download');
-
-      // Ensure the directory exists
-      if (!await downloadDir.exists()) {
-        await downloadDir.create(recursive: true);
-      }
-
-      // Save file directly to the Downloads folder
-      String filePath = '${downloadDir.path}/$fileName';
-      File file = File(filePath);
-      await file.writeAsBytes(encodedFile);
-
-      debugPrint('Excel file saved at $filePath');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Excel file saved in "Downloads" folder')),
-      );
-    } catch (e) {
-      debugPrint('Error while saving the file: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error saving Excel file.')),
-      );
-    }
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +124,7 @@ class _DashboardState extends State<Dashboard> {
     double iconSize = cardWidth * 0.2;
     double titleFontSize = cardWidth * 0.09;
     double valueFontSize = cardWidth * 0.1;
+    double containerHeight = screenHeight * 0.28;
 
     // For larger screens like tablets, adjust layout
     if (screenWidth > 800) {
@@ -259,6 +133,7 @@ class _DashboardState extends State<Dashboard> {
       iconSize = cardWidth * 0.13;
       titleFontSize = cardWidth * 0.05;
       valueFontSize = cardWidth * 0.06;
+      containerHeight = screenHeight * 0.95;
     }
 
     return Scaffold(
@@ -268,118 +143,143 @@ class _DashboardState extends State<Dashboard> {
         selectedIndex: _selectedIndex,
       ),
       backgroundColor: AppTheme.backgroundWhite,
-      body: RefreshIndicator(
-        onRefresh: _fetchDashboardData,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
+      body: Column(
+        children: [
+          // Fixed Header with "Dashboard" and "Export to Excel"
+          Padding(
             padding: const EdgeInsets.all(14.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Dashboard',
-                      style: TextStyle(
-                          fontSize: titleFontSize, fontWeight: FontWeight.bold),
-                    ),
-
-                    CustomElevatedButton(
-                      buttonText: 'Export to Excel',
-                      onPressed: () async {
-                        await exportToExcel(context); // Ensure exportToExcel is async
-                      },
-                      width: screenWidth * 0.45,
-                      height: 45,
-                      backgroundColor: AppTheme.backgroundBlue,
-                      icon: const Icon(
-                        FontAwesomeIcons.solidFileExcel,
-                        color: AppTheme.backgroundWhite,
-                      ),
-                    ),
-
-                    // CustomElevatedButton(
-                    //   buttonText: 'Export to Excel',
-                    //   onPressed: () {
-                    //     exportToExcel(context);
-                    //   },
-                    //   width: screenWidth * 0.45,
-                    //   height: 45,
-                    //   backgroundColor: AppTheme.backgroundBlue,
-                    //   icon: const Icon(
-                    //     FontAwesomeIcons.solidFileExcel,
-                    //     color: AppTheme.backgroundWhite,
-                    //   ),
-                    // ),
-                  ],
+                Text(
+                  'Dashboard',
+                  style: TextStyle(
+                    fontSize: titleFontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildDashboardCard(
-                      title: "Total Machines",
-                      value: totalMachineCount.toString(),
-                      icon: FontAwesomeIcons.box,
-                      cardWidth: cardWidth,
-                      cardHeight: cardHeight,
-                      iconSize: iconSize,
-                      titleFontSize: titleFontSize,
-                      valueFontSize: valueFontSize,
-                    ),
-                    _buildDashboardCard(
-                      title: "Total Companies",
-                      value: totalBusinessCount.toString(),
-                      icon: FontAwesomeIcons.briefcase,
-                      cardWidth: cardWidth,
-                      cardHeight: cardHeight,
-                      iconSize: iconSize,
-                      titleFontSize: titleFontSize,
-                      valueFontSize: valueFontSize,
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ViewBusiness()),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildDashboardCard(
-                      title: "Total Bottles",
-                      value: totalBottleCount.toString(),
-                      icon: FontAwesomeIcons.bottleWater,
-                      cardWidth: cardWidth,
-                      cardHeight: cardHeight,
-                      iconSize: iconSize,
-                      titleFontSize: titleFontSize,
-                      valueFontSize: valueFontSize,
-                    ),
-                    _buildDashboardCard(
-                      title: "Bottle Weight (kg)",
-                      value: totalBottleWeight.toStringAsFixed(1),
-                      icon: FontAwesomeIcons.weightHanging,
-                      cardWidth: cardWidth,
-                      cardHeight: cardHeight,
-                      iconSize: iconSize,
-                      titleFontSize: titleFontSize,
-                      valueFontSize: valueFontSize,
-                    ),
-                  ],
+                CustomElevatedButton(
+                  buttonText: 'Export to Excel',
+                  onPressed: () async {
+                    await exportToExcel(context); // Ensure exportToExcel is async
+                  },
+                  width: screenWidth * 0.45,
+                  height: 45,
+                  backgroundColor: AppTheme.backgroundBlue,
+                  icon: const Icon(
+                    FontAwesomeIcons.solidFileExcel,
+                    color: AppTheme.backgroundWhite,
+                  ),
                 ),
               ],
             ),
           ),
-        ),
+          const SizedBox(height: 10),
+          // Scrollable Content
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _fetchDashboardData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildDashboardCard(
+                            title: "Total Machines",
+                            value: totalMachineCount.toString(),
+                            icon: FontAwesomeIcons.box,
+                            cardWidth: cardWidth,
+                            cardHeight: cardHeight,
+                            iconSize: iconSize,
+                            titleFontSize: titleFontSize,
+                            valueFontSize: valueFontSize,
+                          ),
+                          _buildDashboardCard(
+                            title: "Total Companies",
+                            value: totalBusinessCount.toString(),
+                            icon: FontAwesomeIcons.briefcase,
+                            cardWidth: cardWidth,
+                            cardHeight: cardHeight,
+                            iconSize: iconSize,
+                            titleFontSize: titleFontSize,
+                            valueFontSize: valueFontSize,
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ViewBusiness(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildDashboardCard(
+                            title: "Total Bottles",
+                            value: totalBottleCount.toString(),
+                            icon: FontAwesomeIcons.bottleWater,
+                            cardWidth: cardWidth,
+                            cardHeight: cardHeight,
+                            iconSize: iconSize,
+                            titleFontSize: titleFontSize,
+                            valueFontSize: valueFontSize,
+                          ),
+                          _buildDashboardCard(
+                            title: "Bottle Weight (kg)",
+                            value: totalBottleWeight.toStringAsFixed(1),
+                            icon: FontAwesomeIcons.weightHanging,
+                            cardWidth: cardWidth,
+                            cardHeight: cardHeight,
+                            iconSize: iconSize,
+                            titleFontSize: titleFontSize,
+                            valueFontSize: valueFontSize,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: AppTheme.backgroundCard,
+                            border: Border.all(
+                              color: AppTheme.backgroundCard, // Set the background color
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.35), // Shadow color with opacity
+                                blurRadius: 10, // Spread of the shadow
+                                offset: const Offset(0, 4), // Position of the shadow (x, y)
+                              ),
+                            ],
+                          ),
+                          height: containerHeight,
+                          child: const LineChartScreen(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
 
   Widget _buildDashboardCard({
     required String title,

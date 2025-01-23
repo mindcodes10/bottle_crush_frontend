@@ -74,7 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter your email'),
-          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -84,7 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter your password'),
-          backgroundColor: Colors.red,
         ),
       );
       return;
