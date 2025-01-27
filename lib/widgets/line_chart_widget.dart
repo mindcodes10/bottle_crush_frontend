@@ -54,6 +54,8 @@ class LineChartScreenState extends State<LineChartScreen> {
 
       final response = await _apiService.getDaywiseBottleStats(token);
 
+      debugPrint('API Response: $response');
+
       if (response != null && response is Map<String, dynamic>) {
         // Process and populate chart data
         setState(() {
