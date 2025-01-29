@@ -5,6 +5,7 @@ import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/bar_chart_widget.dart';
+import 'package:bottle_crush/widgets/business_vs_machines_chart.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_elevated_button.dart';
@@ -294,6 +295,31 @@ class _DashboardState extends State<Dashboard> {
                           child: const BarChartWidget(),
                         ),
                       ),
+                      const SizedBox(height: 20,),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: AppTheme.backgroundCard,
+                            border: Border.all(
+                              color: AppTheme.backgroundCard,
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.35),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          height: containerHeight,
+                          child: BusinessVsMachinesChart(token: token!,), // Add the new line chart here
+                        ),
+                      ),
+
                     ],
                   ),
                 ),
