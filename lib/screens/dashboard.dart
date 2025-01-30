@@ -14,6 +14,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/export_to_excel.dart';
 import '../widgets/line_chart_widget.dart';
+import '../widgets/pie_chart_widget.dart';
 
 
 
@@ -316,10 +317,34 @@ class _DashboardState extends State<Dashboard> {
                             ],
                           ),
                           height: containerHeight,
-                          child: BusinessVsMachinesChart(token: token!,), // Add the new line chart here
+                          child: const BusinessVsMachinesChart(), // Add the new line chart here
                         ),
                       ),
-
+                      const SizedBox(height: 20,),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: AppTheme.backgroundCard,
+                            border: Border.all(
+                              color: AppTheme.backgroundCard,
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.35),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          //height: containerHeight,
+                          height: 300,
+                          child: const PieChartWidget(), // Add the new line chart here
+                        ),
+                      ),
                     ],
                   ),
                 ),
