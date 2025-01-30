@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 import '../services/api_services.dart';
 
 class BusinessVsMachinesChart extends StatefulWidget {
-  final String token;
-
-  const BusinessVsMachinesChart({super.key, required this.token});
+  const BusinessVsMachinesChart({super.key, });
 
   @override
   State<BusinessVsMachinesChart> createState() =>
@@ -19,6 +18,8 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
   List<double> _businessTotals = [];
   List<double> _machineTotals = [];
   bool _isLoading = true;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  String? token;
 
   @override
   void initState() {
@@ -27,7 +28,8 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
   }
 
   Future<void> _fetchData() async {
-    final data = await _apiServices.getDaywiseBottleStats(widget.token);
+    token = await _secureStorage.read(key: 'access_token');
+    final data = await _apiServices.getDaywiseBottleStats(token!);
     if (data != null) {
       _processData(data);
     }
