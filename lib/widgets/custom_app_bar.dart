@@ -1,8 +1,7 @@
-import 'package:bottle_crush/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:bottle_crush/utils/theme.dart';
-import 'package:bottle_crush/screens/login_screen.dart'; // Import your LoginScreen
+import 'package:bottle_crush/screens/login_screen.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -11,27 +10,28 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   State<CustomAppBar> createState() => _CustomAppBarState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(56); // Implemented preferredSize
+  Size get preferredSize => const Size.fromHeight(56);
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  final GlobalKey _iconKey = GlobalKey(); // Key for the profile icon
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); // Initialize secure storage
-  final ApiServices _apiService = ApiServices(); // Initialize ApiService
+  final GlobalKey _iconKey = GlobalKey();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  bool _isDarkMode = false; // Track dark mode state
 
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(56), // Adjust the height as needed
+      preferredSize: const Size.fromHeight(56),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.backgroundWhite,
+          color: _isDarkMode ? AppTheme.backgroundDark : AppTheme.backgroundWhite,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2), // Shadow color
-              spreadRadius: 1, // Shadow spread
-              blurRadius: 8, // Shadow blur effect
-              offset: const Offset(0, 4), // Shadow offset
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -42,32 +42,30 @@ class _CustomAppBarState extends State<CustomAppBar> {
               'assets/images/aquazen_logo.png',
               fit: BoxFit.cover,
               width: 70,
-              height: 70,
+              height: 60,
             ),
           ),
           actions: [
             IconButton(
-              key: _iconKey, // Assign the GlobalKey to the IconButton
+              key: _iconKey,
               icon: const Icon(
                 Icons.account_circle,
                 color: AppTheme.backgroundBlue,
               ),
               iconSize: 45,
               onPressed: () {
-                // Show the logout menu when the profile icon is clicked
-                _showLogoutMenu(context);
+                _showMenu(context);
               },
             ),
           ],
           scrolledUnderElevation: 0,
-          backgroundColor: AppTheme.backgroundWhite,
+          backgroundColor: _isDarkMode ? AppTheme.backgroundDark : AppTheme.backgroundWhite,
         ),
       ),
     );
   }
 
-  // Function to show the logout menu
-  void _showLogoutMenu(BuildContext context) {
+  void _showMenu(BuildContext context) {
     if (_iconKey.currentContext == null) {
       return;
     }
@@ -85,23 +83,69 @@ class _CustomAppBarState extends State<CustomAppBar> {
         borderRadius: BorderRadius.circular(12.0),
       ),
       items: [
+        // Dark Mode Toggle
+        PopupMenuItem(
+          enabled: false,
+          padding: EdgeInsets.zero,
+          height: 35,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // Uniform padding
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Dark Mode",
+                  style: TextStyle(
+                    color: AppTheme.textWhite,
+                    fontSize: 14,
+                  ),
+                ),
+                Transform.scale(
+                  scale: 0.7, // Adjust switch size
+                  child: Switch(
+                    value: _isDarkMode,
+                    activeColor: Colors.white,
+                    inactiveTrackColor: Colors.grey,
+                    onChanged: (value) {
+                      setState(() {
+                        _isDarkMode = value;
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Divider
+        PopupMenuItem(
+          enabled: false,
+          padding: EdgeInsets.zero,
+          height: 5,
+          child: Container(
+            height: 1,
+            color: Colors.white.withOpacity(0.3),
+            margin: const EdgeInsets.symmetric(horizontal: 12),
+          ),
+        ),
+        // Logout Option
         PopupMenuItem(
           value: 'logout',
           padding: EdgeInsets.zero,
+          height: 35,
           child: Container(
-            height: 29.0,
-            alignment: Alignment.center,
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // Uniform padding
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start, // Align to start
               children: [
-                Icon(Icons.exit_to_app, color: AppTheme.backgroundWhite),
-                SizedBox(width: 4.0),
-                Text(
+                const Icon(Icons.exit_to_app, color: AppTheme.backgroundWhite, size: 18),
+                const SizedBox(width: 8), // Adjust spacing for better alignment
+                const Text(
                   'Logout',
                   style: TextStyle(
                     color: AppTheme.textWhite,
-                    height: 1.0,
+                    fontSize: 14,
                   ),
                 ),
               ],
@@ -117,30 +161,24 @@ class _CustomAppBarState extends State<CustomAppBar> {
     });
   }
 
-  // Function to handle user logout
   void _logoutUser(BuildContext context) async {
     try {
-      // Retrieve token from secure storage
       String? token = await _secureStorage.read(key: 'access_token');
       if (token == null || token.isEmpty) {
         throw Exception("Access token is missing or invalid.");
       }
 
-      // Clear the token from secure storage
       await _secureStorage.delete(key: 'access_token');
 
-      // Redirect to the login page
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
             (Route<dynamic> route) => false,
       );
     } catch (e) {
-      // Handle errors during logout
-      print('Error during logout: $e');
+      debugPrint('Error during logout: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred during logout.')),
       );
     }
   }
-
 }
