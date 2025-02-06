@@ -10,20 +10,40 @@ class AppTheme {
   static const Color backgroundCard = Color(0xFFFAFAFA);
   static const Color transparent = Colors.transparent;
   static const Color backgroundDark = Colors.black45;
+
+  // Light Theme
+  static final ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
+    fontFamily: 'Merriweather',
+    primaryColor: backgroundBlue,
+    scaffoldBackgroundColor: backgroundWhite,
+    colorScheme: const ColorScheme.light(
+      primary: backgroundBlue,
+      secondary: endColor,
+      background: backgroundWhite,
+      onBackground: textBlack,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: backgroundWhite,
+      iconTheme: IconThemeData(color: textBlack),
+    ),
+  );
+
+  // Dark Theme
+  static final ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    fontFamily: 'Merriweather',
+    primaryColor: backgroundDark,
+    scaffoldBackgroundColor: Colors.black,
+    colorScheme: const ColorScheme.dark(
+      primary: backgroundDark,
+      secondary: endColor,
+      background: Colors.black,
+      onBackground: textWhite,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: backgroundDark,
+      iconTheme: IconThemeData(color: textWhite),
+    ),
+  );
 }
-
-
-// class AppTheme {
-//   // Light Theme Colors
-//   static const Color lightPrimary = Color(0xFF0B499E);
-//   static const Color lightBackground = Colors.white;
-//   static const Color lightText = Colors.black;
-//   static const Color lightCard = Color(0xFFFAFAFA);
-//
-//   // Dark Theme Colors
-//   static const Color darkPrimary = Color(0xFF1E1E1E);
-//   static const Color darkBackground = Color(0xFF121212);
-//   static const Color darkText = Colors.white;
-//   static const Color darkCard = Color(0xFF222222);
-// }
-

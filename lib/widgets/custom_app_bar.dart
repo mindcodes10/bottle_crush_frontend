@@ -136,12 +136,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
           height: 35,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // Uniform padding
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.start, // Align to start
               children: [
-                const Icon(Icons.exit_to_app, color: AppTheme.backgroundWhite, size: 18),
-                const SizedBox(width: 8), // Adjust spacing for better alignment
-                const Text(
+                Icon(Icons.exit_to_app, color: AppTheme.backgroundWhite, size: 18),
+                SizedBox(width: 8), // Adjust spacing for better alignment
+                Text(
                   'Logout',
                   style: TextStyle(
                     color: AppTheme.textWhite,
