@@ -25,6 +25,7 @@ class AddBusiness extends StatefulWidget {
 }
 
 class _AddBusinessState extends State<AddBusiness> {
+
   int _selectedIndex = 1; // Track the selected index for bottom nav items
   bool _isPasswordVisible = false;
   final TextEditingController _businessNameController = TextEditingController();
@@ -161,17 +162,18 @@ class _AddBusinessState extends State<AddBusiness> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     bool isTablet = screenWidth > 600;
 
     double fontSize = isTablet ? 20 : 14;
     double iconSize = isTablet ? 30 : 24;
-    double fieldHeight = isTablet ? 70 : 50;
 
     return Scaffold(
       appBar: const CustomAppBar(),
-      backgroundColor: AppTheme.backgroundWhite,
+      backgroundColor: isDark ? textBlack : backgroundWhite,
       body: Column(
         children: [
           Expanded(
@@ -191,7 +193,7 @@ class _AddBusinessState extends State<AddBusiness> {
                             : 'Update Company',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: isDark ? textWhite : textBlack,
                           fontSize: fontSize,
                         ),
                       ),
@@ -207,7 +209,8 @@ class _AddBusinessState extends State<AddBusiness> {
                             : !_isEditable,
                         style: TextStyle(
                             fontSize: fontSize,
-                            color: AppTheme.textBlack),
+                          color: isDark ? textWhite : textBlack,
+                          ),
                         decoration: InputDecoration(
                           labelText: 'Company Name',
                           labelStyle: TextStyle(
@@ -216,7 +219,7 @@ class _AddBusinessState extends State<AddBusiness> {
                           prefixIcon: Icon(
                             FontAwesomeIcons.briefcase,
                             size: iconSize,
-                            color: AppTheme.backgroundBlue,
+                            color: isDark ? backgroundBlue : backgroundBlue,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -235,7 +238,8 @@ class _AddBusinessState extends State<AddBusiness> {
                             : !_isEditable,
                         style: TextStyle(
                             fontSize: fontSize,
-                            color: AppTheme.textBlack),
+                          color: isDark ? textWhite : textBlack,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Company Email',
                           labelStyle: TextStyle(
@@ -244,7 +248,7 @@ class _AddBusinessState extends State<AddBusiness> {
                           prefixIcon: Icon(
                             FontAwesomeIcons.solidEnvelope,
                             size: iconSize,
-                            color: AppTheme.backgroundBlue,
+                            color: isDark ? backgroundBlue : backgroundBlue,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -264,14 +268,15 @@ class _AddBusinessState extends State<AddBusiness> {
                         keyboardType: TextInputType.number,
                         style: TextStyle(
                             fontSize: fontSize,
-                            color: AppTheme.textBlack),
+                          color: isDark ? textWhite : textBlack,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Company Mobile',
                           labelStyle : TextStyle(fontSize: fontSize),
                           prefixIcon: Icon(
                             FontAwesomeIcons.phone,
                             size: iconSize,
-                            color: AppTheme.backgroundBlue,
+                            color: isDark ? backgroundBlue : backgroundBlue,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -291,22 +296,22 @@ class _AddBusinessState extends State<AddBusiness> {
                         obscureText: !_isPasswordVisible,
                         style: TextStyle(
                             fontSize: fontSize,
-                            color: AppTheme.textBlack),
+                          color: isDark ? textWhite : textBlack,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Password',
-                          labelStyle:
-                          TextStyle(fontSize: fontSize),
+                         labelStyle: TextStyle(fontSize: fontSize),
                           prefixIcon: Icon(
                             FontAwesomeIcons.lock,
                             size: iconSize,
-                            color: AppTheme.backgroundBlue,
+                            color: isDark ? backgroundBlue : backgroundBlue,
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _isPasswordVisible
                                   ? Icons.visibility
                                   : Icons.visibility_off,
-                              color: AppTheme.backgroundBlue,
+                              color: isDark ? backgroundBlue : backgroundBlue,
                             ),
                             onPressed: () {
                               setState(() {
@@ -329,22 +334,21 @@ class _AddBusinessState extends State<AddBusiness> {
                         enabled: true, // Disable editing for the logo path
                         style: TextStyle(
                           fontSize: fontSize,
-                          color: AppTheme.textBlack,
+                          color: isDark ? textWhite : textBlack,
                         ),
                         decoration: InputDecoration(
                           labelText: 'Logo',
-                          labelStyle:
-                          TextStyle(fontSize: fontSize),
+                         labelStyle: TextStyle(fontSize: fontSize),
                           prefixIcon: Icon(
                             FontAwesomeIcons.solidFileImage,
                             size: iconSize,
-                            color: AppTheme.backgroundBlue,
+                            color: isDark ? backgroundBlue : backgroundBlue,
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               FontAwesomeIcons.cloudArrowUp,
-                              size: iconSize,
-                              color: AppTheme.backgroundBlue,
+                              size: 18.0,
+                              color: isDark ? backgroundBlue : backgroundBlue,
                             ),
                             onPressed: () async {
                               final XFile? image = await _picker.pickImage(
@@ -391,14 +395,14 @@ class _AddBusinessState extends State<AddBusiness> {
                                 },
                                 child: Container(
                                   decoration: const BoxDecoration(
-                                    color: AppTheme.backgroundBlue,
+                                   // color: AppTheme.backgroundBlue,
                                     shape: BoxShape.circle,
                                   ),
                                   padding: const EdgeInsets.all(4.0),
                                   child: const Icon(
                                     Icons.close,
                                     size: 16.0,
-                                    color: AppTheme.backgroundWhite,
+                                    //color: AppTheme.backgroundWhite,
                                   ),
                                 ),
                               ),
@@ -430,14 +434,15 @@ class _AddBusinessState extends State<AddBusiness> {
                                 },
                                 child: Container(
                                   decoration: const BoxDecoration(
-                                    color: AppTheme.backgroundBlue,
+                                   // color: isDark ? backgroundBlue : backgroundCard,
                                     shape: BoxShape.circle,
                                   ),
                                   padding: const EdgeInsets.all(4.0),
                                   child: const Icon(
                                     Icons.close,
                                     size: 16.0,
-                                    color: AppTheme.backgroundWhite,
+                                    //color: AppTheme.backgroundWhite,
+                                   // color: isDark ? backgroundBlue : backgroundWhite,
                                   ),
                                 ),
                               ),
@@ -463,21 +468,24 @@ class _AddBusinessState extends State<AddBusiness> {
                     Navigator.pop(context);
                   },
                   width: screenWidth * 0.4,
-                  backgroundColor: AppTheme.backgroundWhite,
-                  textColor: AppTheme.backgroundBlue,
-                  borderColor: AppTheme.backgroundBlue,
-                  icon: const Icon(Icons.cancel, color: AppTheme.backgroundBlue),
+                   backgroundColor: isDark ? backgroundBlue : backgroundWhite,
+                  textColor: isDark ? textWhite : backgroundBlue,
+                  borderColor: isDark ? transparent : backgroundBlue,
+                  icon: Icon(Icons.cancel,
+                      color: isDark? textWhite : backgroundBlue
+                  ),
                 ),
                 CustomElevatedButton(
                   buttonText: widget.business == null ? 'Add ' : 'Update ',
-                  // onPressed: submitPressed,
                   onPressed: () async {
                     await submitPressed();
                   },
                   width: screenWidth * 0.4,
-                  backgroundColor: AppTheme.backgroundBlue,
-                  textColor: AppTheme.textWhite,
-                  icon: const Icon(Icons.check, color: AppTheme.textWhite),
+                  backgroundColor: isDark ? backgroundBlue : backgroundBlue,
+                  textColor: isDark ? textWhite : textWhite,
+                  icon: Icon(Icons.check,
+                    color: isDark? textWhite : textWhite,
+                  ),
                 ),
               ],
             ),

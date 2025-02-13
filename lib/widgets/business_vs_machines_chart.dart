@@ -1,3 +1,4 @@
+import 'package:bottle_crush/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -56,7 +57,7 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
         totalBusinessBottles += businessBottleCount;
       });
 
-      // Convert date from 'YYYY-MM-DD' to 'D/M' format
+      /// Convert date from 'YYYY-MM-DD' to 'D/M' format
       DateTime parsedDate = DateTime.parse(date);
       String formattedDate = "${parsedDate.day}/${parsedDate.month}";
 
@@ -76,12 +77,13 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (_dates.isEmpty) {
-      return const Center(child: Text("No data available."));
+      return Center(child: Text("No data found.", style: TextStyle(color: isDark? textWhite : textBlack),));
     }
 
     return Column(

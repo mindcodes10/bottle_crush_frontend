@@ -16,7 +16,7 @@ class _PieChartWidgetState extends State<PieChartWidget> {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   String? token;
 
-  // Mapping full state names to their abbreviations
+  /// Mapping full state names to their abbreviations
   final Map<String, String> stateAbbreviations = {
     "Andhra Pradesh": "AP",
     "Arunachal Pradesh": "AR",
@@ -47,7 +47,7 @@ class _PieChartWidgetState extends State<PieChartWidget> {
     "Uttarakhand": "UK",
     "West Bengal": "WB",
 
-    // Union Territories
+    /// Union Territories
     "Andaman and Nicobar Islands": "AN",
     "Chandigarh": "CH",
     "Dadra and Nagar Haveli and Daman and Diu": "DN",
@@ -74,8 +74,8 @@ class _PieChartWidgetState extends State<PieChartWidget> {
       Map<String, int> stateMachineCount = {};
 
       for (var machine in machines) {
-        String state = machine["state"] ?? "Unknown"; // Get state name
-        String shortState = stateAbbreviations[state] ?? state; // Convert to abbreviation if available
+        String state = machine["state"] ?? "Unknown"; /// Get state name
+        String shortState = stateAbbreviations[state] ?? state; /// Convert to abbreviation if available
         stateMachineCount[shortState] = (stateMachineCount[shortState] ?? 0) + 1;
       }
 
@@ -88,11 +88,12 @@ class _PieChartWidgetState extends State<PieChartWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
-        const Text(
+        Text(
           "State-wise Machine Count",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? textWhite: textBlack),
         ),
         const SizedBox(height: 10),
         SizedBox(
@@ -103,7 +104,7 @@ class _PieChartWidgetState extends State<PieChartWidget> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError || snapshot.data!.isEmpty) {
-                return const Center(child: Text("No data available"));
+                return Center(child: Text("No data available", style: TextStyle(color: isDark ? textWhite : textBlack),));
               } else {
                 return PieChart(
                   PieChartData(
@@ -122,12 +123,13 @@ class _PieChartWidgetState extends State<PieChartWidget> {
   }
 
   List<PieChartSectionData> _getSections(Map<String, int> stateMachineData) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final List<Color> colors = [
-      const Color(0xFF0B499E), // Original primary color
-      const Color(0xFF2D5FAA), // Slightly lighter
-      const Color(0xFF4D75B6), // Medium shade
-      const Color(0xFF6D8CC2), // Lighter shade
-      const Color(0xFF8DA3CC), // Lightest shade
+      const Color(0xFF0B499E), /// Original primary color
+      const Color(0xFF2D5FAA), /// Slightly lighter
+      const Color(0xFF4D75B6), /// Medium shade
+      const Color(0xFF6D8CC2), /// Lighter shade
+      const Color(0xFF8DA3CC), /// Lightest shade
     ];
 
     int index = 0;
@@ -139,10 +141,10 @@ class _PieChartWidgetState extends State<PieChartWidget> {
         value: entry.value.toDouble(),
         title: "${entry.key}\n(${entry.value})",
         radius: 40,
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.bold,
-          color: AppTheme.textWhite,
+          color: isDark? textWhite : textBlack,
         ),
       );
     }).toList();
