@@ -12,10 +12,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:async';
 import 'package:excel/excel.dart';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 
@@ -95,21 +93,9 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     }
   }
 
-  //
-  // Future<void> requestStoragePermission() async {
-  //   PermissionStatus status = await Permission.storage.request();
-  //
-  //   if (status.isGranted) {
-  //     debugPrint('Permission granted');
-  //   } else if (status.isDenied) {
-  //     debugPrint('Permission denied');
-  //   } else if (status.isPermanentlyDenied) {
-  //     openAppSettings(); // Let the user open settings to enable permission
-  //   }
-  // }
-
-
   Future<void> exportToExcel(BuildContext context) async {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     try {
       debugPrint('Starting exportToExcel function...');
 
@@ -126,7 +112,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         } else {
           debugPrint('Storage permission denied');
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Storage permission denied. Please enable it in settings.')),
+            SnackBar(content: Text('Storage permission denied. Please enable it in settings.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
           );
         }
       } else {
@@ -136,7 +122,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     } catch (e) {
       debugPrint('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Android Version not found')),
+        SnackBar(content: Text('Android Version not found',style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
       );
     }
   }
@@ -145,6 +131,8 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
 
 
   Future<void> _exportFileLogic(BuildContext context) async {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     try {
     // Retrieve token from secure storage
       String? token = await _secureStorage.read(key: 'access_token');
@@ -159,7 +147,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         // No machines found
         debugPrint('No machines found for this company.');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You do not have any machines, so cannot create Excel.')),
+          SnackBar(content: Text('You do not have any machines, so cannot create Excel.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
         );
         return;
       }
@@ -197,12 +185,14 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     } catch (e) {
       debugPrint('Error exporting to Excel: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to export Excel file.')),
+        SnackBar(content: Text('Failed to export Excel file.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
       );
     }
   }
 
   Future<void> _saveFileToDownloads(String fileName, List<int> encodedFile, BuildContext context) async {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     try {
       final downloadDir = Directory('/storage/emulated/0/Download');
 
@@ -218,18 +208,20 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
 
       debugPrint('Excel file saved at $filePath');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Excel file saved in "Downloads" folder')),
+        SnackBar(content: Text('Excel file saved in "Downloads" folder', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
       );
     } catch (e) {
       debugPrint('Error while saving the file: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error saving Excel file.')),
+        SnackBar(content: Text('Error saving Excel file.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -246,7 +238,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-      backgroundColor: AppTheme.backgroundWhite,
+      backgroundColor: isDark ? textBlack : backgroundWhite,
       body: RefreshIndicator(
         onRefresh: _fetchDashboardData,
         child: SingleChildScrollView(
@@ -261,7 +253,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                   children: [
                     Text(
                       'Dashboard',
-                      style: TextStyle(fontSize: titleFontSize, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: titleFontSize, fontWeight: FontWeight.bold, color: isDark ? textWhite : textBlack),
                     ),
                     CustomElevatedButton(
                       buttonText: 'Export to Excel',
@@ -270,26 +262,12 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                       },
                       width: screenWidth * 0.45,
                       height: 45,
-                      backgroundColor: AppTheme.backgroundBlue,
-                      icon: const Icon(
+                      backgroundColor: isDark ? backgroundBlue : backgroundBlue,
+                      icon: Icon(
                         FontAwesomeIcons.solidFileExcel,
-                        color: AppTheme.backgroundWhite,
+                        color: isDark ? backgroundWhite : backgroundWhite,
                       ),
                     ),
-
-                    // CustomElevatedButton(
-                    //   buttonText: 'Export to Excel',
-                    //   onPressed: () {
-                    //     exportToExcel(context);
-                    //   },
-                    //   width: screenWidth * 0.45,
-                    //   height: 45,
-                    //   backgroundColor: AppTheme.backgroundBlue,
-                    //   icon: const Icon(
-                    //     FontAwesomeIcons.solidFileExcel,
-                    //     color: AppTheme.backgroundWhite,
-                    //   ),
-                    // ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -336,8 +314,10 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     required double titleFontSize,
     required double valueFontSize,
   }) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Card(
-      color: AppTheme.backgroundCard,
+      color: isDark ? cardDark : backgroundCard,
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: SizedBox(
@@ -346,7 +326,10 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
+            Icon(icon, size: iconSize,
+                //color: AppTheme.backgroundBlue
+              color: isDark ? backgroundWhite : backgroundBlue,
+            ),
             const SizedBox(height: 10),
             Text(title, style: TextStyle(fontSize: titleFontSize)),
             Text(

@@ -27,6 +27,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -44,7 +45,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
           children: [
             Positioned.fill(
               child: BottomAppBar(
-                color: AppTheme.backgroundWhite,
+                color: isDark ? cardDark :backgroundWhite,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -75,21 +76,24 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
   }
 
   Widget _buildTopLine(int index) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     double screenWidth = MediaQuery.of(context).size.width;
     double lineWidth = screenWidth / 5;
 
     return SizedBox(
       width: lineWidth,
       child: Container(
-        height: 4,
+        height: 7,
         color: _selectedIndex == index
-            ? AppTheme.backgroundBlue
+            ? isDark ? backgroundBlue : backgroundBlue
             : Colors.transparent,
       ),
     );
   }
 
   Widget _buildBottomNavItem(IconData icon, String label, int index) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: () {
         setState(() {
@@ -104,8 +108,8 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
           Icon(
             icon,
             color: _selectedIndex == index
-                ? AppTheme.backgroundBlue
-                : AppTheme.backgroundBlue,
+                ? isDark ? backgroundBlue : backgroundBlue
+                : isDark ? backgroundBlue : backgroundBlue,
             size: 25,
           ),
           Flexible(
@@ -113,9 +117,10 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
               label,
               style: TextStyle(
                 fontSize: 12,
+                fontWeight: FontWeight.bold,
                 color: _selectedIndex == index
-                    ? AppTheme.backgroundBlue
-                    : AppTheme.backgroundBlue,
+                    ? isDark ? backgroundBlue : backgroundBlue
+                    : isDark ? backgroundBlue : backgroundBlue,
               ),
             ),
           ),
@@ -125,6 +130,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
   }
 
   Widget _buildFontAwesomeNavItem(IconData icon, String label, int index) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: () {
         setState(() {
@@ -139,8 +145,8 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
           FaIcon(
             icon,
             color: _selectedIndex == index
-                ? AppTheme.backgroundBlue
-                : AppTheme.backgroundBlue,
+                ? isDark ? backgroundBlue : backgroundBlue
+                : isDark ? backgroundBlue : backgroundBlue,
             size: 22,
           ),
           Flexible(
@@ -148,9 +154,10 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
               label,
               style: TextStyle(
                 fontSize: 12,
+                fontWeight: FontWeight.bold,
                 color: _selectedIndex == index
-                    ? AppTheme.backgroundBlue
-                    : AppTheme.backgroundBlue,
+                    ? isDark ? backgroundBlue : backgroundBlue
+                    : isDark ? backgroundBlue : backgroundBlue,
               ),
             ),
           ),

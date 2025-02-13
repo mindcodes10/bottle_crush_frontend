@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/services/api_services.dart';
+
+import '../utils/theme.dart';
 
 class MachineView extends StatefulWidget {
   final int id;
@@ -31,6 +32,7 @@ class _MachineViewState extends State<MachineView> {
 
   // Fetch machine details
   Future<void> fetchMachineDetails() async {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     String? token = await _secureStorage.read(key: 'access_token');
     try {
       List<Map<String, dynamic>>? machines = await apiService.fetchMachines(token!);
@@ -44,7 +46,7 @@ class _MachineViewState extends State<MachineView> {
         isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load machines.')),
+        SnackBar(content: Text('Failed to load machines.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
       );
     }
   }
@@ -77,13 +79,14 @@ class _MachineViewState extends State<MachineView> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: const CustomAppBar(),
       bottomNavigationBar: CustomBottomAppBar(
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-      backgroundColor: AppTheme.backgroundWhite,
+      backgroundColor: isDark ? textBlack : backgroundWhite,
       body: Column(
         children: [
           // Machine List Section
@@ -91,7 +94,7 @@ class _MachineViewState extends State<MachineView> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator()) // Show loading indicator
                 : (machineDetails?.isEmpty ?? true)
-                ? const Center(child: Text('No machines found.'))
+                ? Center(child: Text('No machines found.', style: TextStyle(color: isDark ? textWhite : textBlack),))
                 : ListView.builder(
               itemCount: machineDetails!.length,
               itemBuilder: (context, index) {
@@ -106,7 +109,7 @@ class _MachineViewState extends State<MachineView> {
                       top: 10.0, left: 14.0, right: 12.0, bottom: 10.0),
                   child: Card(
                     elevation: 4,
-                    color: AppTheme.backgroundCard,
+                    color: isDark ? cardDark : backgroundCard,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

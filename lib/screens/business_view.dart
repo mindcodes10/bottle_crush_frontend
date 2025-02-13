@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:bottle_crush/screens/business_dashboard.dart';
 import 'package:bottle_crush/screens/business_email.dart';
 import 'package:bottle_crush/screens/machine_view.dart';
+import 'package:bottle_crush/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/services/api_services.dart';
-import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 
@@ -74,6 +74,8 @@ class _BusinessViewState extends State<BusinessView> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -83,7 +85,7 @@ class _BusinessViewState extends State<BusinessView> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-      backgroundColor: AppTheme.backgroundWhite,
+      backgroundColor: isDark ? textBlack : backgroundWhite,
       body: FutureBuilder<List<dynamic>>(
         future: _businessDetails,
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
@@ -91,17 +93,17 @@ class _BusinessViewState extends State<BusinessView> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             debugPrint('Error: ${snapshot.error}');
-            return const Center(child: Text('No company details available'));
+            return Center(child: Text('No company details available',style: TextStyle(color: isDark ? textWhite : textBlack),));
           } else if (snapshot.hasData) {
             List<dynamic> businessDetails = snapshot.data!;
             if (businessDetails.isEmpty) {
-              return const Center(child: Text('No company details available.'));
+              return Center(child: Text('No company details available.', style: TextStyle(color: isDark ? textWhite : textBlack),));
             }
 
             return Container(
               width: double.infinity,
               height: screenHeight,
-              color: AppTheme.backgroundWhite,
+              color: isDark ? textBlack : backgroundWhite,
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,6 +113,7 @@ class _BusinessViewState extends State<BusinessView> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: screenWidth * 0.04,
+                      color: isDark ? textWhite : textBlack
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -121,7 +124,7 @@ class _BusinessViewState extends State<BusinessView> {
                         var business = businessDetails[index];
                         return Card(
                           elevation: 4,
-                          color: AppTheme.backgroundCard,
+                          color: isDark ? cardDark : backgroundCard,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -144,9 +147,10 @@ class _BusinessViewState extends State<BusinessView> {
                                     children: [
                                       Text(
                                         business['name'] ?? 'Company Name',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
+                                          color: isDark ? textWhite : textBlack
                                         ),
                                         maxLines: 2,
                                         softWrap: true,
@@ -154,14 +158,16 @@ class _BusinessViewState extends State<BusinessView> {
                                       const SizedBox(height: 3),
                                       Text(
                                         business['owner_email'] ?? 'company@email.com',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
+                                            color: isDark ? textWhite : textBlack
                                         ),
                                       ),
                                       Text(
                                         business['mobile'] ?? '+1 234 567 890',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
+                                            color: isDark ? textWhite : textBlack
                                         ),
                                       ),
                                     ],
@@ -178,7 +184,7 @@ class _BusinessViewState extends State<BusinessView> {
               ),
             );
           } else {
-            return const Center(child: Text('No company details available.'));
+            return Center(child: Text('No company details available.', style: TextStyle(color: isDark ? textWhite : textBlack),));
           }
         },
       ),

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/screens/login_screen.dart';
+import 'package:provider/provider.dart';
+
+import '../utils/theme_manager.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -14,18 +17,25 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
+  late ThemeManager _themeManager;
+
   final GlobalKey _iconKey = GlobalKey();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
-  bool _isDarkMode = false; // Track dark mode state
+  @override
+  void initState() {
+    super.initState();
+    _themeManager = Provider.of<ThemeManager>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return PreferredSize(
       preferredSize: const Size.fromHeight(56),
       child: Container(
         decoration: BoxDecoration(
-          color: _isDarkMode ? AppTheme.backgroundDark : AppTheme.backgroundWhite,
+          color: isDark ? cardDark : backgroundWhite,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -39,18 +49,18 @@ class _CustomAppBarState extends State<CustomAppBar> {
           leading: Padding(
             padding: const EdgeInsets.only(left: 7),
             child: Image.asset(
-              'assets/images/aquazen_logo.png',
+              'assets/images/logo.png',
               fit: BoxFit.cover,
               width: 70,
-              height: 60,
+              height: 100,
             ),
           ),
           actions: [
             IconButton(
               key: _iconKey,
-              icon: const Icon(
+              icon: Icon(
                 Icons.account_circle,
-                color: AppTheme.backgroundBlue,
+                color: isDark ? backgroundBlue : backgroundBlue,
               ),
               iconSize: 45,
               onPressed: () {
@@ -59,13 +69,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ),
           ],
           scrolledUnderElevation: 0,
-          backgroundColor: _isDarkMode ? AppTheme.backgroundDark : AppTheme.backgroundWhite,
+          backgroundColor: isDark ? cardDark : backgroundWhite,
         ),
       ),
     );
   }
 
   void _showMenu(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     if (_iconKey.currentContext == null) {
       return;
     }
@@ -76,7 +87,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     double y = offset.dy + renderBox.size.height;
 
     showMenu(
-      color: AppTheme.backgroundBlue,
+      color: isDark? backgroundBlue : backgroundBlue,
       context: context,
       position: RelativeRect.fromLTRB(x, y, x, y),
       shape: RoundedRectangleBorder(
@@ -96,23 +107,44 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 const Text(
                   "Dark Mode",
                   style: TextStyle(
-                    color: AppTheme.textWhite,
+                    color: textWhite,
                     fontSize: 14,
                   ),
                 ),
                 Transform.scale(
-                  scale: 0.7, // Adjust switch size
+                  scale: 0.7,
+                  // child: Switch(
+                  //   value: _isDarkMode,
+                  //   activeColor: Colors.white,
+                  //   inactiveTrackColor: Colors.grey,
+                  //   onChanged: (value) {
+                  //     setState(() {
+                  //       _isDarkMode = value;
+                  //     });
+                  //     Navigator.pop(context);
+                  //   },
+                  // ),
                   child: Switch(
-                    value: _isDarkMode,
+                    value: Provider.of<ThemeManager>(context, listen: false).themeMode == ThemeMode.dark,
                     activeColor: Colors.white,
                     inactiveTrackColor: Colors.grey,
-                    onChanged: (value) {
-                      setState(() {
-                        _isDarkMode = value;
-                      });
+                    onChanged: (newValue) {
+                      Provider.of<ThemeManager>(context, listen: false).toggleTheme(newValue);
                       Navigator.pop(context);
                     },
                   ),
+
+                  // child: Switch(
+                  //   value: _themeManager.themeMode == ThemeMode.dark,
+                  //   activeColor: Colors.white,
+                  //   inactiveTrackColor: Colors.grey,
+                  //   onChanged: (newValue) {
+                  //     setState(() {
+                  //       _themeManager.toggleTheme(newValue);
+                  //     });
+                  //     Navigator.pop(context);
+                  //   },
+                  // ),
                 ),
               ],
             ),
@@ -139,12 +171,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.start, // Align to start
               children: [
-                Icon(Icons.exit_to_app, color: AppTheme.backgroundWhite, size: 18),
+                Icon(Icons.exit_to_app,
+                    color: backgroundWhite,
+                    size: 18),
                 SizedBox(width: 8), // Adjust spacing for better alignment
                 Text(
                   'Logout',
                   style: TextStyle(
-                    color: AppTheme.textWhite,
+                    color: textWhite,
                     fontSize: 14,
                   ),
                 ),

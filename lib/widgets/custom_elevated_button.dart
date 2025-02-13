@@ -24,7 +24,7 @@ class CustomElevatedButton extends StatefulWidget {
   });
 
   @override
-  _CustomElevatedButtonState createState() => _CustomElevatedButtonState();
+  State<CustomElevatedButton> createState() => _CustomElevatedButtonState();
 }
 
 class _CustomElevatedButtonState extends State<CustomElevatedButton> {
@@ -93,10 +93,10 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
 }
 
 class DottedCircularProgressIndicator extends StatefulWidget {
-  const DottedCircularProgressIndicator({Key? key}) : super(key: key);
+  const DottedCircularProgressIndicator({super.key});
 
   @override
-  _DottedCircularProgressIndicatorState createState() =>
+  State<DottedCircularProgressIndicator> createState() =>
       _DottedCircularProgressIndicatorState();
 }
 
@@ -157,8 +157,8 @@ class _DottedProgressPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final double radius = size.width / 2;
-    final double dottedLength = 5.0;
-    final double gapLength = 3.0;
+    const double dottedLength = 5.0;
+    const double gapLength = 3.0;
 
     for (double currentAngle = 0.0; currentAngle < 2 * pi; currentAngle += (dottedLength + gapLength) / radius) {
       final double x = radius + radius * cos(currentAngle + angle); // Apply rotation angle

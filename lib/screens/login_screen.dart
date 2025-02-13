@@ -157,11 +157,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundBlue,
+     backgroundColor: isDark ? backgroundBlue: backgroundBlue,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -182,11 +183,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
           const SizedBox(height: 20),
-          const Center(
+          Center(
             child: Text(
               "Welcome to Aquazen!",
               style: TextStyle(
-                color: AppTheme.textWhite,
+                color: isDark ? textWhite: textWhite,
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
@@ -195,11 +196,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          const Center(
+          Center(
             child: Text(
               "Login to continue",
               style: TextStyle(
-                color: AppTheme.textWhite,
+                color: isDark ? textWhite: textWhite,
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
               ),
@@ -210,9 +211,9 @@ class _LoginScreenState extends State<LoginScreen> {
           Expanded(
             child: Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: AppTheme.backgroundWhite,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                  color: isDark ? textBlack: backgroundWhite,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(35.0),
                   topRight: Radius.circular(35.0),
                 ),
@@ -223,11 +224,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Center(
+                      Center(
                         child: Text(
                           "Login",
                           style: TextStyle(
-                            color: Colors.black,
+                            color: isDark ? textWhite: textBlack,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
@@ -236,15 +237,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 30),
                       TextFormField(
                         controller: _emailController,
+                        style: TextStyle(color: isDark ? textWhite : textBlack),
                         decoration: InputDecoration(
                           labelText: 'Email',
-                          prefixIcon: const Icon(Icons.email, color: AppTheme.backgroundBlue),
-                          labelStyle: TextStyle(color: Colors.grey.shade700),
+                          prefixIcon: Icon(Icons.email,
+                            color: isDark ? backgroundBlue: backgroundBlue,
+                          ),
+                          labelStyle: TextStyle(color:isDark? Colors.grey: Colors.grey.shade700),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey.shade400),
+                            borderSide: BorderSide(color:isDark? Colors.grey.shade400: textBlack),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color:isDark? Colors.grey.shade400: textBlack, width: 2.0),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
@@ -253,13 +261,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
+                        style: TextStyle(color: isDark ? textWhite : textBlack),
                         decoration: InputDecoration(
                           labelText: 'Password',
-                          prefixIcon: const Icon(Icons.lock, color: AppTheme.backgroundBlue),
+                          prefixIcon: Icon(Icons.lock,
+                            color: isDark ? backgroundBlue: backgroundBlue,
+                          ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: AppTheme.backgroundBlue,
+                              color: isDark ? backgroundBlue: backgroundBlue,
                             ),
                             onPressed: () {
                               setState(() {
@@ -267,12 +278,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                           ),
-                          labelStyle: TextStyle(color: Colors.grey.shade700),
+                          labelStyle: TextStyle(color:isDark? Colors.grey: Colors.grey.shade700),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey.shade400),
+                            borderSide: BorderSide(color:isDark? Colors.grey.shade400: textBlack),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color:isDark? Colors.grey.shade400: textBlack, width: 2.0),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
@@ -282,12 +297,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ForgotPassword()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPassword()));
                           },
-                          child: const Text(
+                          child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: AppTheme.backgroundBlue,
+                              color: isDark ? backgroundBlue: backgroundBlue,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -299,8 +314,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: submitPressed,
                         width: screenWidth * 0.3,
                         height: screenHeight * 0.06,
-                        backgroundColor: AppTheme.backgroundBlue,
-                        icon: const Icon(Icons.check, color: AppTheme.textWhite),
+                        backgroundColor: isDark ? backgroundBlue: backgroundBlue,
+                        icon: Icon(Icons.check,
+                          color: isDark ? textWhite: textWhite,
+                        ),
                       ),
                     ],
                   ),

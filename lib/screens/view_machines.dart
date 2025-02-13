@@ -93,11 +93,12 @@ class _ViewMachinesState extends State<ViewMachines> {
   }
 
   void _showDeleteConfirmationDialog(int machineId) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: AppTheme.backgroundWhite,
+          backgroundColor: isDark? cardDark : backgroundCard,
           title: const Text(
             'Are you sure you want to delete this machine?\n\n This action cannot be undone',
             style: TextStyle(fontSize: 13),
@@ -113,18 +114,18 @@ class _ViewMachinesState extends State<ViewMachines> {
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () async {
-                    await Future.delayed(Duration(milliseconds: 100));
+                    await Future.delayed(const Duration(milliseconds: 100));
 
                     Navigator.of(context).pop();
                   },
-                  backgroundColor: AppTheme.backgroundWhite,
-                  textColor: AppTheme.backgroundBlue,
-                  borderColor: AppTheme.backgroundBlue,
+                  backgroundColor: isDark ? backgroundBlue : backgroundWhite,
+                  textColor: isDark ? backgroundWhite : backgroundBlue,
+                  borderColor: isDark ? transparent : backgroundBlue,
                   width: 120,
                   height: 38,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.cancel,
-                    color: AppTheme.backgroundBlue,
+                    color: isDark? backgroundWhite : backgroundBlue,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -135,13 +136,13 @@ class _ViewMachinesState extends State<ViewMachines> {
                     await deleteMachine(machineId);
                     Navigator.of(context).pop(); // Close the dialog after deletion
                   },
-                  backgroundColor: AppTheme.backgroundBlue,
+                  backgroundColor: isDark ? backgroundBlue : backgroundBlue,
                   textColor: Colors.white,
                   width: 120,
                   height: 38,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.delete,
-                    color: AppTheme.textWhite,
+                    color: isDark ? textWhite : textWhite,
                   ),
                 ),
               ],
@@ -154,10 +155,11 @@ class _ViewMachinesState extends State<ViewMachines> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: const CustomAppBar(),
       bottomNavigationBar: CustomBottomAppBar(onItemTapped: _onItemTapped, selectedIndex: _selectedIndex),
-      backgroundColor: AppTheme.backgroundWhite,
+      backgroundColor: isDark ? textBlack : backgroundWhite,
       body: Column(
         children: [
           // Machine List Section
@@ -176,7 +178,7 @@ class _ViewMachinesState extends State<ViewMachines> {
                   padding: const EdgeInsets.only(top: 10.0, left: 14.0, right: 12.0, bottom: 10.0),
                   child: Card(
                     elevation: 4,
-                    color: AppTheme.backgroundCard,
+                    color: isDark ? cardDark : backgroundCard,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -192,9 +194,10 @@ class _ViewMachinesState extends State<ViewMachines> {
                               children: [
                                 Text(
                                   machine['name'] ?? 'Machine Name',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
+                                    color: isDark ? textWhite : textBlack,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -202,15 +205,15 @@ class _ViewMachinesState extends State<ViewMachines> {
                                 const SizedBox(height: 4),
                                 Text(
                                   'Company Name: ${machine['business_name']}',
-                                  style: const TextStyle(fontSize: 12),
+                                  style: TextStyle(fontSize: 12, color: isDark ? textWhite : textBlack,),
                                 ),
                                 Text(
                                   'Machine Number: ${machine['number']}',
-                                  style: const TextStyle(fontSize: 12),
+                                  style: TextStyle(fontSize: 12, color: isDark ? textWhite : textBlack,),
                                 ),
                                 Text(
                                   'Location: $location',
-                                  style: const TextStyle(fontSize: 12),
+                                  style: TextStyle(fontSize: 12, color: isDark ? textWhite : textBlack,),
                                 ),
                               ],
                             ),
@@ -224,9 +227,9 @@ class _ViewMachinesState extends State<ViewMachines> {
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(
+                                icon: Icon(
                                   FontAwesomeIcons.solidPenToSquare,
-                                  color: AppTheme.backgroundBlue,
+                                  color: isDark ? textWhite : backgroundBlue,
                                 ),
                                 onPressed: () async {
                                   // Navigate to the AddMachines page and wait for the result
@@ -244,9 +247,9 @@ class _ViewMachinesState extends State<ViewMachines> {
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(
+                                icon: Icon(
                                   FontAwesomeIcons.solidTrashCan,
-                                  color: AppTheme.backgroundBlue,
+                                  color: isDark ? textWhite : backgroundBlue,
                                 ),
                                 onPressed: () {
                                   _showDeleteConfirmationDialog(machine['id']);
@@ -266,7 +269,7 @@ class _ViewMachinesState extends State<ViewMachines> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: CustomElevatedButton(
-              buttonText: ' + ADD MACHINE',
+              buttonText: 'ADD MACHINE',
               onPressed: () async {
                 // Wait for the result from AddMachines
                 final result = await Navigator.push(
@@ -279,9 +282,13 @@ class _ViewMachinesState extends State<ViewMachines> {
                   fetchMachines(); // Refresh the machine list
                 }
               },
+              icon: Icon(
+                Icons.add,
+                color: isDark ? backgroundWhite : backgroundWhite,
+              ),
               width: double.infinity,
               height: 50,
-              backgroundColor: AppTheme.backgroundBlue,
+              backgroundColor: isDark ? backgroundBlue : backgroundBlue,
             ),
           ),
         ],

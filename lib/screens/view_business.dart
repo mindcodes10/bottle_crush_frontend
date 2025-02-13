@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:bottle_crush/screens/email.dart';
+import 'package:bottle_crush/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:bottle_crush/screens/dashboard.dart';
 import 'package:bottle_crush/screens/view_machines.dart';
 import 'package:bottle_crush/screens/add_business.dart';
 import 'package:bottle_crush/services/api_services.dart';
-import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_elevated_button.dart';
@@ -75,6 +75,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
   }
 
   void _showBusinessDetailsPopup(String businessId) async {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     String? token = await _secureStorage.read(key: 'access_token');
 
     if (token == null) {
@@ -94,7 +95,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            backgroundColor: AppTheme.backgroundWhite,
+            backgroundColor: isDark ? cardDark : backgroundCard,
             title: Text(
               'Company Name: ${businessStats['business_name']?.toString() ?? 'N/A'}',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -130,13 +131,17 @@ class _ViewBusinessState extends State<ViewBusiness> {
               CustomElevatedButton(
                 buttonText: 'Close',
                 onPressed: () async {
-                  await Future.delayed(Duration(milliseconds: 100));
+                  await Future.delayed(const Duration(milliseconds: 100));
                   Navigator.of(context).pop();
                 },
-                backgroundColor: AppTheme.backgroundBlue,
+                backgroundColor: isDark ? backgroundBlue : backgroundBlue,
                 textColor: Colors.white,
-                width: 100,
+                width: 130,
                 height: 40,
+                icon: Icon(
+                  Icons.cancel,
+                  color: isDark ? backgroundWhite : backgroundWhite,
+                ),
               ),
             ],
           );
@@ -155,11 +160,12 @@ class _ViewBusinessState extends State<ViewBusiness> {
 
   // Function to show confirmation dialog before deletion
   void _showDeleteConfirmationDialog(int businessId) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: AppTheme.backgroundWhite,
+        backgroundColor: isDark ? cardDark : backgroundCard,
           title: const Text(
             'Are you sure you want to delete this company?\n\n This action cannot be undone',
             style: TextStyle(fontSize: 13),
@@ -175,17 +181,17 @@ class _ViewBusinessState extends State<ViewBusiness> {
                 CustomElevatedButton(
                   buttonText: 'Cancel',
                   onPressed: () async {
-                    await Future.delayed(Duration(milliseconds: 100));
+                    await Future.delayed(const Duration(milliseconds: 100));
                     Navigator.of(context).pop();
                   },
-                  backgroundColor: AppTheme.backgroundWhite,
-                  textColor: AppTheme.backgroundBlue,
-                  borderColor: AppTheme.backgroundBlue,
+                  backgroundColor: isDark ? backgroundBlue : backgroundWhite,
+                  textColor: isDark ? backgroundWhite : backgroundBlue,
+                  borderColor: isDark ? transparent : backgroundBlue,
                   width: 120,
                   height: 38,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.cancel,
-                    color: AppTheme.backgroundBlue,
+                    color: isDark ? backgroundWhite : backgroundBlue,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -208,13 +214,13 @@ class _ViewBusinessState extends State<ViewBusiness> {
                     Navigator.of(context).pop();
                     _fetchTokenAndBusinessDetails();
                   },
-                  backgroundColor: AppTheme.backgroundBlue,
+                  backgroundColor: isDark ? backgroundBlue : backgroundBlue,
                   textColor: Colors.white,
                   width: 120,
                   height: 38,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.delete,
-                    color: AppTheme.textWhite,
+                    color: isDark ? textWhite : textWhite,
                   ),
                 ),
               ],
@@ -229,6 +235,8 @@ class _ViewBusinessState extends State<ViewBusiness> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -239,7 +247,6 @@ class _ViewBusinessState extends State<ViewBusiness> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-      backgroundColor: AppTheme.backgroundWhite,
       body: FutureBuilder<List<dynamic>>(
         future: _businessDetails,
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
@@ -247,17 +254,17 @@ class _ViewBusinessState extends State<ViewBusiness> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             debugPrint('Error: ${snapshot.error}');
-            return const Center(child: Text('No company details available'));
+            return Center(child: Text('No company details available', style: TextStyle(color: isDark ? textWhite : textBlack),));
           } else if (snapshot.hasData) {
             List<dynamic> businessDetails = snapshot.data!;
             if (businessDetails.isEmpty) {
-              return const Center(child: Text('No company details available.'));
+              return Center(child: Text('No company details available.', style: TextStyle(color: isDark ? textWhite : textBlack),));
             }
 
             return Container(
               width: double.infinity,
               height: screenHeight,
-              color: AppTheme.backgroundWhite,
+              color: isDark ? textBlack : backgroundWhite,
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,7 +289,7 @@ class _ViewBusinessState extends State<ViewBusiness> {
                           },
                           child: Card(
                             elevation: 4,
-                            color: AppTheme.backgroundCard,
+                            color: isDark ? cardDark : backgroundCard,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -304,10 +311,11 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                                   ? MemoryImage(base64Decode(business['logo_image']))
                                                   : null, // Set to null to use the child widget instead
                                               child: business['logo_image'] == null || business['logo_image'].isEmpty
-                                                  ? const Icon(
+                                                  ? Icon(
                                                 FontAwesomeIcons.briefcase,
                                                 size: 25, // Adjust size as needed
-                                                color: AppTheme.backgroundBlue, // Set the color of the icon
+                                               // color: AppTheme.backgroundBlue, // Set the color of the icon
+                                                color: isDark ? textBlack : backgroundBlue,
                                               )
                                                   : null, // No child if logo_image is available
                                             ),
@@ -353,9 +361,9 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                   Row(
                                     children: [
                                       IconButton(
-                                        icon: const Icon(
+                                        icon: Icon(
                                           FontAwesomeIcons.solidPenToSquare,
-                                          color: AppTheme.backgroundBlue,
+                                          color: isDark ? backgroundWhite : backgroundBlue,
                                         ),
                                         onPressed: () {
                                           Navigator.push(
@@ -371,9 +379,9 @@ class _ViewBusinessState extends State<ViewBusiness> {
                                         },
                                       ),
                                       IconButton(
-                                        icon: const Icon(
+                                        icon: Icon(
                                           FontAwesomeIcons.solidTrashCan,
-                                          color: AppTheme.backgroundBlue,
+                                          color: isDark ? backgroundWhite : backgroundBlue,
                                         ),
                                         onPressed: () {
                                           _showDeleteConfirmationDialog(business['id']);
@@ -406,31 +414,15 @@ class _ViewBusinessState extends State<ViewBusiness> {
                     },
                     width: double.infinity,
                     height: 50,
-                    backgroundColor: AppTheme.backgroundBlue,
+                    backgroundColor:  isDark ? backgroundBlue : backgroundBlue,
                   ),
-
-
-                  // CustomElevatedButton(
-                  //   buttonText: ' + ADD COMPANY',
-                  //   onPressed: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(builder: (context) => const AddBusiness()),
-                  //     ).then((result) {
-                  //       if (result == true) {
-                  //         _fetchTokenAndBusinessDetails(); // Refresh the business details
-                  //       }
-                  //     });
-                  //   },
-                  //   width: double.infinity,
-                  //   height: 50,
-                  //   backgroundColor: AppTheme.backgroundBlue,
-                  // ),
                 ],
               ),
             );
           } else {
-            return const Center(child: Text('No company details available.'));
+            return Center(child: Text('No company details available.',
+            style: TextStyle(color: isDark ? backgroundWhite : textBlack),
+            ));
           }
         },
       ),

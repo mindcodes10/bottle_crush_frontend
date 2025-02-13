@@ -19,29 +19,42 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   bool isOtpSent = false;
   bool isOtpVerified = false;
-  bool isNewPasswordObscured = true; // State for New Password visibility
-  bool isConfirmPasswordObscured = true; // State for Confirm Password visibility
-  String resetToken = ""; // Declare a variable to store the reset token
+  bool isNewPasswordObscured = true; /// State for New Password visibility
+  bool isConfirmPasswordObscured = true; /// State for Confirm Password visibility
+  String resetToken = ""; /// Declare a variable to store the reset token
 
   final ApiServices apiServices = ApiServices();
 
-  void showSnackbar(String message) {
+  void showSnackBar(String message) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(content: Text(message,style: TextStyle(color: isDark? textBlack: textWhite),), backgroundColor: isDark? backgroundWhite : textBlack, duration: const Duration(seconds: 2),),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: AppTheme.backgroundBlue,
+      backgroundColor: isDark ? backgroundBlue: backgroundBlue,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: screenHeight * 0.08),
+          SizedBox(height: screenHeight * 0.02),
+          /// Back Arrow Button
+          Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back, size: 30, color: isDark ? textWhite: textWhite,),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          SizedBox(height: screenHeight * 0.01),
           Center(
             child: ClipOval(
               child: SizedBox(
@@ -55,11 +68,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             ),
           ),
           const SizedBox(height: 20),
-          const Center(
+          Center(
             child: Text(
               "Welcome to Aquazen!",
               style: TextStyle(
-                color: AppTheme.textWhite,
+                color: isDark ? textWhite: textWhite,
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
@@ -68,11 +81,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             ),
           ),
           const SizedBox(height: 10),
-          const Center(
+          Center(
             child: Text(
               "Forgot Password",
               style: TextStyle(
-                color: AppTheme.textWhite,
+                color: isDark ? textWhite: textWhite,
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
               ),
@@ -82,9 +95,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           SizedBox(height: screenHeight * 0.1),
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
-                color: AppTheme.backgroundWhite,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: isDark ? textBlack : backgroundWhite,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(35.0),
                   topRight: Radius.circular(35.0),
                 ),
@@ -95,11 +108,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Center(
+                      Center(
                         child: Text(
                           "Reset your password here",
                           style: TextStyle(
-                            color: Colors.black,
+                            color: isDark ? textWhite: textBlack,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -116,32 +129,32 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         const SizedBox(height: 20),
                         CustomElevatedButton(
                           buttonText: "Send OTP",
-                          width: screenWidth * 0.27,
+                          width: screenWidth * 0.34,
                           height: screenHeight * 0.05,
-                          backgroundColor: AppTheme.backgroundBlue,
-                          textColor: AppTheme.textWhite,
+                          backgroundColor: isDark ? backgroundBlue: backgroundBlue,
+                          textColor: isDark ? textWhite: textWhite,
                           onPressed: () async {
                             if (emailController.text.isEmpty) {
-                              showSnackbar("Please enter your email");
+                              showSnackBar("Please enter your email", );
                               return;
                             }
                             // Show loading Snack bar
-                            showSnackbar("Sending OTP... Please wait.");
+                            showSnackBar("Sending OTP... Please wait.");
 
                             try {
                               final response = await apiServices.sendForgotPasswordEmail(emailController.text);
 
                               if (response.containsKey('message')) {
                                 // Show success Snack bar
-                                showSnackbar("OTP sent successfully! Check your email.");
+                                showSnackBar("OTP sent successfully! Check your email.");
                                 setState(() {
                                   isOtpSent = true;
                                 });
                               } else {
-                                showSnackbar("Email not found... please enter valid email");
+                                showSnackBar("Email not found... please enter valid email");
                               }
                             } catch (e) {
-                              showSnackbar("Email not found... please enter valid email");
+                              showSnackBar("Email not found... please enter valid email");
                               debugPrint(e.toString());
                             }
                           },
@@ -155,19 +168,19 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
                         CustomElevatedButton(
                           buttonText: "Verify OTP",
-                          width: screenWidth * 0.30,
+                          width: screenWidth * 0.38,
                           height: screenHeight * 0.05,
-                          backgroundColor: AppTheme.backgroundBlue,
-                          textColor: AppTheme.textWhite,
+                          backgroundColor: isDark ? backgroundBlue: backgroundBlue,
+                          textColor: isDark ? textWhite: textWhite,
                           onPressed: () async {
                             // Check if all OTP fields are filled
                             if (otpControllers.any((controller) => controller.text.isEmpty)) {
-                              showSnackbar("Please enter all digits of OTP");
+                              showSnackBar("Please enter all digits of OTP");
                               return;
                             }
 
                             // Show loading Snack bar
-                            showSnackbar("Verifying OTP... Please wait.");
+                            showSnackBar("Verifying OTP... Please wait.");
 
                             // Extract OTP from controllers
                             String otp = otpControllers.map((e) => e.text).join();
@@ -177,7 +190,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
                               if (response.containsKey('message') && response['message'] == "OTP verified successfully") {
                                 // Show success Snack bar
-                                showSnackbar("OTP verified successfully.");
+                                showSnackBar("OTP verified successfully.");
 
                                 // Store the reset token from the response
                                 setState(() {
@@ -191,10 +204,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   });
                                 });
                               } else {
-                                showSnackbar("Failed to verify OTP. Please try again.");
+                                showSnackBar("Failed to verify OTP. Please try again.");
                               }
                             } catch (e) {
-                              showSnackbar("Error verifying OTP. Please try again.");
+                              showSnackBar("Error verifying OTP. Please try again.");
                               debugPrint(e.toString());
                             }
                           },
@@ -213,7 +226,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               isNewPasswordObscured
                                   ? Icons.visibility_off
                                   : Icons.visibility,
-                              color: AppTheme.backgroundBlue,
+                              color: isDark ? backgroundBlue: backgroundBlue,
                             ),
                             onPressed: () {
                               setState(() {
@@ -233,7 +246,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               isConfirmPasswordObscured
                                   ? Icons.visibility_off
                                   : Icons.visibility,
-                              color: AppTheme.backgroundBlue,
+                              color: isDark ? backgroundBlue: backgroundBlue,
                             ),
                             onPressed: () {
                               setState(() {
@@ -246,19 +259,22 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         const SizedBox(height: 20),
                         CustomElevatedButton(
                           buttonText: "Reset Password",
-                          width: screenWidth * 0.38,
-                          backgroundColor: AppTheme.backgroundBlue,
-                          textColor: AppTheme.textWhite,
+                          width: screenWidth * 0.42,
+                          backgroundColor: isDark ? backgroundBlue: backgroundBlue,
+                          textColor: isDark ? textWhite: textWhite,
+                          icon: Icon(Icons.check,
+                            color: isDark ? textWhite: textWhite,
+                          ),
                           onPressed: () async {
                             // Check if the new password and confirm password match
                             if (newPasswordController.text != confirmPasswordController.text) {
-                              showSnackbar("Passwords do not match");
+                              showSnackBar("Passwords do not match");
                               return;
                             }
 
                             // Check if OTP is verified and token is available
                             if (resetToken.isEmpty) {
-                              showSnackbar("OTP verification is required before resetting the password.");
+                              showSnackBar("OTP verification is required before resetting the password.");
                               return;
                             }
 
@@ -272,13 +288,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               debugPrint('Response received: $response');
 
                               if (response['message'] == 'Password reset successfully') {
-                                showSnackbar("Password reset successfully!");
+                                showSnackBar("Password reset successfully!");
                                 Navigator.pop(context); // Redirect to Login Page
                               } else {
-                                showSnackbar("Failed to reset password. Please try again.");
+                                showSnackBar("Failed to reset password. Please try again.");
                               }
                             } catch (e) {
-                              showSnackbar("Error resetting password. Please try again.");
+                              showSnackBar("Error resetting password. Please try again.");
                               debugPrint(e.toString());
                             }
                           },
@@ -298,6 +314,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   // OTP Input Fields as Individual Fields
   Widget _buildOtpFields() {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(6, (index) {
@@ -315,8 +332,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: AppTheme.backgroundBlue),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(color: isDark? Colors.grey : Colors.grey.shade700, width: 1.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color:isDark? Colors.grey: Colors.grey.shade700, width: 2.0,
+                ),
               ),
             ),
             onChanged: (value) {
@@ -342,20 +365,29 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     bool obscureText = false,
     Widget? suffixIcon,
   }) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return TextField(
       controller: controller,
       obscureText: obscureText,
-      style: const TextStyle(fontSize: 12),
+      style: TextStyle(fontSize: 12, color: isDark ? textWhite : textBlack),
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: const TextStyle(fontSize: 12),
+        labelStyle: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
         prefixIcon: Icon(
           icon,
-          color: AppTheme.backgroundBlue,
+          color: isDark ? backgroundBlue: backgroundBlue,
         ),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color:isDark? Colors.grey.shade400: textBlack),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color:isDark? Colors.grey.shade400: textBlack, width: 2.0),
+          borderRadius: BorderRadius.circular(8.0),
         ),
       ),
     );

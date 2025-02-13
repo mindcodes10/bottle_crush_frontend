@@ -111,39 +111,40 @@ class LineChartScreenState extends State<LineChartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     if (isLoading) {
-      return const Scaffold(
-        backgroundColor: AppTheme.backgroundCard,
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: isDark ? cardDark :backgroundCard,
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (hasTimeoutOccurred && chartData.isEmpty) {
-      return const Scaffold(
-        backgroundColor: AppTheme.backgroundCard,
+      return Scaffold(
+        backgroundColor: isDark ? cardDark :backgroundCard,
         body: Center(
           child: Text(
             "No data found",
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: isDark? textWhite :textBlack),
           ),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundCard,
+      backgroundColor: isDark ? cardDark :backgroundCard,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Bottle Count per day", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+            Text("Bottle Count per day", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: isDark? textWhite :textBlack)),
             const SizedBox(height: 20),
             AspectRatio(
               aspectRatio: 16 / 6,
               child: LineChart(
                 LineChartData(
-                  backgroundColor: AppTheme.backgroundCard,
+                 backgroundColor: isDark ? cardDark : backgroundCard,
                   lineTouchData: const LineTouchData(
                     handleBuiltInTouches: true,
                   ),
@@ -166,7 +167,9 @@ class LineChartScreenState extends State<LineChartScreen> {
                               meta: meta,
                               child: Text(
                                 '${date.day}/${date.month}',
-                                style: const TextStyle(fontSize: 10.5, color: AppTheme.textBlack),
+                                style: TextStyle(fontSize: 10.5,
+                                  color: isDark ? textWhite : textBlack
+                                ),
                               ),
                             );
                           }
@@ -179,7 +182,9 @@ class LineChartScreenState extends State<LineChartScreen> {
                         getTitlesWidget: (value, meta) {
                           return Text(
                             value.toInt().toString(),
-                            style: const TextStyle(fontSize: 10.5, color: AppTheme.textBlack),
+                            style: TextStyle(fontSize: 10.5,
+                                color: isDark ? textWhite : textBlack
+                            ),
                           );
                         },
                         showTitles: true,
@@ -194,15 +199,15 @@ class LineChartScreenState extends State<LineChartScreen> {
                       spots: chartData,
                       isCurved: true,
                       barWidth: 2,
-                      color: AppTheme.startColor,
+                     color: startColor,
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            AppTheme.startColor.withOpacity(0.5),
-                            AppTheme.transparent,
+                           startColor.withOpacity(0.5),
+                           transparent,
                           ],
                         ),
                       ),
