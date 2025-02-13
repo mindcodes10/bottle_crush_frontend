@@ -178,13 +178,16 @@ class _BarChartWidgetState extends State<BarChartWidget> {
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           getTitlesWidget: (value, meta) {
-                            return Text(
-                              value.toInt().toString(),
-                              style: TextStyle(fontSize: 10.5,
-                                  color: isDark ? textWhite : textBlack
-                              ),
-                            );
-                          },
+                            if (value % 10 == 0) {
+                              return Text(
+                                value.toInt().toString(),
+                                style: TextStyle(fontSize: 10.5,
+                                    color: isDark ? textWhite : textBlack
+                                ),
+                              );
+                            }
+                            return const SizedBox();
+                              },
                           showTitles: true,
                           interval: 10,
                           reservedSize: 40,

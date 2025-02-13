@@ -125,11 +125,20 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
                         },
                       ),
                     ),
-                    leftTitles: const AxisTitles(
+                    leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         interval: 10,
                         reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
+                          if (value % 10 == 0) { // Only show values at multiples of 10
+                            return Text(
+                              value.toInt().toString(),
+                              style: const TextStyle(fontSize: 10.5),
+                            );
+                          }
+                          return const SizedBox.shrink(); // Hide other values
+                        },
                       ),
                     ),
                   ),

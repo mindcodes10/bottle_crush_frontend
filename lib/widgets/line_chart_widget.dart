@@ -180,12 +180,16 @@ class LineChartScreenState extends State<LineChartScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         getTitlesWidget: (value, meta) {
-                          return Text(
-                            value.toInt().toString(),
-                            style: TextStyle(fontSize: 10.5,
-                                color: isDark ? textWhite : textBlack
-                            ),
-                          );
+                          // Only show values that are exact multiples of the interval
+                          if (value % 10 == 0) {
+                            return Text(
+                              value.toInt().toString(),
+                              style: TextStyle(fontSize: 10.5,
+                                  color: isDark ? textWhite : textBlack
+                              ),
+                            );
+                          }
+                          return const SizedBox(); // Hide values that are not multiples of the interval
                         },
                         showTitles: true,
                         interval: 10,
