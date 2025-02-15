@@ -6,6 +6,7 @@ import 'package:bottle_crush/utils/theme.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_elevated_button.dart';
+import 'package:bottle_crush/widgets/line_chart_for_company.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,6 +16,8 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+
+import '../widgets/line_chart_widget.dart';
 
 
 class BusinessDashboard extends StatefulWidget {
@@ -226,11 +229,21 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     double cardWidth = screenWidth * 0.4;
-
     double cardHeight = screenHeight * 0.2;
     double iconSize = cardWidth * 0.2;
     double titleFontSize = cardWidth * 0.09;
     double valueFontSize = cardWidth * 0.1;
+    double containerHeight = screenHeight * 0.28;
+
+    // For larger screens like tablets, adjust layout
+    if (screenWidth > 800) {
+      cardWidth = screenWidth * 0.3;
+      cardHeight = screenHeight * 0.3;
+      iconSize = cardWidth * 0.13;
+      titleFontSize = cardWidth * 0.05;
+      valueFontSize = cardWidth * 0.06;
+      containerHeight = screenHeight * 0.95;
+    }
 
     return Scaffold(
       appBar: const CustomAppBar(),
@@ -295,6 +308,32 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                       valueFontSize: valueFontSize,
                     ),
                   ],
+                ),
+
+
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: isDark ? cardDark :backgroundCard,
+                      // border: Border.all(
+                      //   color: isDark ? cardDark :backgroundCard,
+                      //   width: 1,
+                      // ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.35), // Shadow color with opacity
+                          blurRadius: 10, // Spread of the shadow
+                          offset: const Offset(0, 4), // Position of the shadow (x, y)
+                        ),
+                      ],
+                    ),
+                    height: containerHeight,
+                    child: const LineChartForCompany(),
+                  ),
                 ),
               ],
             ),
