@@ -3,6 +3,7 @@ import 'package:bottle_crush/screens/business_view.dart';
 import 'package:bottle_crush/screens/machine_view.dart';
 import 'package:bottle_crush/services/api_services.dart';
 import 'package:bottle_crush/utils/theme.dart';
+import 'package:bottle_crush/widgets/bar_chart_for_company.dart';
 import 'package:bottle_crush/widgets/custom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_bottom_app_bar.dart';
 import 'package:bottle_crush/widgets/custom_elevated_button.dart';
@@ -333,6 +334,30 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                     ),
                     height: containerHeight,
                     child: const LineChartForCompany(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: isDark ? cardDark :backgroundCard,
+                      // border: Border.all(
+                      //   color: isDark ? cardDark :backgroundCard,
+                      //   width: 1,
+                      // ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.35), // Shadow color with opacity
+                          blurRadius: 10, // Spread of the shadow
+                          offset: const Offset(0, 4), // Position of the shadow (x, y)
+                        ),
+                      ],
+                    ),
+                    height: containerHeight,
+                    child: const BarChartForCompany(),
                   ),
                 ),
               ],
