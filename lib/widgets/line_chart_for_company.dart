@@ -114,38 +114,38 @@ class _LineChartForCompanyState extends State<LineChartForCompany> {
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     if (isLoading) {
-      return Scaffold(
-        backgroundColor: isDark ? cardDark :backgroundCard,
-        body: const Center(child: CircularProgressIndicator()),
+      return const Scaffold(
+        backgroundColor: AppTheme.backgroundCard,
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
     if (hasTimeoutOccurred && chartData.isEmpty) {
-      return Scaffold(
-        backgroundColor: isDark ? cardDark :backgroundCard,
+      return const Scaffold(
+        backgroundColor: AppTheme.backgroundCard,
         body: Center(
           child: Text(
             "No data found",
-            style: TextStyle(fontSize: 16, color: isDark? textWhite :textBlack),
+            style: TextStyle(fontSize: 16, color: AppTheme.textBlack),
           ),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: isDark ? cardDark :backgroundCard,
+      backgroundColor: AppTheme.backgroundCard,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Bottle Count per day", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: isDark? textWhite :textBlack)),
+            const Text("Bottle Count per day", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textBlack)),
             const SizedBox(height: 20),
             AspectRatio(
               aspectRatio: 16 / 6,
               child: LineChart(
                 LineChartData(
-                  backgroundColor: isDark ? cardDark : backgroundCard,
+                  backgroundColor: AppTheme.backgroundCard,
                   lineTouchData: const LineTouchData(
                     handleBuiltInTouches: true,
                   ),
@@ -168,8 +168,8 @@ class _LineChartForCompanyState extends State<LineChartForCompany> {
                               meta: meta,
                               child: Text(
                                 '${date.day}/${date.month}',
-                                style: TextStyle(fontSize: 10.5,
-                                    color: isDark ? textWhite : textBlack
+                                style: const TextStyle(fontSize: 10.5,
+                                    color: AppTheme.textBlack
                                 ),
                               ),
                             );
@@ -185,8 +185,8 @@ class _LineChartForCompanyState extends State<LineChartForCompany> {
                           if (value % 10 == 0) {
                             return Text(
                               value.toInt().toString(),
-                              style: TextStyle(fontSize: 10.5,
-                                  color: isDark ? textWhite : textBlack
+                              style: const TextStyle(fontSize: 10.5,
+                                  color: AppTheme.textBlack
                               ),
                             );
                           }
@@ -204,15 +204,15 @@ class _LineChartForCompanyState extends State<LineChartForCompany> {
                       spots: chartData,
                       isCurved: true,
                       barWidth: 2,
-                      color: startColor,
+                      color: AppTheme.startColor,
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            startColor.withOpacity(0.5),
-                            transparent,
+                            AppTheme.startColor.withOpacity(0.5),
+                            AppTheme.transparent,
                           ],
                         ),
                       ),

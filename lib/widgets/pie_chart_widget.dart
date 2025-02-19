@@ -91,9 +91,9 @@ class _PieChartWidgetState extends State<PieChartWidget> {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
-        Text(
+        const Text(
           "State-wise Machine Count",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? textWhite: textBlack),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textBlack),
         ),
         const SizedBox(height: 10),
         SizedBox(
@@ -104,7 +104,7 @@ class _PieChartWidgetState extends State<PieChartWidget> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError || snapshot.data!.isEmpty) {
-                return Center(child: Text("No data available", style: TextStyle(color: isDark ? textWhite : textBlack),));
+                return const Center(child: Text("No data available", style: TextStyle(color: AppTheme.textBlack),));
               } else {
                 return PieChart(
                   PieChartData(
@@ -141,10 +141,10 @@ class _PieChartWidgetState extends State<PieChartWidget> {
         value: entry.value.toDouble(),
         title: "${entry.key}\n(${entry.value})",
         radius: 40,
-        titleStyle: TextStyle(
+        titleStyle: const TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.bold,
-          color: isDark? textWhite : textBlack,
+          color: AppTheme.textBlack,
         ),
       );
     }).toList();

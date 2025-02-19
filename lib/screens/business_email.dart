@@ -56,7 +56,6 @@ class _BusinessEmailState extends State<BusinessEmail> {
   }
 
   Future<void> _sendEmail() async {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     String? token = await secureStorage.read(key: 'access_token');
     final toEmail = _toController.text.trim();
     final subject = _subjectController.text.trim();
@@ -64,7 +63,7 @@ class _BusinessEmailState extends State<BusinessEmail> {
 
     if (toEmail.isEmpty || subject.isEmpty || message.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please fill in all the required fields.",style: TextStyle(color: isDark ? textBlack : textWhite), ), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+        const SnackBar(content: Text("Please fill in all the required fields.")),
       );
       return;
     }
@@ -74,7 +73,7 @@ class _BusinessEmailState extends State<BusinessEmail> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Sending email... Please wait.", style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+      const SnackBar(content: Text("Sending email... Please wait.")),
     );
 
     try {
@@ -88,7 +87,7 @@ class _BusinessEmailState extends State<BusinessEmail> {
 
       if (response.containsKey('message')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Email sent successfully!", style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+          const SnackBar(content: Text("Email sent successfully!")),
         );
 
         // Clear all input fields and file selection
@@ -105,13 +104,13 @@ class _BusinessEmailState extends State<BusinessEmail> {
       } else {
         debugPrint("Error : ${response['error']}");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Email not sent", style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+          const SnackBar(content: Text("Email not sent")),
         );
       }
     } catch (e) {
       debugPrint("Error: ${e.toString()}");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Email not sent", style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+        const SnackBar(content: Text("Email not sent")),
       );
     } finally {
       setState(() {
@@ -124,8 +123,6 @@ class _BusinessEmailState extends State<BusinessEmail> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: const CustomAppBar(),
@@ -133,7 +130,7 @@ class _BusinessEmailState extends State<BusinessEmail> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-      backgroundColor: isDark ? textBlack : backgroundWhite,
+      backgroundColor: AppTheme.backgroundWhite,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -147,26 +144,26 @@ class _BusinessEmailState extends State<BusinessEmail> {
                     style: TextStyle(
                       fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? textWhite : textBlack
+                      color: AppTheme.textBlack,
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _toController,
-                    style: TextStyle(fontSize: screenWidth * 0.03, color: isDark? textWhite : textBlack),
+                    style: TextStyle(fontSize: screenWidth * 0.03),
                     decoration: InputDecoration(
                       labelText: 'To',
-                      labelStyle: TextStyle(color: isDark ? textWhite : textBlack, fontSize: screenWidth * 0.03),
+                      labelStyle: TextStyle(color: Colors.grey, fontSize: screenWidth * 0.03),
                       contentPadding: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 12.0),
                     ),
                   ),
                   const SizedBox(height: 14),
                   TextFormField(
                     controller: _subjectController,
-                    style: TextStyle(fontSize: screenWidth * 0.03, color: isDark? textWhite : textBlack),
+                    style: TextStyle(fontSize: screenWidth * 0.03),
                     decoration: InputDecoration(
                       labelText: 'Subject',
-                      labelStyle: TextStyle(color: isDark ? textWhite : textBlack, fontSize: screenWidth * 0.03),
+                      labelStyle: TextStyle(color: Colors.grey, fontSize: screenWidth * 0.03),
                       contentPadding: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 12.0),
                     ),
                   ),
@@ -177,9 +174,8 @@ class _BusinessEmailState extends State<BusinessEmail> {
                         child: Text(
                           selectedFileName.isNotEmpty ? selectedFileName : 'No file selected',
                           style: TextStyle(
-                            color: isDark ? backgroundBlue : backgroundBlue,
+                            color: AppTheme.backgroundBlue,
                             fontSize: screenWidth * 0.03,
-                            fontWeight: FontWeight.bold
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -200,11 +196,10 @@ class _BusinessEmailState extends State<BusinessEmail> {
                           }
                         },
                         width: screenWidth * 0.3,
-                        backgroundColor: isDark ? backgroundBlue : backgroundBlue,
-                        textColor: isDark ? textWhite : textWhite,
-                        icon: Icon(FontAwesomeIcons.paperclip,
-                          color: isDark ? textWhite : textWhite,
-                        ),
+                        backgroundColor: AppTheme.backgroundBlue,
+                        textColor: AppTheme.backgroundWhite,
+                        borderColor: AppTheme.backgroundBlue,
+                        icon: const Icon(FontAwesomeIcons.paperclip, color: AppTheme.backgroundWhite),
                       ),
                     ],
                   ),
@@ -215,14 +210,12 @@ class _BusinessEmailState extends State<BusinessEmail> {
                     style: TextStyle(fontSize: screenWidth * 0.03),
                     decoration: InputDecoration(
                       labelText: 'Message',
-                      labelStyle: TextStyle(color: isDark ? textWhite : textBlack),
+                      labelStyle: const TextStyle(color: Colors.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: isDark ? Colors.grey : textBlack
-                        ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: AppTheme.backgroundBlue),
                       ),
                     ),
                   ),
@@ -233,11 +226,10 @@ class _BusinessEmailState extends State<BusinessEmail> {
                       buttonText: 'Send',
                       onPressed: _sendEmail,
                       width: screenWidth * 0.3,
-                      backgroundColor: isDark ? backgroundBlue : backgroundBlue,
-                      textColor: isDark ? textWhite : textWhite,
-                      icon: Icon(FontAwesomeIcons.solidPaperPlane,
-                        color: isDark ? backgroundWhite : backgroundWhite,
-                      ),
+                      backgroundColor: AppTheme.backgroundBlue,
+                      textColor: AppTheme.backgroundWhite,
+                      borderColor: AppTheme.backgroundBlue,
+                      icon: const Icon(FontAwesomeIcons.solidPaperPlane, color: AppTheme.backgroundWhite),
                     ),
                   ),
                 ],

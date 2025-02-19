@@ -329,10 +329,9 @@ class _AddMachinesState extends State<AddMachines> {
     required String labelText,
     required IconData icon,
     required double screenWidth,
-    // TextInputType? keyboardType,
-    // String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
   }) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     double fontSize = MediaQuery.of(context).size.width > 600 ? 18 : 13;
     double iconSize = MediaQuery.of(context).size.width > 600 ? 30 : 20;
 
@@ -340,40 +339,32 @@ class _AddMachinesState extends State<AddMachines> {
       controller: controller,
       style: TextStyle(
         fontSize: fontSize,
-        color: isDark ? textWhite : textBlack
+        color: AppTheme.textBlack,
       ),
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(fontSize: fontSize, color: isDark ? textWhite : Colors.grey.shade800),
+        labelStyle: TextStyle(fontSize: fontSize),
         prefixIcon: Icon(
           icon,
           size: iconSize,
-          color: isDark ? backgroundBlue : backgroundBlue,
+          color: AppTheme.backgroundBlue,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-            color: isDark ? textWhite : Colors.grey,
-            width: 1.0,
-          ),
-        )
       ),
     );
   }
 
   void _showDialog(String title, List<String> items, ValueChanged<String?> onSelected) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         double fontSize = MediaQuery.of(context).size.width > 600 ? 23 : 18;
 
         return AlertDialog(
-          backgroundColor: isDark ? cardDark : backgroundWhite,
-          title: Text(title, style: TextStyle(fontSize: fontSize, color: isDark ? textWhite : textBlack),), // Set the title dynamically
+          backgroundColor: AppTheme.backgroundWhite,
+          title: Text(title, style: TextStyle(fontSize: fontSize),), // Set the title dynamically
           content: SingleChildScrollView(
             child: ListBody(
               children: items.map((String item) {
@@ -386,7 +377,7 @@ class _AddMachinesState extends State<AddMachines> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Text(
                       item,
-                      style: TextStyle(fontSize: 15, color: isDark ? textWhite : textBlack), // Adjust font size as needed
+                      style: const TextStyle(fontSize: 16), // Adjust font size as needed
                     ),
                   ),
                 );
@@ -406,8 +397,6 @@ class _AddMachinesState extends State<AddMachines> {
     required ValueChanged<String?> onChanged,
     required double screenWidth,
   }) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-
     double fontSize = MediaQuery.of(context).size.width > 600 ? 18 : 13;
     double iconSize = MediaQuery.of(context).size.width > 600 ? 30 : 20;
 
@@ -433,31 +422,22 @@ class _AddMachinesState extends State<AddMachines> {
         height: 56.0, // Set the height to match the text fields
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
         decoration: BoxDecoration(
-          color: isDark ? textBlack : backgroundWhite,
-          border: Border.all(
-              color: isDark? textWhite : Colors.grey
-          ),
+          border: Border.all(color: AppTheme.backgroundBlue),
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
           children: [
-            Icon(icon, size: iconSize,
-              color: isDark ? backgroundBlue : backgroundBlue,
-            ),
+            Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 value ?? 'Select $labelText',
-                style: TextStyle(fontSize: fontSize,
-                  color: isDark ? textWhite : Colors.grey.shade800
-                ),
+                style: TextStyle(fontSize: fontSize, color: AppTheme.textBlack),
                 overflow: TextOverflow.ellipsis, // Handle overflow for the selected value
                 maxLines: 1, // Limit to one line for the selected value
               ),
             ),
-            Icon(Icons.arrow_drop_down,
-              color: isDark ? backgroundBlue : backgroundBlue,
-            ),
+            const Icon(Icons.arrow_drop_down, color: AppTheme.backgroundBlue),
           ],
         ),
       ),
@@ -466,8 +446,6 @@ class _AddMachinesState extends State<AddMachines> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -475,6 +453,7 @@ class _AddMachinesState extends State<AddMachines> {
 
     double fontSize = isTablet ? 20 : 14;
     double iconSize = isTablet ? 30 : 24;
+    double fieldHeight = isTablet ? 70 : 50;
 
     return Scaffold(
       appBar: const CustomAppBar(),
@@ -482,7 +461,7 @@ class _AddMachinesState extends State<AddMachines> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-      backgroundColor: isDark ? textBlack : backgroundWhite,
+      backgroundColor: AppTheme.backgroundWhite,
       body: Column(
         children: [
           Expanded(
@@ -493,11 +472,7 @@ class _AddMachinesState extends State<AddMachines> {
                 children: [
                   Text(
                     widget.machine == null ? 'Add Machine' : 'Update Machine',
-                    style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.bold,
-                      color: isDark ? textWhite : textBlack
-                    ),
+                    style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: screenHeight * 0.01),
                   _buildTextFormField(
@@ -550,15 +525,15 @@ class _AddMachinesState extends State<AddMachines> {
                     controller: _pincodeController,
                     style: TextStyle(
                       fontSize: fontSize,
-                      color: isDark ? textWhite : textBlack
+                      color: AppTheme.textBlack,
                     ),
                     decoration: InputDecoration(
                       labelText: 'Pin Code',
-                     labelStyle: TextStyle(fontSize: fontSize),
+                      labelStyle: TextStyle(fontSize: fontSize),
                       prefixIcon: Icon(
                         FontAwesomeIcons.locationDot,
                         size: iconSize,
-                        color: isDark ? backgroundBlue : backgroundBlue,
+                        color: AppTheme.backgroundBlue,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -590,13 +565,12 @@ class _AddMachinesState extends State<AddMachines> {
                     Navigator.pop(context);
                   },
                   width: screenWidth * 0.4,
-                  backgroundColor: isDark ? backgroundBlue : backgroundWhite,
-                  textColor: isDark ? textWhite : backgroundBlue,
-                  borderColor: isDark ? transparent : backgroundBlue,
-                  icon: Icon(
+                  backgroundColor: AppTheme.backgroundWhite,
+                  textColor: AppTheme.backgroundBlue,
+                  borderColor: AppTheme.backgroundBlue,
+                  icon: const Icon(
                       Icons.cancel,
-                      color: isDark? textWhite : backgroundBlue
-                  ),
+                      color: AppTheme.backgroundBlue ),
                 ),
                 CustomElevatedButton(
                   buttonText: widget.machine == null ? 'Add' : 'Update',
@@ -604,11 +578,11 @@ class _AddMachinesState extends State<AddMachines> {
                     await _submitPressed();  // Ensure that _submitPressed is an async function
                   },
                   width: screenWidth * 0.4,
-                  backgroundColor: isDark ? backgroundBlue : backgroundBlue,
-                  textColor: isDark ? textWhite : textWhite,
-                  icon: Icon(
+                  backgroundColor: AppTheme.backgroundBlue,
+                  textColor: AppTheme.textWhite,
+                  icon: const Icon(
                     Icons.check,
-                   color: isDark ? textWhite : textWhite,
+                    color: AppTheme.textWhite,
                   ),
                 ),
               ],

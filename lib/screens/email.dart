@@ -55,7 +55,6 @@ class _EmailState extends State<Email> {
   }
 
   Future<void> _sendEmail() async {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     String? token = await secureStorage.read(key: 'access_token');
     final toEmail = _toController.text.trim();
     final subject = _subjectController.text.trim();
@@ -63,7 +62,7 @@ class _EmailState extends State<Email> {
 
     if (toEmail.isEmpty || subject.isEmpty || message.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please fill in all the required fields.", style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+        const SnackBar(content: Text("Please fill in all the required fields.")),
       );
       return;
     }
@@ -73,11 +72,10 @@ class _EmailState extends State<Email> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Sending email... Please wait.",style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+      const SnackBar(content: Text("Sending email... Please wait.")),
     );
 
     try {
-
       final response = await ApiServices.sendEmail(
         token: token!,
         toEmail: toEmail,
@@ -88,7 +86,7 @@ class _EmailState extends State<Email> {
 
       if (response.containsKey('message')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Email sent successfully!",style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+          const SnackBar(content: Text("Email sent successfully!")),
         );
 
         // Clear all input fields and file selection
@@ -105,13 +103,13 @@ class _EmailState extends State<Email> {
       } else {
         debugPrint("Error : ${response['error']}");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Email not sent",style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack,duration: const Duration(seconds: 1),),
+          const SnackBar(content: Text("Email not sent")),
         );
       }
     } catch (e) {
       debugPrint("Error: ${e.toString()}");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Email not sent",style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+        const SnackBar(content: Text("Email not sent")),
       );
     } finally {
       setState(() {
@@ -124,8 +122,6 @@ class _EmailState extends State<Email> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-
     double screenWidth = MediaQuery.of(context).size.width;
     bool isTablet = screenWidth > 600;
 
@@ -136,7 +132,7 @@ class _EmailState extends State<Email> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-      backgroundColor: isDark ? textBlack : backgroundWhite,
+      backgroundColor: AppTheme.backgroundWhite,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -150,7 +146,7 @@ class _EmailState extends State<Email> {
                     style: TextStyle(
                       fontSize: fontSize,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? textWhite :textBlack
+                      color: AppTheme.textBlack,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -159,7 +155,7 @@ class _EmailState extends State<Email> {
                     style: TextStyle(fontSize: fontSize),
                     decoration: InputDecoration(
                       labelText: 'To',
-                      labelStyle: TextStyle(color: isDark ? backgroundWhite : backgroundBlue, fontSize: fontSize),
+                      labelStyle: TextStyle(color: Colors.grey, fontSize: fontSize),
                       contentPadding: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 12.0),
                     ),
                   ),
@@ -169,7 +165,7 @@ class _EmailState extends State<Email> {
                     style: TextStyle(fontSize: fontSize),
                     decoration: InputDecoration(
                       labelText: 'Subject',
-                      labelStyle: TextStyle(color: isDark ? backgroundWhite : backgroundBlue, fontSize: fontSize),
+                      labelStyle: TextStyle(color: Colors.grey, fontSize: fontSize),
                       contentPadding: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 12.0),
                     ),
                   ),
@@ -180,7 +176,7 @@ class _EmailState extends State<Email> {
                         child: Text(
                           selectedFileName.isNotEmpty ? selectedFileName : 'No file selected',
                           style: TextStyle(
-                            color: isDark ? backgroundWhite : backgroundBlue,
+                            color: AppTheme.backgroundBlue,
                             fontSize: fontSize,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -202,11 +198,10 @@ class _EmailState extends State<Email> {
                           }
                         },
                         width: screenWidth * 0.3,
-                        backgroundColor: isDark? backgroundBlue : backgroundBlue,
-                        textColor: isDark ? textWhite : textWhite,
-                        icon: Icon(FontAwesomeIcons.paperclip,
-                           color: isDark ? textWhite : textWhite
-                        ),
+                        backgroundColor: AppTheme.backgroundBlue,
+                        textColor: AppTheme.backgroundWhite,
+                        borderColor: AppTheme.backgroundBlue,
+                        icon: const Icon(FontAwesomeIcons.paperclip, color: AppTheme.backgroundWhite),
                       ),
                     ],
                   ),
@@ -217,16 +212,13 @@ class _EmailState extends State<Email> {
                     style: TextStyle(fontSize: fontSize),
                     decoration: InputDecoration(
                       labelText: 'Message',
-                      labelStyle: TextStyle(color: isDark ? backgroundWhite : backgroundBlue),
+                      labelStyle: const TextStyle(color: Colors.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: isDark ? textWhite: textWhite
-                        ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: AppTheme.backgroundBlue),
                       ),
-
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -236,11 +228,10 @@ class _EmailState extends State<Email> {
                       buttonText: 'Send',
                       onPressed: _sendEmail,
                       width: screenWidth * 0.3,
-                      backgroundColor: isDark ? backgroundBlue : backgroundBlue,
-                      textColor: isDark ? textWhite : textWhite,
-                      icon: Icon(FontAwesomeIcons.solidPaperPlane,
-                          color: isDark ? textWhite : textWhite
-                      ),
+                      backgroundColor: AppTheme.backgroundBlue,
+                      textColor: AppTheme.backgroundWhite,
+                      borderColor: AppTheme.backgroundBlue,
+                      icon: const Icon(FontAwesomeIcons.solidPaperPlane, color: AppTheme.backgroundWhite),
                     ),
                   ),
                 ],
@@ -259,4 +250,3 @@ class _EmailState extends State<Email> {
     );
   }
 }
-
