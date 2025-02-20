@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bottle_crush/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -110,9 +109,19 @@ class _BarChartWidgetState extends State<BarChartWidget> {
     return barChartDataTemp;
   }
 
+  double getDynamicInterval(double maxValue) {
+    if (maxValue <= 0) return 1; // Default case for zero or negative values
+
+    double rawInterval = (maxValue / 3).ceilToDouble(); // Ensures at most 3 intervals above 0
+    double magnitude = (rawInterval / 10).floorToDouble() * 10;
+
+    return magnitude > 0 ? magnitude : rawInterval; // Ensure minimum interval of 1
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (isLoading) {
       return const Scaffold(
         backgroundColor: AppTheme.backgroundCard,
@@ -132,88 +141,95 @@ class _BarChartWidgetState extends State<BarChartWidget> {
       );
     }
 
+    double maxY = barChartData.isEmpty
+        ? 1
+        : barChartData.map((e) => e.barRods.first.toY).reduce((a, b) => a > b ? a : b);
+
+    double interval = getDynamicInterval(maxY);
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundCard,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Bottle Count per day", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textBlack)),
+            const Text(
+              "Bottle Count per day",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textBlack,
+              ),
+            ),
             const SizedBox(height: 20),
             AspectRatio(
               aspectRatio: 16 / 6,
               child: BarChart(
-                  BarChartData(
-                    backgroundColor: AppTheme.backgroundCard,
-                    gridData: const FlGridData(show: false),
-                    titlesData: FlTitlesData(
-                      rightTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      topTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            int index = value.toInt();
-                            if (index % 2 == 0) {
-                              DateTime date = DateTime.now().subtract(Duration(days: barChartData.length - 1 - index));
-                              return SideTitleWidget(
-                                meta: meta,
-                                child: Text(
-                                  '${date.day}/${date.month}',
-                                  style: const TextStyle(fontSize: 10.5,
-                                    color: AppTheme.textBlack
-                                  ),
-                                ),
-                              );
-                            }
-                            return const SizedBox();
-                          },
-                        ),
-                      ),
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          getTitlesWidget: (value, meta) {
-                            if (value % 10 == 0) {
-                              return Text(
-                                value.toInt().toString(),
-                                style: const TextStyle(fontSize: 10.5,
-                                    color: AppTheme.textBlack
-                                ),
-                              );
-                            }
-                            return const SizedBox();
-                              },
-                          showTitles: true,
-                          interval: 10,
-                          reservedSize: 40,
-                        ),
+                BarChartData(
+                  backgroundColor: AppTheme.backgroundCard,
+                  gridData: const FlGridData(show: false),
+                  titlesData: FlTitlesData(
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          int index = value.toInt();
+                          if (index % 2 == 0) {
+                            DateTime date = DateTime.now().subtract(Duration(days: barChartData.length - 1 - index));
+                            return SideTitleWidget(
+                              meta: meta,
+                              child: Text(
+                                '${date.day}/${date.month}',
+                                style: const TextStyle(fontSize: 10.5, color: AppTheme.textBlack),
+                              ),
+                            );
+                          }
+                          return const SizedBox();
+                        },
                       ),
                     ),
-                    borderData: FlBorderData(show: false),
-                    barGroups: barChartData.isEmpty
-                        ? [
-                      BarChartGroupData(
-                        x: 0,
-                        barRods: [
-                          BarChartRodData(
-                            toY: 0.5, // A small value to show a visible placeholder line
-                            color: AppTheme.backgroundBlue, // Distinct color for visibility
-                            width: 8,
-                          ),
-                        ],
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        getTitlesWidget: (value, meta) {
+                          if (value % interval == 0) {
+                            return Text(
+                              value.toInt().toString(),
+                              style: const TextStyle(fontSize: 10.5, color: AppTheme.textBlack),
+                            );
+                          }
+                          return const SizedBox();
+                        },
+                        showTitles: true,
+                        interval: interval,
+                        reservedSize: 70,
                       ),
-                    ]
-                        : barChartData,
-                    groupsSpace: 10,
-                    maxY: barChartData.isEmpty
-                        ? 1 // Set a small positive maxY to render the placeholder bar
-                        : barChartData.map((e) => e.barRods.first.toY).reduce((a, b) => a > b ? a : b),
+                    ),
                   ),
+                  borderData: FlBorderData(show: false),
+                  barGroups: barChartData.isEmpty
+                      ? [
+                    BarChartGroupData(
+                      x: 0,
+                      barRods: [
+                        BarChartRodData(
+                          toY: 0.5,
+                          color: AppTheme.backgroundBlue,
+                          width: 8,
+                        ),
+                      ],
+                    ),
+                  ]
+                      : barChartData,
+                  groupsSpace: 10,
+                  maxY: (interval * 3).toDouble(),
+                ),
               ),
             ),
           ],
@@ -222,3 +238,4 @@ class _BarChartWidgetState extends State<BarChartWidget> {
     );
   }
 }
+

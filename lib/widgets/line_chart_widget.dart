@@ -19,6 +19,8 @@ class LineChartScreenState extends State<LineChartScreen> {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final ApiServices _apiService = ApiServices();
   Timer? _timeoutTimer; // Timer to track timeout
+  double maxCrushedBottles = 0; // Declare maxCrushedBottles at class level
+
 
   @override
   void initState() {
@@ -60,9 +62,11 @@ class LineChartScreenState extends State<LineChartScreen> {
         // Process and populate chart data
         setState(() {
           chartData = processChartData(response);
-          isLoading = false; // Stop loading
+          maxCrushedBottles = getMaxCrushedBottles(chartData);
+          isLoading = false;
         });
         _timeoutTimer?.cancel(); // Cancel the timer as data is loaded
+        debugPrint("Maximum number of bottle crushed : $maxCrushedBottles");
       } else {
         throw Exception('Failed to load data or empty response');
       }
@@ -109,9 +113,27 @@ class LineChartScreenState extends State<LineChartScreen> {
     return chartDataTemp;
   }
 
+  double getMaxCrushedBottles(List<FlSpot> chartData) {
+    if (chartData.isEmpty) return 0;
+    return chartData.map((e) => e.y).reduce((a, b) => a > b ? a : b);
+  }
+
+  double getDynamicInterval(double maxValue) {
+    if (maxValue <= 0) return 1; // Default case for zero or negative values
+
+    double rawInterval = (maxValue / 3).ceilToDouble(); // Ensure at most 3 intervals above 0
+    double magnitude = (rawInterval / 10).floorToDouble() * 10;
+
+    return magnitude > 0 ? magnitude : rawInterval; // Ensure minimum interval of 1
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    double dynamicInterval = getDynamicInterval(maxCrushedBottles);
+
     bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (isLoading) {
       return const Scaffold(
         backgroundColor: AppTheme.backgroundCard,
@@ -134,7 +156,7 @@ class LineChartScreenState extends State<LineChartScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundCard,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 10, left: 10, right: 10,bottom: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -144,7 +166,7 @@ class LineChartScreenState extends State<LineChartScreen> {
               aspectRatio: 16 / 6,
               child: LineChart(
                 LineChartData(
-                 backgroundColor: AppTheme.backgroundCard,
+                  backgroundColor: AppTheme.backgroundCard,
                   lineTouchData: const LineTouchData(
                     handleBuiltInTouches: true,
                   ),
@@ -168,7 +190,7 @@ class LineChartScreenState extends State<LineChartScreen> {
                               child: Text(
                                 '${date.day}/${date.month}',
                                 style: const TextStyle(fontSize: 10.5,
-                                  color: AppTheme.textBlack
+                                    color: AppTheme.textBlack
                                 ),
                               ),
                             );
@@ -180,20 +202,17 @@ class LineChartScreenState extends State<LineChartScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         getTitlesWidget: (value, meta) {
-                          // Only show values that are exact multiples of the interval
-                          if (value % 10 == 0) {
+                          if (value % dynamicInterval == 0) {
                             return Text(
                               value.toInt().toString(),
-                              style: const TextStyle(fontSize: 10.5,
-                                  color: AppTheme.textBlack
-                              ),
+                              style: const TextStyle(fontSize: 10.5, color: AppTheme.textBlack),
                             );
                           }
-                          return const SizedBox(); // Hide values that are not multiples of the interval
+                          return const SizedBox();
                         },
                         showTitles: true,
-                        interval: 10,
-                        reservedSize: 40,
+                        interval: dynamicInterval, // Use dynamically determined interval
+                        reservedSize: 70,
                       ),
                     ),
                   ),
@@ -203,15 +222,15 @@ class LineChartScreenState extends State<LineChartScreen> {
                       spots: chartData,
                       isCurved: true,
                       barWidth: 2,
-                     color: AppTheme.startColor,
+                      color: AppTheme.startColor,
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                           AppTheme.startColor.withOpacity(0.5),
-                           AppTheme.transparent,
+                            AppTheme.startColor.withOpacity(0.5),
+                            AppTheme.transparent,
                           ],
                         ),
                       ),

@@ -6,7 +6,7 @@ import 'dart:async';
 import '../services/api_services.dart';
 
 class BusinessVsMachinesChart extends StatefulWidget {
-  const BusinessVsMachinesChart({super.key, });
+  const BusinessVsMachinesChart({super.key});
 
   @override
   State<BusinessVsMachinesChart> createState() =>
@@ -44,35 +44,54 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
     List<double> businessTotals = [];
     List<double> machineTotals = [];
 
+    DateTime now = DateTime.now();
+    DateTime oneMonthAgo = now.subtract(Duration(days: 30));
+
     data.forEach((date, businesses) {
-      double totalBusinessBottles = 0;
-      double totalMachineBottles = 0;
-
-      businesses.forEach((businessName, machines) {
-        double businessBottleCount = 0;
-        for (var machine in machines) {
-          businessBottleCount += machine["total_bottles"] ?? 0;
-          totalMachineBottles += machine["total_bottles"] ?? 0;
-        }
-        totalBusinessBottles += businessBottleCount;
-      });
-
-      /// Convert date from 'YYYY-MM-DD' to 'D/M' format
       DateTime parsedDate = DateTime.parse(date);
-      String formattedDate = "${parsedDate.day}/${parsedDate.month}";
 
-      dates.add(formattedDate);
-      businessTotals.add(totalBusinessBottles);
-      machineTotals.add(totalMachineBottles);
+      // Filter only last 30 days' data
+      if (parsedDate.isAfter(oneMonthAgo) || parsedDate.isAtSameMomentAs(oneMonthAgo)) {
+        double totalBusinessBottles = 0;
+        double totalMachineBottles = 0;
+
+        businesses.forEach((businessName, machines) {
+          double businessBottleCount = 0;
+          for (var machine in machines) {
+            businessBottleCount += machine["total_bottles"] ?? 0;
+            totalMachineBottles += machine["total_bottles"] ?? 0;
+          }
+          totalBusinessBottles += businessBottleCount;
+        });
+
+        /// Convert date from 'YYYY-MM-DD' to 'D/M' format
+        String formattedDate = "${parsedDate.day}/${parsedDate.month}";
+
+        dates.add(formattedDate);
+        businessTotals.add(totalBusinessBottles);
+        machineTotals.add(totalMachineBottles);
+      }
     });
 
     setState(() {
-      _dates = dates;
-      _businessTotals = businessTotals;
-      _machineTotals = machineTotals;
-      debugPrint("Business Totals: $_businessTotals");
-      debugPrint("Machine Totals: $_machineTotals");
+      _dates = dates.reversed.toList(); // Reverse to start from left to right
+      _businessTotals = businessTotals.reversed.toList();
+      _machineTotals = machineTotals.reversed.toList();
+
+      debugPrint("Filtered Business Totals (Last Month): $_businessTotals");
+      debugPrint("Filtered Machine Totals (Last Month): $_machineTotals");
     });
+  }
+
+
+
+  double getDynamicInterval(double maxValue) {
+    if (maxValue <= 0) return 1; // Default case for zero or negative values
+
+    double rawInterval = (maxValue / 3).ceilToDouble(); // Ensure at most 3 intervals above 0
+    double magnitude = (rawInterval / 10).floorToDouble() * 10;
+
+    return magnitude > 0 ? magnitude : rawInterval; // Ensure minimum interval of 1
   }
 
   @override
@@ -83,8 +102,26 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
     }
 
     if (_dates.isEmpty) {
-      return const Center(child: Text("No data found.", style: TextStyle(color: AppTheme.textBlack),));
+      return const Center(
+          child: Text(
+            "No data found.",
+            style: TextStyle(color: AppTheme.textBlack),
+          ));
     }
+
+    // Determine the max value for dynamic interval
+    double maxValue = [
+      ..._businessTotals,
+      ..._machineTotals
+    ].reduce((a, b) => a > b ? a : b);
+
+    debugPrint("MAxValue : $maxValue");
+
+    double dynamicInterval = getDynamicInterval(maxValue);
+
+    // // Calculate a suitable interval (rounded to nearest 10)
+    // double interval = (maxValue / 4).ceilToDouble();
+    // if (interval < 10) interval = 10; // Ensure minimum interval of 10 for clarity
 
     return Column(
       children: [
@@ -95,6 +132,7 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
               padding: const EdgeInsets.all(8.0),
               child: LineChart(
                 LineChartData(
+                  minY: 0, // Ensures Y-axis starts from 0
                   gridData: const FlGridData(show: false),
                   titlesData: FlTitlesData(
                     rightTitles: const AxisTitles(
@@ -128,16 +166,16 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: 10,
-                        reservedSize: 40,
+                        interval: dynamicInterval, // Dynamic interval applied here
+                        reservedSize: 70,
                         getTitlesWidget: (value, meta) {
-                          if (value % 10 == 0) { // Only show values at multiples of 10
+                          if (value % dynamicInterval == 0) { // Show only interval values
                             return Text(
                               value.toInt().toString(),
                               style: const TextStyle(fontSize: 10.5),
                             );
                           }
-                          return const SizedBox.shrink(); // Hide other values
+                          return const SizedBox.shrink();
                         },
                       ),
                     ),
@@ -145,17 +183,16 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
                   borderData: FlBorderData(show: false),
                   lineBarsData: [
                     _buildLineChartBarData(
-                        _businessTotals, Colors.blue.withOpacity(0.7), "Business",
+                        _businessTotals, Colors.blue.withOpacity(1.0), "Business",
                         offset: 0.2, isDashed: true),
                     _buildLineChartBarData(
-                        _machineTotals, Colors.red.withOpacity(0.7), "Machines"),
+                        _machineTotals, Colors.red.withOpacity(0.5), "Machines"),
                   ],
                 ),
               ),
             ),
           ),
         ),
-        // Legend for the chart
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
@@ -204,3 +241,4 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
     );
   }
 }
+
