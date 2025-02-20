@@ -45,7 +45,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
           children: [
             Positioned.fill(
               child: BottomAppBar(
-                color: isDark ? cardDark :backgroundWhite,
+                color: AppTheme.backgroundWhite,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -86,7 +86,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
       child: Container(
         height: 7,
         color: _selectedIndex == index
-            ? isDark ? backgroundBlue : backgroundBlue
+            ? AppTheme.backgroundBlue
             : Colors.transparent,
       ),
     );
@@ -108,8 +108,8 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
           Icon(
             icon,
             color: _selectedIndex == index
-                ? isDark ? backgroundBlue : backgroundBlue
-                : isDark ? backgroundBlue : backgroundBlue,
+                ? AppTheme.backgroundBlue
+                : AppTheme.backgroundBlue,
             size: 25,
           ),
           Flexible(
@@ -119,8 +119,8 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: _selectedIndex == index
-                    ? isDark ? backgroundBlue : backgroundBlue
-                    : isDark ? backgroundBlue : backgroundBlue,
+                    ? AppTheme.backgroundBlue
+                    : AppTheme.backgroundBlue,
               ),
             ),
           ),
@@ -145,8 +145,8 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
           FaIcon(
             icon,
             color: _selectedIndex == index
-                ? isDark ? backgroundBlue : backgroundBlue
-                : isDark ? backgroundBlue : backgroundBlue,
+                ? AppTheme.backgroundBlue
+                : AppTheme.backgroundBlue,
             size: 22,
           ),
           Flexible(
@@ -156,8 +156,8 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: _selectedIndex == index
-                    ? isDark ? backgroundBlue : backgroundBlue
-                    : isDark ? backgroundBlue : backgroundBlue,
+                    ? AppTheme.backgroundBlue
+                    : AppTheme.backgroundBlue,
               ),
             ),
           ),

@@ -116,7 +116,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         } else {
           debugPrint('Storage permission denied');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Storage permission denied. Please enable it in settings.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+            const SnackBar(content: Text('Storage permission denied. Please enable it in settings.', style: TextStyle(color: AppTheme.textWhite),), backgroundColor: AppTheme.textBlack, duration: Duration(seconds: 1),),
           );
         }
       } else {
@@ -126,7 +126,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     } catch (e) {
       debugPrint('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Android Version not found',style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+        const SnackBar(content: Text('Android Version not found',style: TextStyle(color: AppTheme.textWhite),), backgroundColor: AppTheme.textBlack, duration: Duration(seconds: 1),),
       );
     }
   }
@@ -138,7 +138,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     try {
-    // Retrieve token from secure storage
+      // Retrieve token from secure storage
       String? token = await _secureStorage.read(key: 'access_token');
       if (token == null || token.isEmpty) {
         throw Exception("Access token is missing or invalid.");
@@ -151,7 +151,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         // No machines found
         debugPrint('No machines found for this company.');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('You do not have any machines, so cannot create Excel.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+          const SnackBar(content: Text('You do not have any machines, so cannot create Excel.', style: TextStyle(color: AppTheme.textWhite),), backgroundColor: AppTheme.textBlack, duration: Duration(seconds: 1),),
         );
         return;
       }
@@ -189,7 +189,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     } catch (e) {
       debugPrint('Error exporting to Excel: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to export Excel file.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+        const SnackBar(content: Text('Failed to export Excel file.', style: TextStyle(color: AppTheme.textWhite),), backgroundColor: AppTheme.textBlack, duration: Duration(seconds: 1),),
       );
     }
   }
@@ -212,12 +212,12 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
 
       debugPrint('Excel file saved at $filePath');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Excel file saved in "Downloads" folder', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+        const SnackBar(content: Text('Excel file saved in "Downloads" folder', style: TextStyle(color: AppTheme.textWhite),), backgroundColor: AppTheme.textBlack, duration: Duration(seconds: 1),),
       );
     } catch (e) {
       debugPrint('Error while saving the file: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving Excel file.', style: TextStyle(color: isDark ? textBlack : textWhite),), backgroundColor: isDark ? textWhite : textBlack, duration: const Duration(seconds: 1),),
+        const SnackBar(content: Text('Error saving Excel file.', style: TextStyle(color: AppTheme.textWhite),), backgroundColor: AppTheme.textBlack, duration: Duration(seconds: 1),),
       );
     }
   }
@@ -252,7 +252,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-      backgroundColor: isDark ? textBlack : backgroundWhite,
+      backgroundColor: AppTheme.backgroundWhite,
       body: RefreshIndicator(
         onRefresh: _fetchDashboardData,
         child: SingleChildScrollView(
@@ -267,7 +267,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                   children: [
                     Text(
                       'Dashboard',
-                      style: TextStyle(fontSize: titleFontSize, fontWeight: FontWeight.bold, color: isDark ? textWhite : textBlack),
+                      style: TextStyle(fontSize: titleFontSize, fontWeight: FontWeight.bold, color: AppTheme.textBlack),
                     ),
                     CustomElevatedButton(
                       buttonText: 'Export to Excel',
@@ -276,10 +276,10 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                       },
                       width: screenWidth * 0.45,
                       height: 45,
-                      backgroundColor: isDark ? backgroundBlue : backgroundBlue,
-                      icon: Icon(
+                      backgroundColor: AppTheme.backgroundBlue,
+                      icon: const Icon(
                         FontAwesomeIcons.solidFileExcel,
-                        color: isDark ? backgroundWhite : backgroundWhite,
+                        color: AppTheme.backgroundWhite,
                       ),
                     ),
                   ],
@@ -319,7 +319,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                     padding: const EdgeInsets.all(12.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: isDark ? cardDark :backgroundCard,
+                      color: AppTheme.backgroundCard,
                       // border: Border.all(
                       //   color: isDark ? cardDark :backgroundCard,
                       //   width: 1,
@@ -343,7 +343,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
                     padding: const EdgeInsets.all(12.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: isDark ? cardDark :backgroundCard,
+                      color: AppTheme.backgroundCard,
                       // border: Border.all(
                       //   color: isDark ? cardDark :backgroundCard,
                       //   width: 1,
@@ -381,7 +381,7 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
-      color: isDark ? cardDark : backgroundCard,
+      color: AppTheme.backgroundCard,
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: SizedBox(
@@ -391,8 +391,8 @@ class _BusinessDashboardState extends State<BusinessDashboard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: iconSize,
-                //color: AppTheme.backgroundBlue
-              color: isDark ? backgroundWhite : backgroundBlue,
+              //color: AppTheme.backgroundBlue
+              color: AppTheme.backgroundBlue,
             ),
             const SizedBox(height: 10),
             Text(title, style: TextStyle(fontSize: titleFontSize)),

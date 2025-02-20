@@ -83,7 +83,7 @@ class _BusinessVsMachinesChartState extends State<BusinessVsMachinesChart> {
     }
 
     if (_dates.isEmpty) {
-      return Center(child: Text("No data found.", style: TextStyle(color: isDark? textWhite : textBlack),));
+      return const Center(child: Text("No data found.", style: TextStyle(color: AppTheme.textBlack),));
     }
 
     return Column(

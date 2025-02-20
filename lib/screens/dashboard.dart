@@ -119,9 +119,6 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
-
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -148,7 +145,7 @@ class _DashboardState extends State<Dashboard> {
         onItemTapped: _onItemTapped,
         selectedIndex: _selectedIndex,
       ),
-     // backgroundColor: AppTheme.backgroundWhite,
+      backgroundColor: AppTheme.backgroundWhite,
       body: Column(
         children: [
           // Fixed Header with "Dashboard" and "Export to Excel"
@@ -171,10 +168,10 @@ class _DashboardState extends State<Dashboard> {
                   },
                   width: screenWidth * 0.45,
                   height: 45,
-                  backgroundColor: backgroundBlue,
+                  backgroundColor: AppTheme.backgroundBlue,
                   icon: const Icon(
                     FontAwesomeIcons.solidFileExcel,
-                    color: Colors.white,
+                    color: AppTheme.backgroundWhite,
                   ),
                 ),
               ],
@@ -258,9 +255,9 @@ class _DashboardState extends State<Dashboard> {
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: isDark ? cardDark :backgroundCard,
+                            color: AppTheme.backgroundCard,
                             border: Border.all(
-                              color: isDark ? cardDark :backgroundCard,
+                              color: AppTheme.backgroundCard, // Set the background color
                               width: 1,
                             ),
                             boxShadow: [
@@ -282,9 +279,9 @@ class _DashboardState extends State<Dashboard> {
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: isDark ? cardDark :backgroundCard,
+                            color: AppTheme.backgroundCard,
                             border: Border.all(
-                              color: isDark ? cardDark :backgroundCard,
+                              color: AppTheme.backgroundCard, // Set the background color
                               width: 1,
                             ),
                             boxShadow: [
@@ -306,9 +303,9 @@ class _DashboardState extends State<Dashboard> {
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: isDark ? cardDark :backgroundCard,
+                            color: AppTheme.backgroundCard,
                             border: Border.all(
-                              color: isDark ? cardDark :backgroundCard,
+                              color: AppTheme.backgroundCard,
                               width: 1,
                             ),
                             boxShadow: [
@@ -330,9 +327,9 @@ class _DashboardState extends State<Dashboard> {
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: isDark ? cardDark :backgroundCard,
+                            color: AppTheme.backgroundCard,
                             border: Border.all(
-                              color: isDark ? cardDark :backgroundCard,
+                              color: AppTheme.backgroundCard,
                               width: 1,
                             ),
                             boxShadow: [
@@ -371,11 +368,10 @@ class _DashboardState extends State<Dashboard> {
     required double valueFontSize,
     VoidCallback? onTap,
   }) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        color: isDark? cardDark : backgroundCard,
+        color: AppTheme.backgroundCard,
         elevation: 8,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: SizedBox(
@@ -384,17 +380,14 @@ class _DashboardState extends State<Dashboard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: iconSize,
-                 color:isDark ? backgroundWhite : backgroundBlue
-              ),
+              Icon(icon, size: iconSize, color: AppTheme.backgroundBlue),
               const SizedBox(height: 10),
-              Text(title, style: TextStyle(fontSize: titleFontSize, color: isDark? textWhite : textBlack)),
+              Text(title, style: TextStyle(fontSize: titleFontSize)),
               Text(
                 value,
                 style: TextStyle(
                   fontSize: valueFontSize,
                   fontWeight: FontWeight.bold,
-                  color: isDark? textWhite : textBlack
                 ),
               ),
             ],
