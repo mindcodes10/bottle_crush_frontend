@@ -144,9 +144,10 @@ class _PieChartWidgetState extends State<PieChartWidget> {
         titleStyle: const TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.bold,
-          color: AppTheme.textBlack,
+          color: AppTheme.textWhite,
         ),
       );
     }).toList();
   }
 }
+
